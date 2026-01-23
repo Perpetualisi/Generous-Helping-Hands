@@ -5,19 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Generous Helping Hands</title>
 
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
-        darkMode: 'class', // Enable class-based dark mode
+        darkMode: 'class',
       }
     </script>
-  </head>
-  <body class="bg-white text-gray-800">
-    <!-- React root element -->
-    <div id="root"></div>
 
-    <!-- React app entry -->
+    <script>
+      (function() {
+        try {
+          const savedTheme = localStorage.getItem('theme');
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+    <style>
+      /* Smoothly transition background and text colors across the whole app */
+      html, body {
+        transition: background-color 0.4s ease, color 0.4s ease;
+      }
+      /* Ensure the body takes the correct theme colors immediately */
+      body {
+        @apply bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-100;
+      }
+    </style>
+  </head>
+  
+  <body class="bg-white dark:bg-gray-900">
+    <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
