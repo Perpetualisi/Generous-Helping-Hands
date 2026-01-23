@@ -1,73 +1,94 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Currently, two official plugins are available:
+# 🫶 Generous Helping Hands
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Hey! This is **Generous Helping Hands**, a website I built for an NGO.
 
-## React Compiler
+The idea is simple: help people find programs, events, and ways to volunteer — and make donating super easy.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+I built it using **React, TypeScript, Vite, and Tailwind CSS**, and it works nicely on both desktop and mobile. It also has **dark mode**, smooth scrolling, and a responsive Navbar with dropdowns.
 
-## Expanding the ESLint configuration
+Check it out live here 👉 [Generous Helping Hands](https://generous-helping-hands.vercel.app/)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Built With
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+* React
+* TypeScript
+* Vite
+* Tailwind CSS
+* Fully responsive design
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
+
+## What It Does
+
+Here’s what I added:
+
+* Sticky Navbar that **shrinks when you scroll**
+* Smooth scroll to all sections (Home, About, Programs, Get Involved, Testimonials, Contact)
+* **Dark/Light mode toggle** that remembers your choice
+* Mobile menu with dropdowns and cool animations
+* Donate button that’s easy to find
+* Sections for Mission Statement, Vision Statement, Team, Programs, and Events
+
+Basically, it’s clean, fast, and simple to use.
+
+---
+
+## How to Run It
+
+1. Clone the repo:
+
+```bash
+git clone https://github.com/Perpetualisi/Generous-Helping-Hands.git
+cd Generous-Helping-Hands
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. Install dependencies:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
+
+3. Run locally:
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+---
+
+## Build for Production
+
+```bash
+npm run build
+npm run preview
+```
+
+All files will be in the `dist/` folder, ready to deploy.
+
+---
+
+## Live Demo
+
+[https://generous-helping-hands.vercel.app/](https://generous-helping-hands.vercel.app/)
+
+---
+
+## Notes
+
+* Navbar closes on **Escape** or clicking outside
+* Logos are preloaded so nothing flickers
+* Dark mode works automatically based on your system if you haven’t picked one
+
+---
+
+## About Me
+
+Built by **Perpetual Okan** ❤️
+GitHub: [https://github.com/Perpetualisi](https://github.com/Perpetualisi)
+
