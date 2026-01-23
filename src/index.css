@@ -1,0 +1,9 @@
+html {
+  scroll-behavior: smooth;
+}
+.section {
+  scroll-margin-top: 8rem; /* adjust to match navbar height */
+}
+html, body {
+  overflow-x: hidden; /* hides horizontal scroll */
+}
