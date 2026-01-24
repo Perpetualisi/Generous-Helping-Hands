@@ -18,48 +18,48 @@ const Contact: React.FC = () => {
       title: "Phone",
       content: "+234 903 685 4354",
       link: "tel:+2349036854354",
-      color: "text-green-600 dark:text-green-400",
-      bgColor: "bg-green-50 dark:bg-green-900/30",
-      hoverColor: "hover:bg-green-100 dark:hover:bg-green-900/50",
+      color: "text-gray-600 dark:text-gray-400",
+      bgColor: "bg-gray-100 dark:bg-gray-800/50",
+      hoverColor: "hover:bg-gray-200 dark:hover:bg-gray-800/70",
     },
     {
       icon: Mail,
       title: "Email",
       content: "Giversgenerous@gmail.com",
       link: "mailto:Giversgenerous@gmail.com",
-      color: "text-blue-600 dark:text-blue-400",
-      bgColor: "bg-blue-50 dark:bg-blue-900/30",
-      hoverColor: "hover:bg-blue-100 dark:hover:bg-blue-900/50",
+      color: "text-gray-600 dark:text-gray-400",
+      bgColor: "bg-gray-100 dark:bg-gray-800/50",
+      hoverColor: "hover:bg-gray-200 dark:hover:bg-gray-800/70",
     },
     {
       icon: Share2,
       title: "Social Media",
       content: "@GenerousHelpingHands",
       link: "https://instagram.com/generoushelpinghands",
-      color: "text-purple-600 dark:text-purple-400",
-      bgColor: "bg-purple-50 dark:bg-purple-900/30",
-      hoverColor: "hover:bg-purple-100 dark:hover:bg-purple-900/50",
+      color: "text-gray-600 dark:text-gray-400",
+      bgColor: "bg-gray-100 dark:bg-gray-800/50",
+      hoverColor: "hover:bg-gray-200 dark:hover:bg-gray-800/70",
     },
     {
       icon: MapPin,
       title: "Location",
       content: "Lagos, Nigeria",
-      color: "text-orange-600 dark:text-orange-400",
-      bgColor: "bg-orange-50 dark:bg-orange-900/30",
-      hoverColor: "hover:bg-orange-100 dark:hover:bg-orange-900/50",
+      color: "text-gray-600 dark:text-gray-400",
+      bgColor: "bg-gray-100 dark:bg-gray-800/50",
+      hoverColor: "hover:bg-gray-200 dark:hover:bg-gray-800/70",
     },
   ];
 
   return (
     <section
       id="contact"
-      className="bg-gradient-to-br from-white via-gray-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 sm:py-16 lg:py-20 transition-colors duration-300"
+      className="bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 dark:from-gray-900 dark:via-gray-850 dark:to-gray-900 py-12 sm:py-16 lg:py-20 transition-colors duration-300"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-8 sm:mb-12">
-          <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-blue-100 dark:bg-blue-900/50 rounded-full mb-3 sm:mb-4">
-            <Heart className="w-7 h-7 sm:w-8 sm:h-8 text-blue-600 dark:text-blue-400" />
+          <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-gray-200 dark:bg-gray-800 rounded-full mb-3 sm:mb-4">
+            <Heart className="w-7 h-7 sm:w-8 sm:h-8 text-gray-600 dark:text-gray-400" />
           </div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
             Get in Touch
@@ -82,7 +82,7 @@ const Contact: React.FC = () => {
             </div>
 
             {/* Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-blue-900/40 dark:from-black/70 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-gray-900/50 dark:from-black/70 via-transparent to-transparent" />
 
             {/* Overlay Text */}
             <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 lg:p-8 text-white">
@@ -141,25 +141,25 @@ const Contact: React.FC = () => {
               </div>
             </div>
 
-            {/* CTA */}
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-700 dark:to-purple-700 p-5 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl shadow-xl hover:shadow-2xl text-white transition-all duration-300">
+            {/* CTA - Neutral Background with Blue Buttons */}
+            <div className="bg-gray-100 dark:bg-gray-800 p-5 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl shadow-xl hover:shadow-2xl text-gray-900 dark:text-white transition-all duration-300">
               <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2 sm:mb-3">
                 Ready to Make a Difference?
               </h3>
-              <p className="mb-4 sm:mb-5 text-blue-50 text-xs sm:text-sm lg:text-base">
+              <p className="mb-4 sm:mb-5 text-gray-700 dark:text-gray-300 text-sm sm:text-base lg:text-base">
                 Join us in empowering women and girls. Your support creates lasting change.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3">
                 <a
                   href="#donation"
-                  className="flex-1 px-5 sm:px-6 py-2.5 sm:py-3 bg-white text-blue-600 rounded-lg hover:bg-blue-50 font-semibold text-center shadow-md transition-colors text-sm sm:text-base"
+                  className="flex-1 px-5 sm:px-6 py-2.5 sm:py-3 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 font-semibold text-center shadow-md transition-colors text-sm sm:text-base"
                 >
                   Donate Now
                 </a>
                 <a
                   href="#volunteer"
-                  className="flex-1 px-5 sm:px-6 py-2.5 sm:py-3 bg-blue-700/50 dark:bg-blue-800/50 text-white rounded-lg hover:bg-blue-800/70 dark:hover:bg-blue-700/70 font-semibold text-center shadow-md transition-colors text-sm sm:text-base border border-white/20"
+                  className="flex-1 px-5 sm:px-6 py-2.5 sm:py-3 bg-blue-500 dark:bg-blue-600 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-500 font-semibold text-center shadow-md transition-colors text-sm sm:text-base border border-white/20"
                 >
                   Volunteer
                 </a>

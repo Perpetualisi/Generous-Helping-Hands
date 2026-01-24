@@ -30,10 +30,10 @@ const programImages = [
   "/programs1.jpg",
   "/Programs_children.jpg",
   "/programs_pads.jpg",
-  "/programs4'.jpg",
+  "/programs4'.jpg", 
 ];
 
-// Event images (6 images, no titles or descriptions)
+// Event images
 const eventImages = [
   "/events1.jpg",
   "/events2.jpg",
@@ -53,7 +53,7 @@ const Programs: React.FC = () => {
           id="ourprograms"
           className="scroll-mt-24 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center"
         >
-          {/* Left: Images 2x2 */}
+          {/* Left: Images */}
           <div className="order-2 lg:order-1">
             <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6">
               {programImages.map((image, index) => (
@@ -78,9 +78,11 @@ const Programs: React.FC = () => {
             <span className="text-blue-600 dark:text-blue-400 font-semibold text-xs sm:text-sm uppercase tracking-wider bg-blue-100 dark:bg-blue-900 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full inline-block">
               What We Do
             </span>
+
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 leading-tight">
               Our <span className="text-blue-600 dark:text-blue-400">Programs</span>
             </h2>
+
             <p className="text-gray-600 dark:text-gray-300 text-base sm:text-lg leading-relaxed">
               Discover the various programs we offer to support women and girls:
             </p>
@@ -90,11 +92,11 @@ const Programs: React.FC = () => {
               {programs.map((program, index) => (
                 <div
                   key={index}
-                  className="group flex gap-3 sm:gap-4 md:gap-6 p-4 sm:p-5 md:p-6 bg-white dark:bg-gray-800 rounded-lg border-2 border-gray-100 dark:border-gray-700 hover:border-blue-300 hover:shadow-lg dark:hover:border-blue-400 transition-all duration-300"
+                  className="group flex gap-3 sm:gap-4 md:gap-6 p-4 sm:p-5 md:p-6 bg-white dark:bg-gray-800 rounded-lg border-2 border-gray-100 dark:border-gray-700 hover:border-blue-600 hover:shadow-lg dark:hover:border-blue-400 transition-all duration-300"
                 >
                   {/* Icon */}
                   <div className="flex-shrink-0">
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-700 dark:to-purple-700 rounded-lg sm:rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-br from-blue-100 to-blue-300 dark:from-blue-700 dark:to-blue-500 rounded-lg sm:rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                       <span className="text-lg sm:text-xl">{program.icon}</span>
                     </div>
                   </div>
@@ -137,7 +139,7 @@ const Programs: React.FC = () => {
                 <img
                   src={image}
                   alt={`Event ${index + 1}`}
-                  className="w-full h-64 sm:h-72 md:h-80 lg:h-64 object-contain"
+                  className="w-full h-64 sm:h-72 md:h-80 lg:h-64 object-cover"
                 />
               </div>
             ))}
