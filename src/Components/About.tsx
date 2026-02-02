@@ -7,7 +7,7 @@ import {
   Heart,
   Award,
   Target,
-  HelpingHand,
+  ChevronRight,
 } from "lucide-react";
 
 interface TeamMember {
@@ -92,14 +92,19 @@ const About: React.FC = () => {
       </motion.div>
 
       {/* 2. OUR STORY */}
-      <div id="ourstory" className="scroll-mt-24 bg-gray-50 dark:bg-gray-900/50 py-24 px-4">
+      <div
+        id="ourstory"
+        className="scroll-mt-24 bg-gray-50 dark:bg-gray-900/50 py-24 px-4"
+      >
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
           <motion.div {...fadeInUp}>
-            <h2 className="text-4xl font-bold text-gray-900 dark:text-gray-100">Our Story</h2>
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-gray-100">
+              Our Story
+            </h2>
             <div className="h-1 w-20 bg-blue-600 mt-4 mb-8 rounded-full"></div>
             <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed space-y-4">
-              Generous Helping Hands Foundation was founded with a simple belief —
-              that <strong>small acts of kindness</strong> can transform lives.
+              Generous Helping Hands Foundation was founded with a simple belief
+              — that <strong>small acts of kindness</strong> can transform lives.
               <br />
               <br />
               What began as a localized desire to help neighbors in need has grown
@@ -107,7 +112,11 @@ const About: React.FC = () => {
               with compassion, respect, and integrity.
             </p>
           </motion.div>
-          <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} className="relative">
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            className="relative"
+          >
             <div className="absolute -inset-4 bg-blue-600/10 rounded-2xl -rotate-2"></div>
             <img
               src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=800"
@@ -119,7 +128,10 @@ const About: React.FC = () => {
       </div>
 
       {/* 3. MISSION */}
-      <div id="missionstatement" className="scroll-mt-24 py-24 px-4 max-w-7xl mx-auto">
+      <div
+        id="missionstatement"
+        className="scroll-mt-24 py-24 px-4 max-w-7xl mx-auto"
+      >
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -145,12 +157,18 @@ const About: React.FC = () => {
               practical assistance that promotes dignity and long-term
               well-being.
             </p>
+            <button className="mt-8 flex items-center gap-2 text-blue-600 font-bold hover:gap-4 transition-all">
+              Learn more about our programs <ChevronRight className="w-5 h-5" />
+            </button>
           </motion.div>
         </div>
       </div>
 
       {/* 4. VISION */}
-      <div id="visionstatement" className="scroll-mt-24 bg-gray-50 dark:bg-gray-900/50 py-24 px-4">
+      <div
+        id="visionstatement"
+        className="scroll-mt-24 bg-gray-50 dark:bg-gray-900/50 py-24 px-4"
+      >
         <div className="max-w-6xl mx-auto text-center">
           <motion.div {...fadeInUp}>
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-sm font-semibold">
@@ -167,8 +185,16 @@ const About: React.FC = () => {
                   title: "Stable Futures",
                   text: "Helping families move toward long-term stability",
                 },
-                { icon: Shield, title: "Dignity & Care", text: "Access to essential support and basic needs" },
-                { icon: Users, title: "Stronger Communities", text: "Communities built on trust and hope" },
+                {
+                  icon: Shield,
+                  title: "Dignity & Care",
+                  text: "Access to essential support and basic needs",
+                },
+                {
+                  icon: Users,
+                  title: "Stronger Communities",
+                  text: "Communities built on trust and hope",
+                },
               ].map((v, i) => (
                 <div
                   key={i}
@@ -189,7 +215,10 @@ const About: React.FC = () => {
       </div>
 
       {/* 5. TEAM */}
-      <div id="meettheteam" className="scroll-mt-24 py-24 px-4 bg-white dark:bg-gray-950">
+      <div
+        id="meettheteam"
+        className="scroll-mt-24 py-24 px-4 bg-white dark:bg-gray-950"
+      >
         <div className="max-w-7xl mx-auto text-center mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-sm font-semibold">
             <Award className="w-4 h-4" /> Our Team
@@ -198,8 +227,8 @@ const About: React.FC = () => {
             Meet the People Behind the Mission
           </h2>
           <p className="mt-4 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Our diverse team of dedicated professionals and volunteers work tirelessly to ensure
-            that every hand reached out is met with support.
+            Our diverse team of dedicated professionals and volunteers work
+            tirelessly to ensure that every hand reached out is met with support.
           </p>
         </div>
 
@@ -222,7 +251,9 @@ const About: React.FC = () => {
               <p className="text-sm font-semibold text-blue-600 uppercase tracking-wider mt-1">
                 {member.role}
               </p>
-              <p className="text-gray-600 dark:text-gray-400 mt-4 leading-relaxed">{member.description}</p>
+              <p className="text-gray-600 dark:text-gray-400 mt-4 leading-relaxed">
+                {member.description}
+              </p>
             </motion.div>
           ))}
         </div>
