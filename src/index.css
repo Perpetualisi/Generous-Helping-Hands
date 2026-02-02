@@ -15,4 +15,8 @@ html, body {
 /* Optional: If you use SVGs or specific cards that need to glide too */
 div, section, article {
   transition: background-color 0.5s ease, border-color 0.5s ease;
+}html {
+  scroll-behavior: smooth;
+  /* Adjust the 5rem (80px) to match your header's actual height */
+  scroll-padding-top: 5rem; 
 }
