@@ -1,20 +1,21 @@
+/* Smooth scroll for all links */
+html {
+  scroll-behavior: smooth;
+}
 
-.section {
-  scroll-margin-top: 8rem; /* adjust to match navbar height */
-}
+/* Prevent horizontal scroll */
 html, body {
-  overflow-x: hidden; /* hides horizontal scroll */
-}
-/* Apply to html and body to ensure the background transitions */
-html, body {
+  overflow-x: hidden;
   transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
 }
 
-/* Optional: If you use SVGs or specific cards that need to glide too */
+/* Smooth transitions for elements */
 div, section, article {
   transition: background-color 0.5s ease, border-color 0.5s ease;
-}html {
-  scroll-behavior: smooth;
-  /* Adjust the 5rem (80px) to match your header's actual height */
-  scroll-padding-top: 5rem; 
+}
+
+/* Remove static scroll-padding-top or scroll-margin-top */
+/* JS will handle the dynamic offset */
+.section {
+  /* no fixed scroll-margin-top */
 }

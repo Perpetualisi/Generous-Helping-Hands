@@ -1,14 +1,6 @@
 import React from "react";
-import { motion } from "framer-motion";
-import {
-  Users,
-  TrendingUp,
-  Shield,
-  Heart,
-  Award,
-  Target,
-  ChevronRight
-} from "lucide-react";
+import { motion, easeOut } from "framer-motion";
+import { Users, TrendingUp, Shield, Heart, Target } from "lucide-react";
 
 // --- Data ---
 const TEAM_MEMBERS = [
@@ -27,23 +19,24 @@ const VISION_POINTS = [
 ];
 
 // --- Sub-components ---
-const SectionBadge = ({ icon: Icon, children }: { icon: any; children: React.ReactNode }) => (
+const SectionBadge = ({ icon: Icon, children }: { icon: React.ElementType; children: React.ReactNode }) => (
   <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-sm font-semibold mb-6">
     <Icon className="w-4 h-4" /> {children}
   </div>
 );
 
 const About = () => {
+  // ✅ TypeScript-safe Framer Motion config
   const fadeInUp = {
     initial: { opacity: 0, y: 30 },
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true, margin: "-100px" },
-    transition: { duration: 0.7, ease: "easeOut" },
+    transition: { duration: 0.7, ease: easeOut },
   };
 
   return (
     <section className="bg-white dark:bg-gray-950 transition-colors duration-300 overflow-hidden">
-      
+
       {/* 1. WHY IT MATTERS */}
       <motion.div
         {...fadeInUp}
@@ -94,7 +87,7 @@ const About = () => {
             </p>
           </motion.div>
           <div className="lg:order-1">
-             <img
+            <img
               src="https://images.unsplash.com/photo-1509099836639-18ba1795216d?auto=format&fit=crop&q=80&w=800"
               className="rounded-3xl shadow-xl w-full h-[400px] object-cover"
               alt="Mission"

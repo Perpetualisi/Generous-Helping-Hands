@@ -60,39 +60,31 @@ const Navbar: React.FC = () => {
     localStorage.setItem("theme", isDark ? "dark" : "light");
   };
 
-  // Scroll Listener
+  // Scroll Listener for navbar styling
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // FIXED SCROLL LOGIC
+  // Dynamic scroll to section
   const handleScrollTo = (id: string) => {
-    // 1. Immediately trigger menu close
-    setIsOpen(false);
-    setOpenDropdown(null);
+    setIsOpen(false); // close mobile menu
+    setOpenDropdown(null); // close dropdowns
 
-    // 2. Wait for the mobile menu transition (300ms) to finish
-    // This prevents the "scrolling too far" issue caused by layout shift
+    // Wait for mobile menu animation to finish
     setTimeout(() => {
       const section = document.getElementById(id);
       if (!section) return;
 
-      // Dynamically calculate the navbar height at this exact moment
       const navbarHeight = navRef.current?.offsetHeight || 80;
-      
-      const elementPosition = section.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
+      const targetPosition = section.getBoundingClientRect().top + window.pageYOffset - navbarHeight;
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
-    }, 350); // Matches the duration-300 transition + small buffer
+      window.scrollTo({ top: targetPosition, behavior: "smooth" });
+    }, 300); // match your mobile menu transition duration
   };
 
-  if (darkMode === null) return null;
+  if (darkMode === null) return null; // wait for theme to initialize
 
   return (
     <nav
@@ -202,8 +194,8 @@ const Navbar: React.FC = () => {
                   </div>
                 </>
               ) : (
-                <button 
-                  onClick={() => handleScrollTo(item.href!)} 
+                <button
+                  onClick={() => handleScrollTo(item.href!)}
                   className="block w-full text-left py-3 font-semibold text-gray-900 dark:text-white"
                 >
                   {item.name}
