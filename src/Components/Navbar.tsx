@@ -10,19 +10,24 @@ const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
-  const [darkMode, setDarkMode] = useState<boolean | null>(null); // null until theme detected
+  const [darkMode, setDarkMode] = useState<boolean | null>(null);
   const navRef = useRef<HTMLElement>(null);
 
+  /* ================= MENU STRUCTURE ================= */
   const menu: MenuItem[] = [
     { name: "Home", href: "home" },
+
     {
       name: "About",
       subLinks: [
-        { name: "Mission Statement", href: "missionstatement" },
-        { name: "Vision Statement", href: "visionstatement" },
+        { name: "Why Our Work Matters", href: "whyitmatters" },
+        { name: "Our Mission", href: "missionstatement" },
+        { name: "Our Vision", href: "visionstatement" },
+        { name: "Our Story", href: "ourstory" },
         { name: "Meet the Team", href: "meettheteam" },
       ],
     },
+
     {
       name: "Programs",
       subLinks: [
@@ -30,18 +35,20 @@ const Navbar: React.FC = () => {
         { name: "Events", href: "events" },
       ],
     },
+
     {
       name: "Get Involved",
       subLinks: [
         { name: "Volunteer", href: "volunteer" },
-        { name: "Donation", href: "donation" },
+        { name: "Donate", href: "donation" },
       ],
     },
+
     { name: "Testimonials", href: "testimonials" },
     { name: "Contact", href: "contact" },
   ];
 
-  // Detect and apply saved theme or system preference
+  /* ================= THEME DETECTION ================= */
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -52,7 +59,6 @@ const Navbar: React.FC = () => {
 
     setDarkMode(isDark);
 
-    // Preload logos
     ["/logo_light.jpg", "/logodark.png"].forEach((src) => {
       const img = new Image();
       img.src = src;
@@ -62,23 +68,18 @@ const Navbar: React.FC = () => {
   const toggleDarkMode = () => {
     const isDark = !darkMode;
     setDarkMode(isDark);
-    if (isDark) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
+    document.documentElement.classList.toggle("dark", isDark);
+    localStorage.setItem("theme", isDark ? "dark" : "light");
   };
 
-  // Navbar scroll shrink effect
+  /* ================= SCROLL EFFECT ================= */
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu on Escape
+  /* ================= ESCAPE KEY & BODY LOCK ================= */
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -96,58 +97,53 @@ const Navbar: React.FC = () => {
     };
   }, [isOpen]);
 
+  /* ================= SCROLL TO SECTION ================= */
   const handleScrollTo = (id: string) => {
     const section = document.getElementById(id);
     if (!section) return;
+
     setIsOpen(false);
     setOpenDropdown(null);
+
     setTimeout(() => {
       const navbarHeight = navRef.current?.getBoundingClientRect().height || 80;
       window.scrollTo({
         top: section.offsetTop - navbarHeight,
         behavior: "smooth",
       });
-    }, 300);
+    }, 250);
   };
 
-  // Prevent rendering until theme is determined
   if (darkMode === null) return null;
 
+  /* ================= DESKTOP ITEM ================= */
   const DesktopMenuItem = ({ item }: { item: MenuItem }) => (
     <div className="relative group">
       {item.subLinks ? (
         <>
-          <button className="px-3 lg:px-4 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 flex items-center gap-1 text-sm lg:text-base">
+          <button className="px-4 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 flex items-center gap-1 transition-colors">
             {item.name}
-            <svg
-              className="w-3 h-3 lg:w-4 lg:h-4 transition-transform group-hover:rotate-180"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="w-4 h-4 group-hover:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
-          <div className="absolute left-0 mt-2 w-52 lg:w-56 bg-white dark:bg-gray-800 shadow-xl rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 border border-gray-100 dark:border-gray-700 z-50">
-            <div className="py-2">
-              {item.subLinks.map((sub, index) => (
-                <button
-                  key={sub.name}
-                  onClick={() => handleScrollTo(sub.href!)}
-                  className={`block px-4 py-2.5 lg:py-3 text-sm lg:text-base text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 w-full text-left transition-colors ${
-                    index !== 0 ? "border-t border-gray-100 dark:border-gray-700" : ""
-                  }`}
-                >
-                  {sub.name}
-                </button>
-              ))}
-            </div>
+
+          <div className="absolute left-0 mt-2 w-56 bg-white dark:bg-gray-800 shadow-xl rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 border dark:border-gray-700">
+            {item.subLinks.map((sub) => (
+              <button
+                key={sub.name}
+                onClick={() => handleScrollTo(sub.href)}
+                className="block w-full text-left px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              >
+                {sub.name}
+              </button>
+            ))}
           </div>
         </>
       ) : (
         <button
           onClick={() => handleScrollTo(item.href!)}
-          className="px-3 lg:px-4 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 text-sm lg:text-base"
+          className="px-4 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors"
         >
           {item.name}
         </button>
@@ -158,137 +154,100 @@ const Navbar: React.FC = () => {
   return (
     <nav
       ref={navRef}
-      className={`fixed top-0 w-full z-50 transition-all duration-500 ease-in-out ${
-        scrolled ? "bg-white/95 dark:bg-gray-900/95 shadow-lg backdrop-blur-sm" : "bg-white dark:bg-gray-900 shadow-md"
+      className={`fixed top-0 w-full z-50 transition-all duration-500 ${
+        scrolled
+          ? "bg-white/95 dark:bg-gray-900/95 shadow-lg backdrop-blur"
+          : "bg-white dark:bg-gray-900 shadow-md"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div
-          className={`flex justify-between items-center transition-all duration-500 ${
-            scrolled ? "min-h-[4rem] sm:min-h-[4.5rem]" : "min-h-[5rem] sm:min-h-[6rem] lg:min-h-[7rem]"
-          }`}
-        >
-          {/* Logo */}
-          <a
-            href="#home"
-            onClick={(e) => {
-              e.preventDefault();
-              handleScrollTo("home");
-            }}
-            className="relative flex items-center flex-shrink-0"
-          >
-            <div
-              className={`relative transition-all duration-500 ${
-                scrolled ? "h-12 sm:h-14 lg:h-16" : "h-14 sm:h-16 lg:h-20 xl:h-24"
-              }`}
-            >
-              <img
-                src="/logo_light.jpg"
-                alt="Generous Helping Hands"
-                className={`h-full w-auto transition-opacity duration-500 ${darkMode ? "opacity-0" : "opacity-100"}`}
-              />
-              <img
-                src="/logodark.png"
-                alt="Generous Helping Hands"
-                className={`absolute top-0 left-0 h-full w-auto transition-opacity duration-500 ${darkMode ? "opacity-100" : "opacity-0"}`}
-              />
-            </div>
-          </a>
+      <div className="max-w-7xl mx-auto px-4">
+        <div className={`flex justify-between items-center transition-all duration-500 ${scrolled ? "min-h-[4.5rem]" : "min-h-[6rem]"}`}>
+          
+          {/* LOGO */}
+          <button onClick={() => handleScrollTo("home")} className="relative">
+            <img
+              src="/logo_light.jpg"
+              alt="Generous Helping Hands"
+              className={`h-14 transition-opacity ${darkMode ? "opacity-0" : "opacity-100"}`}
+            />
+            <img
+              src="/logodark.png"
+              alt="Generous Helping Hands"
+              className={`absolute top-0 left-0 h-14 transition-opacity ${darkMode ? "opacity-100" : "opacity-0"}`}
+            />
+          </button>
 
-          {/* Desktop menu */}
-          <div className="hidden lg:flex items-center space-x-1">
+          {/* DESKTOP MENU */}
+          <div className="hidden lg:flex items-center gap-1">
             {menu.map((item) => (
               <DesktopMenuItem key={item.name} item={item} />
             ))}
+
             <button
               onClick={() => handleScrollTo("donation")}
-              className="ml-4 px-5 lg:px-6 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-all duration-300 font-semibold shadow-md hover:shadow-lg text-sm lg:text-base"
+              className="ml-4 px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
             >
-              Donate
+              Donate Now
             </button>
-            <button
-              onClick={toggleDarkMode}
-              className="ml-4 p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-black dark:text-white transition-all duration-500"
-              aria-label="Toggle Dark Mode"
-            >
+
+            <button onClick={toggleDarkMode} className="ml-3 p-2 rounded-lg bg-gray-200 dark:bg-gray-700">
               {darkMode ? "☀️" : "🌙"}
             </button>
           </div>
 
-          {/* Mobile menu toggle */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-          >
-            <div className="w-6 h-5 flex flex-col justify-between">
-              <span className={`block h-0.5 w-full bg-gray-700 dark:bg-gray-200 rounded transition-all duration-300 ${isOpen ? "rotate-45 translate-y-2" : ""}`} />
-              <span className={`block h-0.5 w-full bg-gray-700 dark:bg-gray-200 rounded transition-all duration-300 ${isOpen ? "opacity-0" : ""}`} />
-              <span className={`block h-0.5 w-full bg-gray-700 dark:bg-gray-200 rounded transition-all duration-300 ${isOpen ? "-rotate-45 -translate-y-2" : ""}`} />
-            </div>
+          {/* MOBILE TOGGLE */}
+          <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden p-2">
+            ☰
           </button>
         </div>
       </div>
 
-      {/* Mobile overlay */}
-      {isOpen && <div className="lg:hidden fixed inset-0 bg-black/30" style={{ top: navRef.current?.getBoundingClientRect().height || 80 }} onClick={() => setIsOpen(false)} />}
-
-      {/* Mobile menu */}
-      <div
-        className={`lg:hidden fixed left-0 right-0 bg-white dark:bg-gray-900 shadow-2xl transition-all duration-500 overflow-y-auto ${
-          isOpen ? "max-h-[calc(100vh-5rem)] opacity-100" : "max-h-0 opacity-0"
-        }`}
-        style={{ top: navRef.current?.getBoundingClientRect().height || 80 }}
-      >
-        <div className="max-w-7xl mx-auto px-4 py-4 space-y-1">
-          {menu.map((item) => (
-            <div key={item.name}>
-              {item.subLinks ? (
-                <>
-                  <button
-                    onClick={() => setOpenDropdown(openDropdown === item.name ? null : item.name)}
-                    className="w-full flex justify-between items-center px-4 py-3 font-medium text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors rounded-lg"
-                  >
-                    <span>{item.name}</span>
-                    <svg className={`w-5 h-5 transition-transform duration-200 ${openDropdown === item.name ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                  <div className={`overflow-hidden transition-all duration-300 ${openDropdown === item.name ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}>
-                    <div className="pl-4 mt-1 space-y-1">
-                      {item.subLinks.map((sub) => (
+      {/* MOBILE MENU */}
+      {isOpen && (
+        <div className="lg:hidden bg-white dark:bg-gray-900 shadow-xl">
+          <div className="px-4 py-4 space-y-2">
+            {menu.map((item) => (
+              <div key={item.name}>
+                {item.subLinks ? (
+                  <>
+                    <button
+                      onClick={() => setOpenDropdown(openDropdown === item.name ? null : item.name)}
+                      className="w-full flex justify-between py-3 font-medium"
+                    >
+                      {item.name}
+                    </button>
+                    {openDropdown === item.name &&
+                      item.subLinks.map((sub) => (
                         <button
                           key={sub.name}
-                          onClick={() => handleScrollTo(sub.href!)}
-                          className="block px-4 py-2.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 w-full text-left transition-colors rounded-lg"
+                          onClick={() => handleScrollTo(sub.href)}
+                          className="block w-full text-left pl-4 py-2 text-sm"
                         >
                           {sub.name}
                         </button>
                       ))}
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <button
-                  onClick={() => handleScrollTo(item.href!)}
-                  className="block px-4 py-3 font-medium text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 w-full text-left rounded-lg transition-colors"
-                >
-                  {item.name}
-                </button>
-              )}
-            </div>
-          ))}
+                  </>
+                ) : (
+                  <button onClick={() => handleScrollTo(item.href!)} className="block w-full text-left py-3 font-medium">
+                    {item.name}
+                  </button>
+                )}
+              </div>
+            ))}
 
-          {/* Mobile buttons */}
-          <div className="pt-4 space-y-2">
-            <button onClick={() => handleScrollTo("donation")} className="block w-full px-6 py-3 bg-blue-600 dark:bg-blue-700 text-white rounded-lg font-semibold text-center">
+            <button
+              onClick={() => handleScrollTo("donation")}
+              className="w-full mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold"
+            >
               Donate Now
             </button>
-            <button onClick={toggleDarkMode} className="block w-full px-6 py-3 bg-gray-200 dark:bg-gray-700 text-black dark:text-white rounded-lg transition-all duration-500 text-center font-semibold">
+
+            <button onClick={toggleDarkMode} className="w-full px-6 py-3 bg-gray-200 dark:bg-gray-700 rounded-lg">
               {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
             </button>
           </div>
         </div>
-      </div>
+      )}
     </nav>
   );
 };

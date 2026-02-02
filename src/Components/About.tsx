@@ -1,5 +1,15 @@
-import React, { useState, useEffect, useRef } from "react";
-import { BookOpen, Users, Megaphone, TrendingUp, Shield, Heart, Award, Target } from "lucide-react";
+import React from "react";
+import { motion } from "framer-motion";
+import {
+  Users,
+  TrendingUp,
+  Shield,
+  Heart,
+  Award,
+  Target,
+  HelpingHand,
+  ChevronRight,
+} from "lucide-react";
 
 interface TeamMember {
   name: string;
@@ -9,246 +19,197 @@ interface TeamMember {
 }
 
 const team: TeamMember[] = [
-  { name: "Leadership", role: "Strategic Vision & Operations", icon: "🎯", description: "Guiding our mission with strategic vision and operational excellence" },
-  { name: "Education Specialist", role: "Empowers women and girls", icon: "📚", description: "Creating pathways to knowledge and opportunity" },
-  { name: "Program Directors", role: "Oversees key projects", icon: "💼", description: "Driving meaningful change through impactful programs" },
-  { name: "Community Engagement", role: "Builds strong relationships", icon: "🤝", description: "Fostering connections that create lasting change" },
-  { name: "Advocacy & Outreach", role: "Champions rights", icon: "📢", description: "Amplifying voices and advocating for equality" },
-  { name: "Administrative Support", role: "Ensures smooth operations", icon: "⚙️", description: "Supporting our mission with organizational excellence" },
+  { name: "Leadership", role: "Vision & Strategy", icon: "🎯", description: "Providing direction, accountability, and leadership to drive our mission forward." },
+  { name: "Program Coordinators", role: "Community Programs", icon: "📦", description: "Planning and delivering outreach programs that meet real community needs." },
+  { name: "Education & Welfare", role: "Learning & Support", icon: "📚", description: "Supporting access to education, skills development, and personal growth." },
+  { name: "Community Engagement", role: "Partnerships & Outreach", icon: "🤝", description: "Building strong relationships with families, volunteers, and partners." },
+  { name: "Advocacy & Awareness", role: "Voice for the Vulnerable", icon: "📢", description: "Raising awareness and advocating for dignity, inclusion, and care." },
+  { name: "Administrative Support", role: "Operations & Compliance", icon: "⚙️", description: "Ensuring transparency, accountability, and smooth daily operations." },
 ];
 
 const About: React.FC = () => {
-  const [isVisible, setIsVisible] = useState({ mission: false, team: false, vision: false });
-
-  const missionRef = useRef<HTMLDivElement>(null);
-  const teamRef = useRef<HTMLDivElement>(null);
-  const visionRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const id = entry.target.id;
-            if (id === 'missionstatement') setIsVisible(prev => ({ ...prev, mission: true }));
-            if (id === 'meettheteam') setIsVisible(prev => ({ ...prev, team: true }));
-            if (id === 'visionstatement') setIsVisible(prev => ({ ...prev, vision: true }));
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    if (missionRef.current) observer.observe(missionRef.current);
-    if (teamRef.current) observer.observe(teamRef.current);
-    if (visionRef.current) observer.observe(visionRef.current);
-
-    return () => observer.disconnect();
-  }, []);
-
-  const missionHighlights = [
-    { icon: BookOpen, title: "Education", description: "Knowledge that empowers", color: "blue" },
-    { icon: Users, title: "Community", description: "Together we rise", color: "purple" },
-    { icon: Megaphone, title: "Advocacy", description: "Voices for change", color: "pink" },
-  ];
-
-  const visionPillars = [
-    { icon: TrendingUp, title: "Economic Freedom", description: "Breaking barriers to financial independence" },
-    { icon: Shield, title: "Rights & Health", description: "Ensuring access to fundamental rights" },
-    { icon: Heart, title: "Healthy Communities", description: "Children thriving in nurturing environments" },
-  ];
-
-  const colorClasses = {
-    blue: { 
-      bg: "bg-blue-100 dark:bg-blue-900/20", 
-      text: "text-blue-600 dark:text-blue-400", 
-      border: "border-blue-200 dark:border-blue-700", 
-      gradient: "from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/20" 
-    },
-    purple: { 
-      bg: "bg-purple-100 dark:bg-purple-900/20", 
-      text: "text-purple-600 dark:text-purple-400", 
-      border: "border-purple-200 dark:border-purple-700", 
-      gradient: "from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/20" 
-    },
-    pink: { 
-      bg: "bg-pink-100 dark:bg-pink-900/20", 
-      text: "text-pink-600 dark:text-pink-400", 
-      border: "border-pink-200 dark:border-pink-700", 
-      gradient: "from-pink-50 to-pink-100 dark:from-pink-900/30 dark:to-pink-800/20" 
-    },
+  const fadeInUp = {
+    initial: { opacity: 0, y: 20 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true },
+    transition: { duration: 0.6 }
   };
 
   return (
-    <section className="space-y-0 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-      {/* Mission Statement */}
-      <div
-        id="missionstatement"
-        ref={missionRef}
-        className="scroll-mt-24 py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 transition-colors duration-300"
+    <section className="bg-white dark:bg-gray-950 transition-colors duration-300 overflow-hidden">
+      
+      {/* 1. WHY IT MATTERS (The Hook) */}
+      <motion.div 
+        {...fadeInUp}
+        id="whyitmatters"
+        className="scroll-mt-32 py-24 px-4 max-w-4xl mx-auto text-center"
       >
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+        <span className="text-blue-600 font-bold tracking-widest uppercase text-sm">The Challenge</span>
+        <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-gray-100 mt-4">
+          Why Our Work Matters
+        </h2>
+        <p className="mt-8 text-xl text-gray-600 dark:text-gray-400 leading-relaxed italic border-l-4 border-blue-500 pl-6 text-left md:text-center md:border-l-0 md:pl-0">
+          "Many families face daily challenges such as food insecurity, limited
+          access to education, and lack of basic health support. These hurdles 
+          stifle community growth and children’s futures."
+        </p>
+      </motion.div>
 
-            {/* Text Content */}
-            <div className={`space-y-4 sm:space-y-6 transition-all duration-1000 ${isVisible.mission ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-xs sm:text-sm font-semibold">
-                <Target className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span>Our Mission</span>
-              </div>
-              
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 dark:text-gray-100 leading-tight">
-                Empowering Women,{" "}
-                <span className="text-blue-600 dark:text-blue-400">Transforming Lives</span>
-              </h2>
-              
-              <div className="space-y-4 text-gray-700 dark:text-gray-300 text-sm sm:text-base lg:text-lg leading-relaxed">
-                <p>
-                  At Generous Helping Hands Foundation, we are dedicated to empowering women and girls by promoting economic sustainability, advocating for societal equity, and ensuring access to fundamental rights.
-                </p>
-                <p>
-                  Through education, community engagement, and advocacy, we work tirelessly to break down barriers and build a just society where women and girls are free to realize their full potential.
-                </p>
-              </div>
-
-              {/* Mission Highlights */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 pt-2 sm:pt-4">
-                {missionHighlights.map((item, index) => {
-                  const Icon = item.icon;
-                  const colors = colorClasses[item.color as keyof typeof colorClasses];
-                  
-                  return (
-                    <div 
-                      key={index}
-                      className={`space-y-2 sm:space-y-3 p-4 rounded-xl bg-gray-100 dark:bg-gray-800 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ${isVisible.mission ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}
-                      style={{ transitionDelay: `${index * 100}ms` }}
-                    >
-                      <div className={`w-10 h-10 sm:w-12 sm:h-12 ${colors.bg} rounded-lg flex items-center justify-center shadow-lg`}>
-                        <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                      </div>
-                      <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm sm:text-base">{item.title}</h3>
-                      <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">{item.description}</p>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Image */}
-            <div className={`relative transition-all duration-1000 delay-300 ${isVisible.mission ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}>
-              <div className="relative rounded-xl overflow-hidden shadow-xl">
-                <img
-                  src="/mission_statement.png"
-                  alt="Women and girls being empowered through our mission"
-                  className="w-full aspect-[4/5] object-cover"
-                  loading="lazy"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Meet the Team */}
-      <div
-        id="meettheteam"
-        ref={teamRef}
-        className="scroll-mt-24 py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900 transition-colors duration-300"
-      >
-        <div className="max-w-7xl mx-auto">
-          <div className={`text-center space-y-4 sm:space-y-6 mb-8 sm:mb-12 transition-all duration-1000 ${isVisible.team ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-xs sm:text-sm font-semibold">
-              <Award className="w-3 h-3 sm:w-4 sm:h-4" />
-              <span>Our Team</span>
-            </div>
-            
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 dark:text-gray-100">
-              Meet the <span className="text-blue-600 dark:text-blue-400">Changemakers</span>
-            </h2>
-            
-            <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base lg:text-lg max-w-3xl mx-auto leading-relaxed px-4">
-              Our team is composed of dedicated professionals passionate about empowering women and girls. Each member brings unique skills and experiences that drive our mission forward.
+      {/* 2. OUR STORY (The Heart) */}
+      <div id="ourstory" className="scroll-mt-24 bg-gray-50 dark:bg-gray-900/50 py-24 px-4">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+          <motion.div {...fadeInUp}>
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-gray-100">Our Story</h2>
+            <div className="h-1 w-20 bg-blue-600 mt-4 mb-8 rounded-full"></div>
+            <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed space-y-4">
+              Generous Helping Hands Foundation was founded with a simple belief — 
+              that <strong>small acts of kindness</strong> can transform lives. 
+              <br /><br />
+              What began as a localized desire to help neighbors in need has grown 
+              into a mission-driven organization dedicated to serving communities 
+              with compassion, respect, and integrity.
             </p>
-          </div>
-
-          {/* Team Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {team.map((member, index) => {
-              const colors = ['blue', 'purple', 'pink'][index % 3] as keyof typeof colorClasses;
-              const colorClass = colorClasses[colors];
-              
-              return (
-                <div
-                  key={member.name}
-                  className={`group bg-gray-100 dark:bg-gray-800 border-2 ${colorClass.border} rounded-xl sm:rounded-2xl p-5 sm:p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${isVisible.team ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
-                  style={{ transitionDelay: `${index * 100}ms` }}
-                >
-                  <div className={`w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br ${colorClass.gradient} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                    <span className="text-2xl sm:text-3xl">{member.icon}</span>
-                  </div>
-
-                  <div className="space-y-2 sm:space-y-3">
-                    <div>
-                      <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 transition-colors">
-                        {member.name}
-                      </h3>
-                      <p className={`text-xs sm:text-sm ${colorClass.text} font-medium mt-1`}>
-                        {member.role}
-                      </p>
-                    </div>
-                    <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm leading-relaxed">
-                      {member.description}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            className="relative"
+          >
+            <div className="absolute -inset-4 bg-blue-600/10 rounded-2xl -rotate-2"></div>
+            <img 
+              src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=800" 
+              alt="Community support" 
+              className="relative rounded-2xl shadow-2xl grayscale hover:grayscale-0 transition-all duration-700 w-full object-cover h-64 md:h-96"
+            />
+          </motion.div>
         </div>
       </div>
 
-      {/* Vision Statement */}
-      <div
-        id="visionstatement"
-        ref={visionRef}
-        className="scroll-mt-24 py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden transition-colors duration-300"
-      >
-        <div className="max-w-6xl mx-auto relative z-10">
-          <div className={`text-center space-y-6 sm:space-y-8 transition-all duration-1000 ${isVisible.vision ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-50/50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-xs sm:text-sm font-semibold border border-blue-200 dark:border-blue-700/50">
-              <Heart className="w-3 h-3 sm:w-4 sm:h-4" />
-              <span>Our Vision</span>
+      {/* 3. MISSION (The Action) */}
+      <div id="missionstatement" className="scroll-mt-24 py-24 px-4 max-w-7xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <motion.div 
+             initial={{ opacity: 0, scale: 0.95 }}
+             whileInView={{ opacity: 1, scale: 1 }}
+             className="order-2 lg:order-1"
+          >
+            <img
+              src="https://images.unsplash.com/photo-1509099836639-18ba1795216d?auto=format&fit=crop&q=80&w=800"
+              alt="Empowerment"
+              className="rounded-3xl shadow-xl w-full object-cover h-64 md:h-[450px]"
+            />
+          </motion.div>
+          <motion.div {...fadeInUp} className="order-1 lg:order-2">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-sm font-semibold">
+              <Target className="w-4 h-4" /> Our Mission
             </div>
-
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 dark:text-gray-100 leading-tight px-4">
-              A Future Where Every Woman and Girl Thrives
+            <h2 className="text-4xl font-bold mt-6 text-gray-900 dark:text-gray-100">
+              Supporting Lives, Building Hope
             </h2>
-            
-            <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base lg:text-lg leading-relaxed max-w-4xl mx-auto px-4">
-              Our vision is to see women and girls empowered to break economic and social barriers, fully access their rights, and foster communities where children lead healthy and enriched lives.
+            <p className="mt-6 text-lg text-gray-600 dark:text-gray-400">
+              We are dedicated to improving the lives of vulnerable individuals
+              and families through compassionate support, education, and
+              practical assistance that promotes dignity and long-term
+              well-being.
             </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 pt-4 sm:pt-8">
-              {visionPillars.map((pillar, index) => {
-                const Icon = pillar.icon;
-                return (
-                  <div 
-                    key={index}
-                    className={`bg-gray-100/50 dark:bg-gray-800/30 rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-gray-200 dark:border-gray-700 hover:bg-gray-200/50 dark:hover:bg-gray-700/50 transition-all duration-300 transform hover:-translate-y-1 sm:hover:-translate-y-2 ${isVisible.vision ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
-                    style={{ transitionDelay: `${index * 150}ms` }}
-                  >
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gray-200/50 dark:bg-gray-700/30 rounded-xl flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg">
-                      <Icon className="w-6 h-6 sm:w-7 sm:h-7 text-gray-700 dark:text-gray-200" />
-                    </div>
-                    <h3 className="text-gray-900 dark:text-gray-100 font-semibold text-base sm:text-lg mb-2">{pillar.title}</h3>
-                    <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm leading-relaxed">{pillar.description}</p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+            <button className="mt-8 flex items-center gap-2 text-blue-600 font-bold hover:gap-4 transition-all">
+              Learn more about our programs <ChevronRight className="w-5 h-5" />
+            </button>
+          </motion.div>
         </div>
       </div>
+
+      {/* 4. TEAM (The Faces) */}
+      <div id="meettheteam" className="scroll-mt-24 bg-gray-100 dark:bg-gray-900 py-24 px-4">
+        <div className="max-w-7xl mx-auto text-center mb-16">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-sm font-semibold">
+            <Award className="w-4 h-4" /> Our Team
+          </div>
+          <h2 className="text-4xl font-bold mt-4 text-gray-900 dark:text-gray-100">
+            Meet the People Behind the Mission
+          </h2>
+        </div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          {team.map((member, idx) => (
+            <motion.div
+              key={member.name}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.1 }}
+              whileHover={{ y: -5 }}
+              className="p-8 bg-white dark:bg-gray-800 rounded-3xl shadow-sm hover:shadow-xl transition-all border border-transparent hover:border-blue-100 dark:hover:border-blue-900"
+            >
+              <div className="w-14 h-14 bg-blue-50 dark:bg-gray-700 rounded-2xl flex items-center justify-center text-3xl mb-6">
+                {member.icon}
+              </div>
+              <h3 className="font-bold text-xl text-gray-900 dark:text-gray-100">
+                {member.name}
+              </h3>
+              <p className="text-sm font-semibold text-blue-600 uppercase tracking-wider mt-1">{member.role}</p>
+              <p className="text-gray-600 dark:text-gray-400 mt-4 leading-relaxed">
+                {member.description}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* 5. VISION (The Goal) */}
+      <div id="visionstatement" className="scroll-mt-24 py-24 px-4 max-w-6xl mx-auto text-center">
+        <motion.div {...fadeInUp}>
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-sm font-semibold">
+            <Heart className="w-4 h-4" /> Our Vision
+          </div>
+          <h2 className="text-4xl font-bold mt-6 text-gray-900 dark:text-gray-100">
+            Communities Where Everyone Feels Supported
+          </h2>
+
+          <div className="grid md:grid-cols-3 gap-8 mt-16">
+            {[
+              { icon: TrendingUp, title: "Stable Futures", text: "Helping families move toward long-term stability" },
+              { icon: Shield, title: "Dignity & Care", text: "Access to essential support and basic needs" },
+              { icon: Users, title: "Stronger Communities", text: "Communities built on trust and hope" },
+            ].map((v, i) => (
+              <div key={i} className="group p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 hover:bg-blue-600 transition-all duration-300">
+                <v.icon className="w-12 h-12 mx-auto mb-6 text-blue-600 group-hover:text-white transition-colors" />
+                <h3 className="font-bold text-xl text-gray-900 dark:text-gray-100 group-hover:text-white transition-colors">
+                  {v.title}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 mt-3 group-hover:text-blue-100 transition-colors">
+                  {v.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+
+      {/* 6. DONATION (The Call to Action) */}
+      <motion.div
+        id="donation"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        className="scroll-mt-24 relative py-28 px-4 bg-blue-600 text-white text-center overflow-hidden"
+      >
+        <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+            <div className="absolute top-[-10%] left-[-10%] w-64 h-64 bg-white rounded-full blur-3xl"></div>
+            <div className="absolute bottom-[-10%] right-[-10%] w-64 h-64 bg-white rounded-full blur-3xl"></div>
+        </div>
+        
+        <div className="relative z-10">
+          <HelpingHand className="w-16 h-16 mx-auto mb-8 animate-bounce" />
+          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight px-4">Your Support Can Change Lives</h2>
+          <p className="max-w-2xl mx-auto mt-8 text-xl text-blue-100 px-4">
+            Every donation helps provide food, education, and health support to
+            families in need. No contribution is too small — each one brings hope.
+          </p>
+
+          <button className="mt-12 px-10 py-4 bg-white text-blue-600 text-lg font-bold rounded-full hover:bg-gray-100 hover:scale-105 transition-all shadow-xl">
+            Donate Today
+          </button>
+        </div>
+      </motion.div>
     </section>
   );
 };
