@@ -35,6 +35,18 @@ const About: React.FC = () => {
     transition: { duration: 0.6 }
   };
 
+  // Helper function for smooth scrolling to sections on other pages/parts
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    } else {
+      // If the ID isn't on this page (e.g., it's on GetInvolved), 
+      // you would normally use a Link from react-router-dom: <Link to="/get-involved#donation" />
+      window.location.href = `/get-involved#${id}`;
+    }
+  };
+
   return (
     <section className="bg-white dark:bg-gray-950 transition-colors duration-300 overflow-hidden">
       
@@ -119,8 +131,40 @@ const About: React.FC = () => {
         </div>
       </div>
 
-      {/* 4. TEAM (The Faces) */}
-      <div id="meettheteam" className="scroll-mt-24 bg-gray-100 dark:bg-gray-900 py-24 px-4">
+      {/* 4. VISION (The Goal) */}
+      <div id="visionstatement" className="scroll-mt-24 bg-gray-50 dark:bg-gray-900/50 py-24 px-4">
+        <div className="max-w-6xl mx-auto text-center">
+            <motion.div {...fadeInUp}>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-sm font-semibold">
+                <Heart className="w-4 h-4" /> Our Vision
+            </div>
+            <h2 className="text-4xl font-bold mt-6 text-gray-900 dark:text-gray-100">
+                Communities Where Everyone Feels Supported
+            </h2>
+
+            <div className="grid md:grid-cols-3 gap-8 mt-16">
+                {[
+                { icon: TrendingUp, title: "Stable Futures", text: "Helping families move toward long-term stability" },
+                { icon: Shield, title: "Dignity & Care", text: "Access to essential support and basic needs" },
+                { icon: Users, title: "Stronger Communities", text: "Communities built on trust and hope" },
+                ].map((v, i) => (
+                <div key={i} className="group p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 hover:bg-blue-600 transition-all duration-300">
+                    <v.icon className="w-12 h-12 mx-auto mb-6 text-blue-600 group-hover:text-white transition-colors" />
+                    <h3 className="font-bold text-xl text-gray-900 dark:text-gray-100 group-hover:text-white transition-colors">
+                    {v.title}
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400 mt-3 group-hover:text-blue-100 transition-colors">
+                    {v.text}
+                    </p>
+                </div>
+                ))}
+            </div>
+            </motion.div>
+        </div>
+      </div>
+
+      {/* 5. TEAM (The Faces) */}
+      <div id="meettheteam" className="scroll-mt-24 py-24 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-7xl mx-auto text-center mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-sm font-semibold">
             <Award className="w-4 h-4" /> Our Team
@@ -128,6 +172,10 @@ const About: React.FC = () => {
           <h2 className="text-4xl font-bold mt-4 text-gray-900 dark:text-gray-100">
             Meet the People Behind the Mission
           </h2>
+          <p className="mt-4 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            Our diverse team of dedicated professionals and volunteers work tirelessly to ensure 
+            that every hand reached out is met with support.
+          </p>
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
@@ -138,9 +186,9 @@ const About: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
               whileHover={{ y: -5 }}
-              className="p-8 bg-white dark:bg-gray-800 rounded-3xl shadow-sm hover:shadow-xl transition-all border border-transparent hover:border-blue-100 dark:hover:border-blue-900"
+              className="p-8 bg-gray-50 dark:bg-gray-900 rounded-3xl shadow-sm hover:shadow-xl transition-all border border-transparent hover:border-blue-100 dark:hover:border-blue-900"
             >
-              <div className="w-14 h-14 bg-blue-50 dark:bg-gray-700 rounded-2xl flex items-center justify-center text-3xl mb-6">
+              <div className="w-14 h-14 bg-white dark:bg-gray-800 rounded-2xl shadow-sm flex items-center justify-center text-3xl mb-6">
                 {member.icon}
               </div>
               <h3 className="font-bold text-xl text-gray-900 dark:text-gray-100">
@@ -155,42 +203,12 @@ const About: React.FC = () => {
         </div>
       </div>
 
-      {/* 5. VISION (The Goal) */}
-      <div id="visionstatement" className="scroll-mt-24 py-24 px-4 max-w-6xl mx-auto text-center">
-        <motion.div {...fadeInUp}>
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-sm font-semibold">
-            <Heart className="w-4 h-4" /> Our Vision
-          </div>
-          <h2 className="text-4xl font-bold mt-6 text-gray-900 dark:text-gray-100">
-            Communities Where Everyone Feels Supported
-          </h2>
-
-          <div className="grid md:grid-cols-3 gap-8 mt-16">
-            {[
-              { icon: TrendingUp, title: "Stable Futures", text: "Helping families move toward long-term stability" },
-              { icon: Shield, title: "Dignity & Care", text: "Access to essential support and basic needs" },
-              { icon: Users, title: "Stronger Communities", text: "Communities built on trust and hope" },
-            ].map((v, i) => (
-              <div key={i} className="group p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 hover:bg-blue-600 transition-all duration-300">
-                <v.icon className="w-12 h-12 mx-auto mb-6 text-blue-600 group-hover:text-white transition-colors" />
-                <h3 className="font-bold text-xl text-gray-900 dark:text-gray-100 group-hover:text-white transition-colors">
-                  {v.title}
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 mt-3 group-hover:text-blue-100 transition-colors">
-                  {v.text}
-                </p>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      </div>
-
-      {/* 6. DONATION (The Call to Action) */}
+      {/* 6. CALL TO ACTION (The Redirect) */}
+      {/* We removed the ID "donation" here to avoid conflict with GetInvolved.tsx */}
       <motion.div
-        id="donation"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
-        className="scroll-mt-24 relative py-28 px-4 bg-blue-600 text-white text-center overflow-hidden"
+        className="relative py-28 px-4 bg-blue-600 text-white text-center overflow-hidden"
       >
         <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
             <div className="absolute top-[-10%] left-[-10%] w-64 h-64 bg-white rounded-full blur-3xl"></div>
@@ -199,15 +217,27 @@ const About: React.FC = () => {
         
         <div className="relative z-10">
           <HelpingHand className="w-16 h-16 mx-auto mb-8 animate-bounce" />
-          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight px-4">Your Support Can Change Lives</h2>
+          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight px-4">Ready to Make a Difference?</h2>
           <p className="max-w-2xl mx-auto mt-8 text-xl text-blue-100 px-4">
-            Every donation helps provide food, education, and health support to
-            families in need. No contribution is too small — each one brings hope.
+            Your journey with us starts here. Whether you give your time or your resources, 
+            you are helping build a brighter future for our community.
           </p>
 
-          <button className="mt-12 px-10 py-4 bg-white text-blue-600 text-lg font-bold rounded-full hover:bg-gray-100 hover:scale-105 transition-all shadow-xl">
-            Donate Today
-          </button>
+          <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center items-center">
+            {/* These link to the sections on the Get Involved page */}
+            <a 
+              href="#donation"
+              className="px-10 py-4 bg-white text-blue-600 text-lg font-bold rounded-full hover:bg-gray-100 hover:scale-105 transition-all shadow-xl"
+            >
+              Donate Today
+            </a>
+            <a 
+              href="/get-involved#volunteer"
+              className="px-10 py-4 bg-blue-700 text-white text-lg font-bold rounded-full hover:bg-blue-800 transition-all border border-blue-500"
+            >
+              Become a Volunteer
+            </a>
+          </div>
         </div>
       </motion.div>
     </section>
