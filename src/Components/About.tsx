@@ -8,7 +8,6 @@ import {
   Award,
   Target,
   HelpingHand,
-  ChevronRight,
 } from "lucide-react";
 
 interface TeamMember {
@@ -19,12 +18,48 @@ interface TeamMember {
 }
 
 const team: TeamMember[] = [
-  { name: "Leadership", role: "Vision & Strategy", icon: "🎯", description: "Providing direction, accountability, and leadership to drive our mission forward." },
-  { name: "Program Coordinators", role: "Community Programs", icon: "📦", description: "Planning and delivering outreach programs that meet real community needs." },
-  { name: "Education & Welfare", role: "Learning & Support", icon: "📚", description: "Supporting access to education, skills development, and personal growth." },
-  { name: "Community Engagement", role: "Partnerships & Outreach", icon: "🤝", description: "Building strong relationships with families, volunteers, and partners." },
-  { name: "Advocacy & Awareness", role: "Voice for the Vulnerable", icon: "📢", description: "Raising awareness and advocating for dignity, inclusion, and care." },
-  { name: "Administrative Support", role: "Operations & Compliance", icon: "⚙️", description: "Ensuring transparency, accountability, and smooth daily operations." },
+  {
+    name: "Leadership",
+    role: "Vision & Strategy",
+    icon: "🎯",
+    description:
+      "Providing direction, accountability, and leadership to drive our mission forward.",
+  },
+  {
+    name: "Program Coordinators",
+    role: "Community Programs",
+    icon: "📦",
+    description:
+      "Planning and delivering outreach programs that meet real community needs.",
+  },
+  {
+    name: "Education & Welfare",
+    role: "Learning & Support",
+    icon: "📚",
+    description:
+      "Supporting access to education, skills development, and personal growth.",
+  },
+  {
+    name: "Community Engagement",
+    role: "Partnerships & Outreach",
+    icon: "🤝",
+    description:
+      "Building strong relationships with families, volunteers, and partners.",
+  },
+  {
+    name: "Advocacy & Awareness",
+    role: "Voice for the Vulnerable",
+    icon: "📢",
+    description:
+      "Raising awareness and advocating for dignity, inclusion, and care.",
+  },
+  {
+    name: "Administrative Support",
+    role: "Operations & Compliance",
+    icon: "⚙️",
+    description:
+      "Ensuring transparency, accountability, and smooth daily operations.",
+  },
 ];
 
 const About: React.FC = () => {
@@ -32,78 +67,64 @@ const About: React.FC = () => {
     initial: { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true },
-    transition: { duration: 0.6 }
-  };
-
-  // Helper function for smooth scrolling to sections on other pages/parts
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    } else {
-      // If the ID isn't on this page (e.g., it's on GetInvolved), 
-      // you would normally use a Link from react-router-dom: <Link to="/get-involved#donation" />
-      window.location.href = `/get-involved#${id}`;
-    }
+    transition: { duration: 0.6 },
   };
 
   return (
     <section className="bg-white dark:bg-gray-950 transition-colors duration-300 overflow-hidden">
-      
-      {/* 1. WHY IT MATTERS (The Hook) */}
-      <motion.div 
+      {/* 1. WHY IT MATTERS */}
+      <motion.div
         {...fadeInUp}
         id="whyitmatters"
         className="scroll-mt-32 py-24 px-4 max-w-4xl mx-auto text-center"
       >
-        <span className="text-blue-600 font-bold tracking-widest uppercase text-sm">The Challenge</span>
+        <span className="text-blue-600 font-bold tracking-widest uppercase text-sm">
+          The Challenge
+        </span>
         <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-gray-100 mt-4">
           Why Our Work Matters
         </h2>
         <p className="mt-8 text-xl text-gray-600 dark:text-gray-400 leading-relaxed italic border-l-4 border-blue-500 pl-6 text-left md:text-center md:border-l-0 md:pl-0">
           "Many families face daily challenges such as food insecurity, limited
-          access to education, and lack of basic health support. These hurdles 
+          access to education, and lack of basic health support. These hurdles
           stifle community growth and children’s futures."
         </p>
       </motion.div>
 
-      {/* 2. OUR STORY (The Heart) */}
+      {/* 2. OUR STORY */}
       <div id="ourstory" className="scroll-mt-24 bg-gray-50 dark:bg-gray-900/50 py-24 px-4">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
           <motion.div {...fadeInUp}>
             <h2 className="text-4xl font-bold text-gray-900 dark:text-gray-100">Our Story</h2>
             <div className="h-1 w-20 bg-blue-600 mt-4 mb-8 rounded-full"></div>
             <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed space-y-4">
-              Generous Helping Hands Foundation was founded with a simple belief — 
-              that <strong>small acts of kindness</strong> can transform lives. 
-              <br /><br />
-              What began as a localized desire to help neighbors in need has grown 
-              into a mission-driven organization dedicated to serving communities 
+              Generous Helping Hands Foundation was founded with a simple belief —
+              that <strong>small acts of kindness</strong> can transform lives.
+              <br />
+              <br />
+              What began as a localized desire to help neighbors in need has grown
+              into a mission-driven organization dedicated to serving communities
               with compassion, respect, and integrity.
             </p>
           </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            className="relative"
-          >
+          <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} className="relative">
             <div className="absolute -inset-4 bg-blue-600/10 rounded-2xl -rotate-2"></div>
-            <img 
-              src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=800" 
-              alt="Community support" 
+            <img
+              src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=800"
+              alt="Community support"
               className="relative rounded-2xl shadow-2xl grayscale hover:grayscale-0 transition-all duration-700 w-full object-cover h-64 md:h-96"
             />
           </motion.div>
         </div>
       </div>
 
-      {/* 3. MISSION (The Action) */}
+      {/* 3. MISSION */}
       <div id="missionstatement" className="scroll-mt-24 py-24 px-4 max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <motion.div 
-             initial={{ opacity: 0, scale: 0.95 }}
-             whileInView={{ opacity: 1, scale: 1 }}
-             className="order-2 lg:order-1"
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            className="order-2 lg:order-1"
           >
             <img
               src="https://images.unsplash.com/photo-1509099836639-18ba1795216d?auto=format&fit=crop&q=80&w=800"
@@ -124,46 +145,50 @@ const About: React.FC = () => {
               practical assistance that promotes dignity and long-term
               well-being.
             </p>
-            <button className="mt-8 flex items-center gap-2 text-blue-600 font-bold hover:gap-4 transition-all">
-              Learn more about our programs <ChevronRight className="w-5 h-5" />
-            </button>
           </motion.div>
         </div>
       </div>
 
-      {/* 4. VISION (The Goal) */}
+      {/* 4. VISION */}
       <div id="visionstatement" className="scroll-mt-24 bg-gray-50 dark:bg-gray-900/50 py-24 px-4">
         <div className="max-w-6xl mx-auto text-center">
-            <motion.div {...fadeInUp}>
+          <motion.div {...fadeInUp}>
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-sm font-semibold">
-                <Heart className="w-4 h-4" /> Our Vision
+              <Heart className="w-4 h-4" /> Our Vision
             </div>
             <h2 className="text-4xl font-bold mt-6 text-gray-900 dark:text-gray-100">
-                Communities Where Everyone Feels Supported
+              Communities Where Everyone Feels Supported
             </h2>
 
             <div className="grid md:grid-cols-3 gap-8 mt-16">
-                {[
-                { icon: TrendingUp, title: "Stable Futures", text: "Helping families move toward long-term stability" },
+              {[
+                {
+                  icon: TrendingUp,
+                  title: "Stable Futures",
+                  text: "Helping families move toward long-term stability",
+                },
                 { icon: Shield, title: "Dignity & Care", text: "Access to essential support and basic needs" },
                 { icon: Users, title: "Stronger Communities", text: "Communities built on trust and hope" },
-                ].map((v, i) => (
-                <div key={i} className="group p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 hover:bg-blue-600 transition-all duration-300">
-                    <v.icon className="w-12 h-12 mx-auto mb-6 text-blue-600 group-hover:text-white transition-colors" />
-                    <h3 className="font-bold text-xl text-gray-900 dark:text-gray-100 group-hover:text-white transition-colors">
+              ].map((v, i) => (
+                <div
+                  key={i}
+                  className="group p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 hover:bg-blue-600 transition-all duration-300"
+                >
+                  <v.icon className="w-12 h-12 mx-auto mb-6 text-blue-600 group-hover:text-white transition-colors" />
+                  <h3 className="font-bold text-xl text-gray-900 dark:text-gray-100 group-hover:text-white transition-colors">
                     {v.title}
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-400 mt-3 group-hover:text-blue-100 transition-colors">
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 mt-3 group-hover:text-blue-100 transition-colors">
                     {v.text}
-                    </p>
+                  </p>
                 </div>
-                ))}
+              ))}
             </div>
-            </motion.div>
+          </motion.div>
         </div>
       </div>
 
-      {/* 5. TEAM (The Faces) */}
+      {/* 5. TEAM */}
       <div id="meettheteam" className="scroll-mt-24 py-24 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-7xl mx-auto text-center mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-sm font-semibold">
@@ -173,7 +198,7 @@ const About: React.FC = () => {
             Meet the People Behind the Mission
           </h2>
           <p className="mt-4 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Our diverse team of dedicated professionals and volunteers work tirelessly to ensure 
+            Our diverse team of dedicated professionals and volunteers work tirelessly to ensure
             that every hand reached out is met with support.
           </p>
         </div>
@@ -194,52 +219,14 @@ const About: React.FC = () => {
               <h3 className="font-bold text-xl text-gray-900 dark:text-gray-100">
                 {member.name}
               </h3>
-              <p className="text-sm font-semibold text-blue-600 uppercase tracking-wider mt-1">{member.role}</p>
-              <p className="text-gray-600 dark:text-gray-400 mt-4 leading-relaxed">
-                {member.description}
+              <p className="text-sm font-semibold text-blue-600 uppercase tracking-wider mt-1">
+                {member.role}
               </p>
+              <p className="text-gray-600 dark:text-gray-400 mt-4 leading-relaxed">{member.description}</p>
             </motion.div>
           ))}
         </div>
       </div>
-
-      {/* 6. CALL TO ACTION (The Redirect) */}
-      {/* We removed the ID "donation" here to avoid conflict with GetInvolved.tsx */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        className="relative py-28 px-4 bg-blue-600 text-white text-center overflow-hidden"
-      >
-        <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-            <div className="absolute top-[-10%] left-[-10%] w-64 h-64 bg-white rounded-full blur-3xl"></div>
-            <div className="absolute bottom-[-10%] right-[-10%] w-64 h-64 bg-white rounded-full blur-3xl"></div>
-        </div>
-        
-        <div className="relative z-10">
-          <HelpingHand className="w-16 h-16 mx-auto mb-8 animate-bounce" />
-          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight px-4">Ready to Make a Difference?</h2>
-          <p className="max-w-2xl mx-auto mt-8 text-xl text-blue-100 px-4">
-            Your journey with us starts here. Whether you give your time or your resources, 
-            you are helping build a brighter future for our community.
-          </p>
-
-          <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center items-center">
-            {/* These link to the sections on the Get Involved page */}
-            <a 
-              href="#donation"
-              className="px-10 py-4 bg-white text-blue-600 text-lg font-bold rounded-full hover:bg-gray-100 hover:scale-105 transition-all shadow-xl"
-            >
-              Donate Today
-            </a>
-            <a 
-              href="/get-involved#volunteer"
-              className="px-10 py-4 bg-blue-700 text-white text-lg font-bold rounded-full hover:bg-blue-800 transition-all border border-blue-500"
-            >
-              Become a Volunteer
-            </a>
-          </div>
-        </div>
-      </motion.div>
     </section>
   );
 };
