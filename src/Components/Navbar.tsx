@@ -44,9 +44,11 @@ const MENU_ITEMS: MenuItem[] = [
   { name: "Contact", href: "contact" },
 ];
 
+// Optimized heights for mobile and desktop
 const NAVBAR_HEIGHTS = {
-  scrolled: 64, // h-16 = 64px
-  default: 80,  // h-20 = 80px (reduced from 96px for mobile)
+  scrolled: 64, // h-16
+  mobileDefault: 64, 
+  desktopDefault: 80,
 };
 
 // ------------------ HOOKS ------------------
@@ -79,7 +81,7 @@ const useScrolled = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      setScrolled(window.scrollY > 10);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -91,31 +93,29 @@ const useScrolled = () => {
 
 // ------------------ REUSABLE COMPONENTS ------------------
 
-// Logo Component
 const Logo: React.FC<{ darkMode: boolean; onClick: () => void }> = ({ darkMode, onClick }) => (
   <button 
     onClick={onClick} 
-    className="relative h-10 w-36 md:h-14 md:w-48 flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg"
+    className="relative h-10 w-32 md:h-12 md:w-40 flex-shrink-0 focus:outline-none"
     aria-label="Go to home"
   >
     <img
       src="/logo_light.jpg"
-      alt="Generous Helping Hands Foundation Logo"
-      className={`absolute inset-0 h-10 md:h-14 w-auto object-contain transition-opacity duration-300 ${
+      alt="Logo"
+      className={`absolute inset-0 h-full w-auto object-contain transition-opacity duration-300 ${
         darkMode ? "opacity-0" : "opacity-100"
       }`}
     />
     <img
       src="/logodark.png"
-      alt="Generous Helping Hands Foundation Logo"
-      className={`absolute inset-0 h-10 md:h-14 w-auto object-contain transition-opacity duration-300 ${
+      alt="Logo"
+      className={`absolute inset-0 h-full w-auto object-contain transition-opacity duration-300 ${
         darkMode ? "opacity-100" : "opacity-0"
       }`}
     />
   </button>
 );
 
-// Desktop Menu Item Component
 const DesktopMenuItem: React.FC<{
   item: MenuItem;
   onNavigate: (href: string) => void;
@@ -124,24 +124,18 @@ const DesktopMenuItem: React.FC<{
     return (
       <div className="relative group">
         <button 
-          className="px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-semibold flex items-center gap-1 transition-colors focus:outline-none focus:text-blue-600"
-          aria-haspopup="true"
-          aria-expanded="false"
+          className="px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-semibold flex items-center gap-1 transition-colors"
         >
           {item.name}
-          <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform" aria-hidden="true" />
+          <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform" />
         </button>
-        <div 
-          className="absolute left-0 mt-0 pt-2 w-52 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200"
-          role="menu"
-        >
+        <div className="absolute left-0 mt-0 pt-2 w-52 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
           <div className="bg-white dark:bg-gray-800 shadow-xl rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
             {item.subLinks.map((sub) => (
               <button
                 key={sub.href}
                 onClick={() => onNavigate(sub.href)}
-                className="block w-full text-left px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus:outline-none focus:bg-blue-50"
-                role="menuitem"
+                className="block w-full text-left px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 transition-colors"
               >
                 {sub.name}
               </button>
@@ -155,14 +149,13 @@ const DesktopMenuItem: React.FC<{
   return (
     <button
       onClick={() => onNavigate(item.href!)}
-      className="px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-semibold transition-colors focus:outline-none focus:text-blue-600"
+      className="px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 font-semibold transition-colors"
     >
       {item.name}
     </button>
   );
 };
 
-// Mobile Menu Item Component
 const MobileMenuItem: React.FC<{
   item: MenuItem;
   openDropdown: string | null;
@@ -173,30 +166,20 @@ const MobileMenuItem: React.FC<{
     const isOpen = openDropdown === item.name;
 
     return (
-      <div>
+      <div className="border-b border-gray-50 dark:border-gray-800/50 last:border-none">
         <button
           onClick={() => onToggleDropdown(item.name)}
-          className="w-full flex justify-between items-center py-3 font-semibold text-gray-900 dark:text-white focus:outline-none focus:text-blue-600"
-          aria-expanded={isOpen}
-          aria-controls={`mobile-submenu-${item.name}`}
+          className="w-full flex justify-between items-center py-4 font-semibold text-gray-900 dark:text-white"
         >
           {item.name}
-          <ChevronDown 
-            className={`w-5 h-5 transition-transform ${isOpen ? "rotate-180" : ""}`} 
-            aria-hidden="true"
-          />
+          <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
         </button>
-        <div 
-          id={`mobile-submenu-${item.name}`}
-          className={`pl-4 space-y-1 overflow-hidden transition-all duration-300 ${
-            isOpen ? "max-h-64 pb-2" : "max-h-0"
-          }`}
-        >
+        <div className={`pl-4 space-y-1 overflow-hidden transition-all duration-300 ${isOpen ? "max-h-64 pb-4" : "max-h-0"}`}>
           {item.subLinks.map((sub) => (
             <button
               key={sub.href}
               onClick={() => onNavigate(sub.href)}
-              className="block w-full text-left py-2.5 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none focus:text-blue-600"
+              className="block w-full text-left py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600"
             >
               {sub.name}
             </button>
@@ -209,76 +192,39 @@ const MobileMenuItem: React.FC<{
   return (
     <button
       onClick={() => onNavigate(item.href!)}
-      className="block w-full text-left py-3 font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none focus:text-blue-600"
+      className="block w-full text-left py-4 font-semibold text-gray-900 dark:text-white border-b border-gray-50 dark:border-gray-800/50 last:border-none"
     >
       {item.name}
     </button>
   );
 };
 
-// Theme Toggle Button Component
-const ThemeToggle: React.FC<{
-  darkMode: boolean;
-  onClick: () => void;
-  variant?: "desktop" | "mobile";
-}> = ({ darkMode, onClick, variant = "desktop" }) => {
+const ThemeToggle: React.FC<{ darkMode: boolean; onClick: () => void; variant?: "desktop" | "mobile" }> = ({ darkMode, onClick, variant = "desktop" }) => {
   if (variant === "mobile") {
     return (
-      <button 
-        onClick={onClick} 
-        className="flex items-center justify-center w-full gap-2 px-6 py-3 bg-gray-100 dark:bg-gray-800 rounded-xl text-gray-700 dark:text-gray-300 font-medium transition-colors hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
-      >
-        {darkMode ? (
-          <>
-            <Sun size={18} aria-hidden="true" /> Light Mode
-          </>
-        ) : (
-          <>
-            <Moon size={18} aria-hidden="true" /> Dark Mode
-          </>
-        )}
+      <button onClick={onClick} className="flex items-center justify-center w-full gap-2 px-6 py-3 bg-gray-100 dark:bg-gray-800 rounded-xl text-gray-700 dark:text-gray-300 font-medium">
+        {darkMode ? <><Sun size={18} /> Light Mode</> : <><Moon size={18} /> Dark Mode</>}
       </button>
     );
   }
-
   return (
-    <button 
-      onClick={onClick} 
-      className="mx-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-      aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
-    >
+    <button onClick={onClick} className="mx-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors">
       {darkMode ? <Sun size={20} /> : <Moon size={20} />}
     </button>
   );
 };
 
-// Donate Button Component
-const DonateButton: React.FC<{
-  onClick: () => void;
-  variant?: "desktop" | "mobile";
-}> = ({ onClick, variant = "desktop" }) => {
-  const baseClasses = "font-bold transition-all flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2";
-  
+const DonateButton: React.FC<{ onClick: () => void; variant?: "desktop" | "mobile" }> = ({ onClick, variant = "desktop" }) => {
   if (variant === "mobile") {
     return (
-      <button
-        onClick={onClick}
-        className={`${baseClasses} w-full px-6 py-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-xl shadow-lg shadow-blue-500/30 justify-center`}
-      >
-        <Heart size={20} fill="currentColor" aria-hidden="true" />
-        Donate Now
+      <button onClick={onClick} className="w-full px-6 py-3.5 bg-blue-600 text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2">
+        <Heart size={18} fill="currentColor" /> Donate Now
       </button>
     );
   }
-
   return (
-    <button
-      onClick={onClick}
-      className={`${baseClasses} ml-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-full text-sm shadow-md hover:shadow-blue-500/40`}
-    >
-      <Heart size={16} fill="currentColor" aria-hidden="true" />
-      Donate
+    <button onClick={onClick} className="ml-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full text-sm flex items-center gap-2 shadow-md">
+      <Heart size={14} fill="currentColor" /> Donate
     </button>
   );
 };
@@ -292,142 +238,77 @@ const Navbar: React.FC = () => {
   const { darkMode, toggleDarkMode } = useTheme();
   const scrolled = useScrolled();
 
-  // Close mobile menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (navRef.current && !navRef.current.contains(event.target as Node) && isOpen) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isOpen]);
-
-  // Close mobile menu on ESC key
-  useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && isOpen) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, [isOpen]);
-
-  // Prevent body scroll when mobile menu is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
-
   const handleScrollTo = useCallback((id: string) => {
     setIsOpen(false);
     setOpenDropdown(null);
 
+    // Give the menu time to close before calculating position
     setTimeout(() => {
       const section = document.getElementById(id);
       if (!section) return;
 
-      // Get actual navbar height, add extra padding for mobile
-      const navbarHeight = navRef.current?.offsetHeight || NAVBAR_HEIGHTS.scrolled;
-      const isMobile = window.innerWidth < 1024; // lg breakpoint
-      const extraOffset = isMobile ? 80 : 0; // Extra space on mobile to account for menu animation
-      
-      const targetPosition = section.getBoundingClientRect().top + window.pageYOffset - navbarHeight - extraOffset;
+      const navbarHeight = navRef.current?.offsetHeight || 64;
+      // We subtract the navbar height to ensure the section starts right below the nav
+      const targetPosition = section.getBoundingClientRect().top + window.pageYOffset - navbarHeight;
 
       window.scrollTo({ top: targetPosition, behavior: "smooth" });
-    }, isOpen ? 350 : 100); // Longer delay if menu is open
-  }, [isOpen]);
-
-  const handleToggleDropdown = useCallback((name: string) => {
-    setOpenDropdown((prev) => (prev === name ? null : name));
+    }, 300);
   }, []);
 
-  if (darkMode === null) {
-    // Render placeholder to prevent layout shift
-    return (
-      <nav className="fixed top-0 w-full z-50 h-20 md:h-24 bg-white dark:bg-gray-900 shadow-md">
-        <div className="max-w-7xl mx-auto px-4 lg:px-8 h-full flex items-center justify-between">
-          <div className="h-10 w-36 md:h-14 md:w-48 bg-gray-200 dark:bg-gray-700 animate-pulse rounded" />
-        </div>
-      </nav>
-    );
-  }
+  useEffect(() => {
+    if (isOpen) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "";
+    return () => { document.body.style.overflow = ""; };
+  }, [isOpen]);
+
+  if (darkMode === null) return <div className="h-16 w-full bg-white dark:bg-gray-900 fixed top-0 z-50 shadow-sm" />;
 
   return (
     <nav
       ref={navRef}
-      className={`fixed top-0 w-full z-50 transition-all duration-500 ${
-        scrolled
-          ? "bg-white/95 dark:bg-gray-900/95 shadow-lg backdrop-blur-md"
-          : "bg-white dark:bg-gray-900 shadow-md"
+      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+        scrolled ? "bg-white/95 dark:bg-gray-900/95 shadow-lg backdrop-blur-md h-16" : "bg-white dark:bg-gray-900 shadow-md h-16 lg:h-20"
       }`}
-      role="navigation"
-      aria-label="Main navigation"
     >
-      <div className="max-w-7xl mx-auto px-4 lg:px-8">
-        <div 
-          className={`flex justify-between items-center transition-all duration-500 ${
-            scrolled ? "h-16" : "h-20 md:h-24"
-          }`}
-        >
-          {/* LOGO */}
-          <Logo darkMode={darkMode} onClick={() => handleScrollTo("home")} />
+      <div className="max-w-7xl mx-auto px-4 lg:px-8 h-full flex items-center justify-between">
+        <Logo darkMode={darkMode} onClick={() => handleScrollTo("home")} />
 
-          {/* DESKTOP MENU */}
-          <div className="hidden lg:flex items-center gap-1">
-            {MENU_ITEMS.map((item) => (
-              <DesktopMenuItem 
-                key={item.name} 
-                item={item} 
-                onNavigate={handleScrollTo} 
-              />
-            ))}
-
-            <ThemeToggle darkMode={darkMode} onClick={toggleDarkMode} />
-            <DonateButton onClick={() => handleScrollTo("donation")} />
-          </div>
-
-          {/* MOBILE TOGGLE */}
-          <button 
-            onClick={() => setIsOpen(!isOpen)} 
-            className="lg:hidden p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-            aria-label={isOpen ? "Close menu" : "Open menu"}
-            aria-expanded={isOpen}
-            aria-controls="mobile-menu"
-          >
-            {isOpen ? <X size={28} /> : <Menu size={28} />}
-          </button>
+        {/* Desktop */}
+        <div className="hidden lg:flex items-center gap-1">
+          {MENU_ITEMS.map((item) => (
+            <DesktopMenuItem key={item.name} item={item} onNavigate={handleScrollTo} />
+          ))}
+          <ThemeToggle darkMode={darkMode} onClick={toggleDarkMode} />
+          <DonateButton onClick={() => handleScrollTo("donation")} />
         </div>
+
+        {/* Mobile Toggle */}
+        <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden p-2 text-gray-600 dark:text-gray-300 rounded-lg">
+          {isOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
       </div>
 
-      {/* MOBILE MENU */}
+      {/* Mobile Menu - Improved with better z-index and spacing */}
       <div 
-        id="mobile-menu"
-        className={`lg:hidden bg-white dark:bg-gray-900 border-t dark:border-gray-800 overflow-hidden transition-all duration-300 ${
-          isOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
+        className={`lg:hidden absolute top-full left-0 w-full bg-white dark:bg-gray-900 border-t dark:border-gray-800 transition-all duration-300 ease-in-out ${
+          isOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"
         }`}
+        style={{ height: isOpen ? 'calc(100vh - 64px)' : '0' }}
       >
-        <div className="px-4 py-6 space-y-2">
-          {MENU_ITEMS.map((item) => (
-            <MobileMenuItem
-              key={item.name}
-              item={item}
-              openDropdown={openDropdown}
-              onToggleDropdown={handleToggleDropdown}
-              onNavigate={handleScrollTo}
-            />
-          ))}
+        <div className="px-6 py-4 flex flex-col h-full overflow-y-auto">
+          <div className="flex-1">
+            {MENU_ITEMS.map((item) => (
+              <MobileMenuItem
+                key={item.name}
+                item={item}
+                openDropdown={openDropdown}
+                onToggleDropdown={(name) => setOpenDropdown(openDropdown === name ? null : name)}
+                onNavigate={handleScrollTo}
+              />
+            ))}
+          </div>
           
-          <div className="pt-6 border-t dark:border-gray-800 space-y-4">
+          <div className="py-6 space-y-4 border-t dark:border-gray-800 mt-auto">
             <ThemeToggle darkMode={darkMode} onClick={toggleDarkMode} variant="mobile" />
             <DonateButton onClick={() => handleScrollTo("donation")} variant="mobile" />
           </div>
