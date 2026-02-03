@@ -1,4 +1,4 @@
-import React, { useState, KeyboardEvent } from "react";
+import React, { useState } from "react";
 
 // --- Types ---
 interface Program {
@@ -55,7 +55,8 @@ const useImageLoader = () => {
 
 // --- Components ---
 
-const ProgramCard: React.FC<{ program: Program; index: number }> = ({ program, index }) => (
+// Removed 'index' from props since it was unused
+const ProgramCard: React.FC<{ program: Program }> = ({ program }) => (
   <div
     className="group flex gap-4 p-5 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 hover:border-blue-600 hover:shadow-xl transition-all duration-300"
     role="listitem"
@@ -79,13 +80,11 @@ const ProgramCard: React.FC<{ program: Program; index: number }> = ({ program, i
 const ImageCard: React.FC<{ image: ImageItem; isGallery?: boolean }> = ({ image, isGallery = false }) => {
   const { isLoaded, hasError, onLoad, onError } = useImageLoader();
 
-  // "Showing Full Image" Logic:
-  // If useContain is true, we use object-contain and a neutral background.
   const objectFit = image.useContain ? "object-contain" : "object-cover";
   const heightClass = isGallery ? "h-48 sm:h-64" : "h-64 sm:h-80";
 
   return (
-    <div className={`relative overflow-hidden rounded-2xl shadow-md bg-gray-100 dark:bg-gray-800 transition-all duration-300 hover:shadow-2xl`}>
+    <div className="relative overflow-hidden rounded-2xl shadow-md bg-gray-100 dark:bg-gray-800 transition-all duration-300 hover:shadow-2xl">
       {!isLoaded && !hasError && (
         <div className={`absolute inset-0 animate-pulse bg-gray-200 dark:bg-gray-700 ${heightClass}`} />
       )}
@@ -107,7 +106,6 @@ const ImageCard: React.FC<{ image: ImageItem; isGallery?: boolean }> = ({ image,
           style={{ objectPosition: image.objectPosition || "center" }}
         />
       )}
-      {/* Decorative Overlay for gallery items */}
       {isGallery && <div className="absolute inset-0 ring-1 ring-inset ring-black/5 rounded-2xl" />}
     </div>
   );
@@ -140,7 +138,8 @@ const Programs: React.FC = () => {
               educate, and protect women and girls in our community.
             </p>
             <div className="space-y-4" role="list">
-              {programs.map((p, i) => <ProgramCard key={i} program={p} index={i} />)}
+              {/* Removed 'index' from the map callback */}
+              {programs.map((p, i) => <ProgramCard key={i} program={p} />)}
             </div>
           </div>
         </div>
