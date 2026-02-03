@@ -153,10 +153,10 @@ const Hero: React.FC = () => {
   return (
     <section
       id="home"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden
+      className="relative min-h-screen flex flex-col lg:flex-row items-center justify-center overflow-hidden
                  bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200
                  dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300
-                 pt-24 sm:pt-28 md:pt-32 lg:pt-40"
+                 pt-32 sm:pt-36 md:pt-40 lg:pt-48 pb-20 sm:pb-24 lg:pb-32"
       aria-label="Hero section"
     >
       {/* Animated background elements */}
@@ -166,12 +166,12 @@ const Hero: React.FC = () => {
         <div className="absolute top-1/2 left-1/4 w-32 h-32 sm:w-40 sm:h-40 bg-gray-200 dark:bg-gray-600/20 rounded-full opacity-20 blur-2xl animate-pulse" />
       </div>
 
-      <div className="relative max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-12 sm:pb-16">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-12 xl:gap-16 items-center">
+      <div className="relative max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-12 lg:gap-16 xl:gap-20 items-center">
 
           {/* Left side: Text Content */}
           <div
-            className={`space-y-5 sm:space-y-6 text-center lg:text-left transition-all duration-1000 ${
+            className={`space-y-6 sm:space-y-8 text-center lg:text-left transition-all duration-1000 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
             }`}
           >
@@ -227,8 +227,8 @@ const Hero: React.FC = () => {
       {/* Scroll indicator - hidden on mobile */}
       <button
         onClick={scrollToNext}
-        className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 hidden md:flex flex-col items-center gap-2
-                   text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors group cursor-pointer"
+        className="absolute bottom-10 left-1/2 transform -translate-x-1/2 hidden md:flex flex-col items-center gap-2
+                    text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors group cursor-pointer"
         aria-label="Scroll to next section"
       >
         <span className="text-xs sm:text-sm font-medium">Scroll to explore</span>
