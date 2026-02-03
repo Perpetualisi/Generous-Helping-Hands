@@ -44,13 +44,6 @@ const MENU_ITEMS: MenuItem[] = [
   { name: "Contact", href: "contact" },
 ];
 
-// Optimized heights for mobile and desktop
-const NAVBAR_HEIGHTS = {
-  scrolled: 64, // h-16
-  mobileDefault: 64, 
-  desktopDefault: 80,
-};
-
 // ------------------ HOOKS ------------------
 const useTheme = () => {
   const [darkMode, setDarkMode] = useState<boolean | null>(null);
@@ -242,13 +235,11 @@ const Navbar: React.FC = () => {
     setIsOpen(false);
     setOpenDropdown(null);
 
-    // Give the menu time to close before calculating position
     setTimeout(() => {
       const section = document.getElementById(id);
       if (!section) return;
 
       const navbarHeight = navRef.current?.offsetHeight || 64;
-      // We subtract the navbar height to ensure the section starts right below the nav
       const targetPosition = section.getBoundingClientRect().top + window.pageYOffset - navbarHeight;
 
       window.scrollTo({ top: targetPosition, behavior: "smooth" });
@@ -283,12 +274,16 @@ const Navbar: React.FC = () => {
         </div>
 
         {/* Mobile Toggle */}
-        <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden p-2 text-gray-600 dark:text-gray-300 rounded-lg">
+        <button 
+          onClick={() => setIsOpen(!isOpen)} 
+          className="lg:hidden p-2 text-gray-600 dark:text-gray-300 rounded-lg focus:outline-none"
+          aria-label="Toggle Menu"
+        >
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
-      {/* Mobile Menu - Improved with better z-index and spacing */}
+      {/* Mobile Menu */}
       <div 
         className={`lg:hidden absolute top-full left-0 w-full bg-white dark:bg-gray-900 border-t dark:border-gray-800 transition-all duration-300 ease-in-out ${
           isOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"
