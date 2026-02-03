@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Heart, Users, Award, ArrowRight, ChevronDown } from "lucide-react";
 
+// ------------------ TYPES ------------------
 interface Stat {
   icon: React.ComponentType<{ className?: string }>;
   value: string;
@@ -8,33 +9,137 @@ interface Stat {
   color: string;
 }
 
+// ------------------ DATA ------------------
+const STATS: Stat[] = [
+  { 
+    icon: Users, 
+    value: "500+", 
+    label: "Lives Impacted", 
+    color: "text-gray-700 dark:text-gray-300" 
+  },
+  { 
+    icon: Heart, 
+    value: "50+", 
+    label: "Active Volunteers", 
+    color: "text-gray-700 dark:text-gray-300" 
+  },
+  { 
+    icon: Award, 
+    value: "10+", 
+    label: "Programs", 
+    color: "text-gray-700 dark:text-gray-300" 
+  },
+];
+
+// ------------------ REUSABLE COMPONENTS ------------------
+
+// Stat Card Component
+const StatCard: React.FC<{ stat: Stat; index: number; isVisible: boolean }> = ({ 
+  stat, 
+  index, 
+  isVisible 
+}) => {
+  const Icon = stat.icon;
+  
+  return (
+    <div
+      className={`text-center lg:text-left transition-all duration-700 ${
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+      }`}
+      style={{ transitionDelay: `${index * 200}ms` }}
+    >
+      <div className="flex items-center justify-center lg:justify-start gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+        <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${stat.color}`} aria-hidden="true" />
+        <div className={`text-xl sm:text-2xl lg:text-3xl font-bold ${stat.color}`}>
+          {stat.value}
+        </div>
+      </div>
+      <div className="text-[10px] sm:text-xs lg:text-sm text-gray-600 dark:text-gray-400 font-medium">
+        {stat.label}
+      </div>
+    </div>
+  );
+};
+
+// Hero Image Component
+const HeroImage: React.FC<{ isVisible: boolean }> = ({ isVisible }) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
+  return (
+    <div
+      className={`relative transition-all duration-1000 delay-300 ${
+        isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-10"
+      }`}
+    >
+      <div className="relative max-w-lg mx-auto">
+        <div className="relative overflow-hidden rounded-xl sm:rounded-2xl shadow-2xl bg-gray-200 dark:bg-gray-800">
+          {/* Loading skeleton */}
+          {!imageLoaded && !imageError && (
+            <div className="absolute inset-0 bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 dark:from-gray-700 dark:via-gray-800 dark:to-gray-700 animate-pulse" />
+          )}
+
+          {imageError ? (
+            <div className="w-full h-[350px] sm:h-[450px] lg:h-[550px] xl:h-[600px] flex items-center justify-center">
+              <span className="text-gray-400 dark:text-gray-600">Image unavailable</span>
+            </div>
+          ) : (
+            <>
+              <img
+                src="/Hero.png"
+                alt="Women and girls empowered through our community programs"
+                className={`w-full h-[350px] sm:h-[450px] lg:h-[550px] xl:h-[600px] object-cover transform hover:scale-105 transition-all duration-700 ${
+                  imageLoaded ? "opacity-100" : "opacity-0"
+                }`}
+                loading="eager"
+                onLoad={() => setImageLoaded(true)}
+                onError={() => setImageError(true)}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none dark:from-black/40" />
+            </>
+          )}
+        </div>
+
+        {/* Floating accent dots - hidden on mobile */}
+        <div className="absolute top-10 -left-4 w-16 h-16 sm:w-20 sm:h-20 bg-gray-300 dark:bg-gray-700/40 rounded-full opacity-40 blur-xl animate-pulse hidden sm:block" aria-hidden="true" />
+        <div className="absolute bottom-20 -right-4 w-20 h-20 sm:w-24 sm:h-24 bg-gray-300 dark:bg-gray-700/40 rounded-full opacity-40 blur-xl animate-pulse hidden sm:block" aria-hidden="true" />
+      </div>
+    </div>
+  );
+};
+
+// CTA Button Component
+const CTAButton: React.FC<{
+  href: string;
+  children: React.ReactNode;
+  variant?: "primary" | "secondary";
+}> = ({ href, children, variant = "primary" }) => {
+  const baseClasses = "group inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 rounded-lg transition-all duration-300 font-semibold transform hover:-translate-y-1 text-sm sm:text-base";
+  
+  const variantClasses = variant === "primary"
+    ? "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl"
+    : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg";
+
+  return (
+    <a
+      href={href}
+      className={`${baseClasses} ${variantClasses}`}
+    >
+      <span>{children}</span>
+      <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
+    </a>
+  );
+};
+
+// ------------------ MAIN COMPONENT ------------------
 const Hero: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    setIsVisible(true);
+    // Trigger animation on mount
+    const timer = setTimeout(() => setIsVisible(true), 100);
+    return () => clearTimeout(timer);
   }, []);
-
-  const stats: Stat[] = [
-    { 
-      icon: Users, 
-      value: "500+", 
-      label: "Lives Impacted", 
-      color: "text-gray-600 dark:text-gray-400" 
-    },
-    { 
-      icon: Heart, 
-      value: "50+", 
-      label: "Active Volunteers", 
-      color: "text-gray-600 dark:text-gray-400" 
-    },
-    { 
-      icon: Award, 
-      value: "10+", 
-      label: "Programs", 
-      color: "text-gray-600 dark:text-gray-400" 
-    },
-  ];
 
   const scrollToNext = () => {
     const section = document.getElementById("missionstatement") || document.getElementById("about");
@@ -52,12 +157,13 @@ const Hero: React.FC = () => {
                  bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200
                  dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300
                  pt-24 sm:pt-28 md:pt-32 lg:pt-40"
+      aria-label="Hero section"
     >
       {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-48 h-48 sm:w-64 sm:h-64 bg-gray-300 dark:bg-gray-700/20 rounded-full opacity-20 blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-64 h-64 sm:w-80 sm:h-80 bg-gray-300 dark:bg-gray-700/20 rounded-full opacity-20 blur-3xl animate-pulse"></div>
-        <div className="absolute top-1/2 left-1/4 w-32 h-32 sm:w-40 sm:h-40 bg-gray-200 dark:bg-gray-600/20 rounded-full opacity-20 blur-2xl animate-pulse"></div>
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        <div className="absolute top-20 left-10 w-48 h-48 sm:w-64 sm:h-64 bg-gray-300 dark:bg-gray-700/20 rounded-full opacity-20 blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 right-10 w-64 h-64 sm:w-80 sm:h-80 bg-gray-300 dark:bg-gray-700/20 rounded-full opacity-20 blur-3xl animate-pulse" />
+        <div className="absolute top-1/2 left-1/4 w-32 h-32 sm:w-40 sm:h-40 bg-gray-200 dark:bg-gray-600/20 rounded-full opacity-20 blur-2xl animate-pulse" />
       </div>
 
       <div className="relative max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-12 sm:pb-16">
@@ -70,8 +176,8 @@ const Hero: React.FC = () => {
             }`}
           >
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs sm:text-sm font-semibold">
-              <Heart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs sm:text-sm font-semibold shadow-sm">
+              <Heart className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" />
               <span>Empowering Women & Girls</span>
             </div>
 
@@ -92,80 +198,29 @@ const Hero: React.FC = () => {
 
             {/* Call-to-Action Buttons */}
             <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-3 sm:gap-4 pt-2 sm:pt-4">
-              <a
-                href="#donation"
-                className="group relative inline-flex items-center justify-center gap-2
-                           bg-gradient-to-r from-blue-600 to-blue-700
-                           text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg
-                           hover:from-blue-700 hover:to-blue-800
-                           transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-sm sm:text-base"
-              >
-                <span>Donate Now</span>
-                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
-              </a>
-
-              <a
-                href="#volunteer"
-                className="group inline-flex items-center justify-center gap-2
-                           bg-gradient-to-r from-blue-500 to-blue-600
-                           text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg
-                           hover:from-blue-600 hover:to-blue-700
-                           transition-all duration-300 font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-1 text-sm sm:text-base"
-              >
-                <span>Volunteer</span>
-                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
-              </a>
+              <CTAButton href="#donation" variant="primary">
+                Donate Now
+              </CTAButton>
+              <CTAButton href="#volunteer" variant="secondary">
+                Volunteer
+              </CTAButton>
             </div>
 
             {/* Impact Stats */}
-            <div className="grid grid-cols-3 gap-4 sm:gap-6 pt-6 sm:pt-8">
-              {stats.map((stat, index) => {
-                const Icon = stat.icon;
-                return (
-                  <div
-                    key={index}
-                    className={`text-center lg:text-left transition-all duration-700 ${
-                      isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-                    }`}
-                    style={{ transitionDelay: `${index * 200}ms` }}
-                  >
-                    <div className="flex items-center justify-center lg:justify-start gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                      <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${stat.color}`} />
-                      <div className={`text-xl sm:text-2xl lg:text-3xl font-bold ${stat.color}`}>
-                        {stat.value}
-                      </div>
-                    </div>
-                    <div className="text-[10px] sm:text-xs lg:text-sm text-gray-600 dark:text-gray-400 font-medium">
-                      {stat.label}
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="grid grid-cols-3 gap-4 sm:gap-6 pt-6 sm:pt-8" role="list" aria-label="Impact statistics">
+              {STATS.map((stat, index) => (
+                <StatCard 
+                  key={index} 
+                  stat={stat} 
+                  index={index} 
+                  isVisible={isVisible}
+                />
+              ))}
             </div>
           </div>
 
           {/* Right side: Hero Image */}
-          <div
-            className={`relative transition-all duration-1000 delay-300 ${
-              isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-10"
-            }`}
-          >
-            <div className="relative max-w-lg mx-auto">
-              <div className="relative overflow-hidden rounded-xl sm:rounded-2xl shadow-2xl">
-                <img
-                  src="/Hero.png"
-                  alt="Women and girls empowered through our community programs"
-                  className="w-full h-[350px] sm:h-[450px] lg:h-[550px] xl:h-[600px] object-cover transform hover:scale-102 transition-transform duration-700"
-                  loading="eager"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none dark:from-black/40"></div>
-              </div>
-
-              {/* Floating accent dots - hidden on mobile */}
-              <div className="absolute top-10 -left-4 w-16 h-16 sm:w-20 sm:h-20 bg-gray-300 dark:bg-gray-700/40 rounded-full opacity-40 blur-xl animate-pulse hidden sm:block"></div>
-              <div className="absolute bottom-20 -right-4 w-20 h-20 sm:w-24 sm:h-24 bg-gray-300 dark:bg-gray-700/40 rounded-full opacity-40 blur-xl animate-pulse hidden sm:block"></div>
-            </div>
-          </div>
+          <HeroImage isVisible={isVisible} />
         </div>
       </div>
 
@@ -181,7 +236,7 @@ const Hero: React.FC = () => {
       </button>
 
       {/* Decorative wave divider */}
-      <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
+      <div className="absolute bottom-0 left-0 right-0 pointer-events-none" aria-hidden="true">
         <svg
           className="w-full h-8 sm:h-12 lg:h-16 text-white dark:text-gray-900"
           viewBox="0 0 1440 100"
