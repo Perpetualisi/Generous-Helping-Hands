@@ -46,7 +46,7 @@ const MENU_ITEMS: MenuItem[] = [
 
 const NAVBAR_HEIGHTS = {
   scrolled: 64, // h-16 = 64px
-  default: 96,  // h-24 = 96px
+  default: 80,  // h-20 = 80px (reduced from 96px for mobile)
 };
 
 // ------------------ HOOKS ------------------
@@ -95,20 +95,20 @@ const useScrolled = () => {
 const Logo: React.FC<{ darkMode: boolean; onClick: () => void }> = ({ darkMode, onClick }) => (
   <button 
     onClick={onClick} 
-    className="relative h-14 w-48 flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg"
+    className="relative h-10 w-36 md:h-14 md:w-48 flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg"
     aria-label="Go to home"
   >
     <img
       src="/logo_light.jpg"
       alt="Generous Helping Hands Foundation Logo"
-      className={`absolute inset-0 h-14 w-auto object-contain transition-opacity duration-300 ${
+      className={`absolute inset-0 h-10 md:h-14 w-auto object-contain transition-opacity duration-300 ${
         darkMode ? "opacity-0" : "opacity-100"
       }`}
     />
     <img
       src="/logodark.png"
       alt="Generous Helping Hands Foundation Logo"
-      className={`absolute inset-0 h-14 w-auto object-contain transition-opacity duration-300 ${
+      className={`absolute inset-0 h-10 md:h-14 w-auto object-contain transition-opacity duration-300 ${
         darkMode ? "opacity-100" : "opacity-0"
       }`}
     />
@@ -354,9 +354,9 @@ const Navbar: React.FC = () => {
   if (darkMode === null) {
     // Render placeholder to prevent layout shift
     return (
-      <nav className="fixed top-0 w-full z-50 h-24 bg-white dark:bg-gray-900 shadow-md">
+      <nav className="fixed top-0 w-full z-50 h-20 md:h-24 bg-white dark:bg-gray-900 shadow-md">
         <div className="max-w-7xl mx-auto px-4 lg:px-8 h-full flex items-center justify-between">
-          <div className="h-14 w-48 bg-gray-200 dark:bg-gray-700 animate-pulse rounded" />
+          <div className="h-10 w-36 md:h-14 md:w-48 bg-gray-200 dark:bg-gray-700 animate-pulse rounded" />
         </div>
       </nav>
     );
@@ -376,7 +376,7 @@ const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 lg:px-8">
         <div 
           className={`flex justify-between items-center transition-all duration-500 ${
-            scrolled ? "h-16" : "h-24"
+            scrolled ? "h-16" : "h-20 md:h-24"
           }`}
         >
           {/* LOGO */}
