@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Heart, Users, Award, ArrowRight, ChevronDown, Sparkles } from "lucide-react";
 
@@ -21,6 +21,7 @@ const CinematicHeroImage = () => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
+  // Smooth out the mouse movement for a "liquid" feel
   const mouseXSpring = useSpring(x, { stiffness: 150, damping: 20 });
   const mouseYSpring = useSpring(y, { stiffness: 150, damping: 20 });
 
@@ -29,6 +30,7 @@ const CinematicHeroImage = () => {
 
   const handleMouseMove = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
+    // Normalize mouse position between -0.5 and 0.5
     x.set((e.clientX - rect.left) / rect.width - 0.5);
     y.set((e.clientY - rect.top) / rect.height - 0.5);
   };
@@ -91,7 +93,9 @@ const CinematicHeroImage = () => {
 // ------------------ MAIN COMPONENT ------------------
 const Hero: React.FC = () => {
   const scrollToContent = () => {
-    const section = document.getElementById("missionstatement") || document.getElementById("about") || document.getElementById("ourprograms");
+    const section = document.getElementById("missionstatement") || 
+                    document.getElementById("about") || 
+                    document.getElementById("ourprograms");
     section?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -109,10 +113,11 @@ const Hero: React.FC = () => {
       <div className="container mx-auto px-6 lg:px-12 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
           
-          {/* Text Content - "order-1" ensures this stays first on mobile */}
+          {/* Text Content */}
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             transition={{ duration: 0.8 }}
             className="lg:col-span-7 space-y-6 lg:space-y-8 text-center lg:text-left order-1"
           >
@@ -125,7 +130,7 @@ const Hero: React.FC = () => {
 
             <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-gray-900 dark:text-white leading-[1.1] tracking-tighter">
               Generous Helping <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-400 bg-[length:200%_auto] animate-[gradient: 4s linear infinite]">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-400 bg-[length:200%_auto] animate-[gradient_4s_linear_infinite]">
                 Hands Foundation
               </span>
             </h1>
@@ -159,10 +164,11 @@ const Hero: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Right Content - Image comes second on mobile (below text) */}
+          {/* Right Content */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
             transition={{ duration: 1 }}
             className="lg:col-span-5 flex justify-center lg:justify-end order-2"
           >
@@ -172,7 +178,7 @@ const Hero: React.FC = () => {
         </div>
       </div>
 
-      {/* Scroll Down */}
+      {/* Scroll Down Button */}
       <button 
         onClick={scrollToContent}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-gray-400 hover:text-blue-500 transition-all cursor-pointer z-20 group"
@@ -180,7 +186,7 @@ const Hero: React.FC = () => {
         <span className="text-[9px] lg:text-[10px] uppercase font-black tracking-[0.3em]">Explore</span>
         <motion.div 
           animate={{ y: [0, 8, 0] }} 
-          transition={{ repeat: Infinity, duration: 2 }}
+          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
         >
           <ChevronDown className="w-5 h-5" />
         </motion.div>

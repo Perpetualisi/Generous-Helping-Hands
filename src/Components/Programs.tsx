@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 import {
   Briefcase, BookOpen, HeartPulse,
-  Image as ImageIcon, ChevronDown, Zap, ArrowUpRight
+  Image as ImageIcon, Zap, ArrowUpRight
 } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -136,6 +136,7 @@ const ProgramCard: React.FC<{ program: Program; index: number }> = ({ program, i
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
               className="overflow-hidden mb-6"
             >
               <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
@@ -202,7 +203,6 @@ const Programs: React.FC = () => {
             </p>
           </motion.div>
 
-          {/* Ghost Text Background */}
           <div className="hidden lg:block text-[12rem] font-black text-gray-900/[0.02] dark:text-white/[0.02] absolute right-0 top-0 select-none -z-10 tracking-tighter">
             IMPACT
           </div>

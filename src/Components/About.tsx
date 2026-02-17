@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
-import { Users, TrendingUp, Shield, Heart, Target, Quote, Globe, Sparkles, MoveRight } from "lucide-react";
+import { Users, TrendingUp, Shield, Target, Quote, Globe, Sparkles } from "lucide-react";
 
 /**
  * DEVELOPER NOTES:
@@ -73,11 +73,16 @@ const About = () => {
         </motion.div>
       </section>
 
-      {/* 2. OUR STORY (NO IMAGE - TYPOGRAPHY FOCUSED) */}
+      {/* 2. OUR STORY */}
       <section id="ourstory" className="py-32 px-6 relative overflow-hidden scroll-mt-24">
-        {/* Background Decorative Grid */}
-        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none" 
-             style={{ backgroundImage: `radial-gradient(#2563eb 1px, transparent 1px)`, size: '40px 40px', backgroundSize: '40px 40px' }} />
+        {/* Background Decorative Grid - Fixed 'size' error here */}
+        <div 
+          className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none" 
+          style={{ 
+            backgroundImage: `radial-gradient(#2563eb 1px, transparent 1px)`, 
+            backgroundSize: '40px 40px' 
+          }} 
+        />
         
         <div className="max-w-5xl mx-auto relative z-10 text-center">
           <motion.div
@@ -86,7 +91,7 @@ const About = () => {
             viewport={{ once: true }}
             className="space-y-12"
           >
-            <div className="inline-block">
+            <div className="inline-block relative">
                 <h2 className="text-5xl md:text-7xl font-black tracking-tighter text-gray-900 dark:text-gray-100 uppercase italic opacity-10 absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap select-none">
                     Our Heritage
                 </h2>
