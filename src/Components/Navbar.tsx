@@ -192,36 +192,6 @@ const MobileMenuItem: React.FC<{
   );
 };
 
-const ThemeToggle: React.FC<{ darkMode: boolean; onClick: () => void; variant?: "desktop" | "mobile" }> = ({ darkMode, onClick, variant = "desktop" }) => {
-  if (variant === "mobile") {
-    return (
-      <button onClick={onClick} className="flex items-center justify-center w-full gap-2 px-6 py-3 bg-gray-100 dark:bg-gray-800 rounded-xl text-gray-700 dark:text-gray-300 font-medium">
-        {darkMode ? <><Sun size={18} /> Light Mode</> : <><Moon size={18} /> Dark Mode</>}
-      </button>
-    );
-  }
-  return (
-    <button onClick={onClick} className="mx-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors">
-      {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-    </button>
-  );
-};
-
-const DonateButton: React.FC<{ onClick: () => void; variant?: "desktop" | "mobile" }> = ({ onClick, variant = "desktop" }) => {
-  if (variant === "mobile") {
-    return (
-      <button onClick={onClick} className="w-full px-6 py-3.5 bg-blue-600 text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2">
-        <Heart size={18} fill="currentColor" /> Donate Now
-      </button>
-    );
-  }
-  return (
-    <button onClick={onClick} className="ml-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full text-sm flex items-center gap-2 shadow-md">
-      <Heart size={14} fill="currentColor" /> Donate
-    </button>
-  );
-};
-
 // ------------------ MAIN COMPONENT ------------------
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -240,10 +210,11 @@ const Navbar: React.FC = () => {
       if (!section) return;
 
       const navbarHeight = navRef.current?.offsetHeight || 64;
-      const targetPosition = section.getBoundingClientRect().top + window.pageYOffset - navbarHeight;
+      const buffer = 20;
+      const targetPosition = section.getBoundingClientRect().top + window.pageYOffset - navbarHeight - buffer;
 
       window.scrollTo({ top: targetPosition, behavior: "smooth" });
-    }, 300);
+    }, 100);
   }, []);
 
   useEffect(() => {
@@ -252,28 +223,42 @@ const Navbar: React.FC = () => {
     return () => { document.body.style.overflow = ""; };
   }, [isOpen]);
 
-  if (darkMode === null) return <div className="h-16 w-full bg-white dark:bg-gray-900 fixed top-0 z-50 shadow-sm" />;
+  if (darkMode === null) return <div className="h-16 w-full bg-white dark:bg-gray-900 fixed top-0 z-50" />;
 
   return (
     <nav
       ref={navRef}
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        scrolled ? "bg-white/95 dark:bg-gray-900/95 shadow-lg backdrop-blur-md h-16" : "bg-white dark:bg-gray-900 shadow-md h-16 lg:h-20"
+        scrolled ? "bg-white/95 dark:bg-gray-900/95 shadow-sm backdrop-blur-md h-16" : "bg-white dark:bg-gray-900 h-16 lg:h-20"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 lg:px-8 h-full flex items-center justify-between">
         <Logo darkMode={darkMode} onClick={() => handleScrollTo("home")} />
 
-        {/* Desktop */}
+        {/* Desktop Navigation */}
         <div className="hidden lg:flex items-center gap-1">
           {MENU_ITEMS.map((item) => (
             <DesktopMenuItem key={item.name} item={item} onNavigate={handleScrollTo} />
           ))}
-          <ThemeToggle darkMode={darkMode} onClick={toggleDarkMode} />
-          <DonateButton onClick={() => handleScrollTo("donation")} />
+          
+          {/* Desktop Theme Toggle */}
+          <button 
+            onClick={toggleDarkMode} 
+            className="mx-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors"
+          >
+            {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
+
+          {/* Clean Desktop Donate Button (No shadows) */}
+          <button 
+            onClick={() => handleScrollTo("donation")} 
+            className="ml-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full text-sm flex items-center gap-2 transition-transform active:scale-95"
+          >
+            <Heart size={14} fill="currentColor" /> Donate
+          </button>
         </div>
 
-        {/* Mobile Toggle */}
+        {/* Mobile Toggle Button */}
         <button 
           onClick={() => setIsOpen(!isOpen)} 
           className="lg:hidden p-2 text-gray-600 dark:text-gray-300 rounded-lg focus:outline-none"
@@ -283,7 +268,7 @@ const Navbar: React.FC = () => {
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Overlay */}
       <div 
         className={`lg:hidden absolute top-full left-0 w-full bg-white dark:bg-gray-900 border-t dark:border-gray-800 transition-all duration-300 ease-in-out ${
           isOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"
@@ -304,8 +289,21 @@ const Navbar: React.FC = () => {
           </div>
           
           <div className="py-6 space-y-4 border-t dark:border-gray-800 mt-auto">
-            <ThemeToggle darkMode={darkMode} onClick={toggleDarkMode} variant="mobile" />
-            <DonateButton onClick={() => handleScrollTo("donation")} variant="mobile" />
+            {/* Mobile Theme Toggle */}
+            <button 
+              onClick={toggleDarkMode} 
+              className="flex items-center justify-center w-full gap-2 px-6 py-3 bg-gray-100 dark:bg-gray-800 rounded-xl text-gray-700 dark:text-gray-300 font-medium"
+            >
+              {darkMode ? <><Sun size={18} /> Light Mode</> : <><Moon size={18} /> Dark Mode</>}
+            </button>
+
+            {/* Clean Mobile Donate Button (No shadows) */}
+            <button 
+              onClick={() => handleScrollTo("donation")} 
+              className="w-full px-6 py-3.5 bg-blue-600 text-white font-bold rounded-xl flex items-center justify-center gap-2"
+            >
+              <Heart size={18} fill="currentColor" /> Donate Now
+            </button>
           </div>
         </div>
       </div>
