@@ -2,11 +2,10 @@ import React, { useState, useRef } from "react";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 import {
   Briefcase, BookOpen, HeartPulse,
-  Image as ImageIcon, Sparkles, ArrowUpRight
+  Image as ImageIcon, Sparkles, ArrowUpRight,
 } from "lucide-react";
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
-
 interface Program {
   icon: React.ElementType;
   title: string;
@@ -16,7 +15,6 @@ interface Program {
 }
 
 // ─── DATA ─────────────────────────────────────────────────────────────────────
-
 const PROGRAMS: Program[] = [
   {
     icon: Briefcase,
@@ -42,26 +40,29 @@ const PROGRAMS: Program[] = [
 ];
 
 const EVENT_PHOTOS = [
-  { src: "/event11.jpeg", alt: "Community outreach", span: "md:col-span-2 md:row-span-2" },
-  { src: "/event22.jpeg", alt: "Skills training", span: "col-span-1" },
-  { src: "/events3.jpg", alt: "Youth mentorship", span: "col-span-1" },
-  { src: "/events4.jpg", alt: "Medical outreach", span: "md:col-span-2" },
-  { src: "/events5.jpg", alt: "Empowerment summit", span: "col-span-1" },
-  { src: "/events6.jpg", alt: "Advocacy walk", span: "col-span-1" },
+  { src: "/event11.jpeg", alt: "Community outreach",   gridArea: "1 / 1 / 3 / 3" },
+  { src: "/event22.jpeg", alt: "Skills training",      gridArea: "1 / 3 / 2 / 4" },
+  { src: "/events3.jpg",  alt: "Youth mentorship",     gridArea: "2 / 3 / 3 / 4" },
+  { src: "/events4.jpg",  alt: "Medical outreach",     gridArea: "3 / 1 / 4 / 3" },
+  { src: "/events5.jpg",  alt: "Empowerment summit",   gridArea: "3 / 3 / 4 / 4" },
+  { src: "/events6.jpg",  alt: "Advocacy walk",        gridArea: "4 / 1 / 5 / 2" },
 ];
 
-// ─── 3D PROGRAM CARD ──────────────────────────────────────────────────────────
+// Mobile order (simple sequential)
+const EVENT_PHOTOS_MOBILE = EVENT_PHOTOS.map((p) => ({ ...p, gridArea: "auto" }));
 
+// ─── 3D PROGRAM CARD ─────────────────────────────────────────────────────────
 const ProgramCard: React.FC<{ program: Program; index: number }> = ({ program, index }) => {
   const [open, setOpen] = useState(false);
+  const [hovered, setHovered] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
-  
+
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const mouseXSpring = useSpring(x);
-  const mouseYSpring = useSpring(y);
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7deg", "-7deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7deg", "7deg"]);
+  const xs = useSpring(x, { stiffness: 120, damping: 20 });
+  const ys = useSpring(y, { stiffness: 120, damping: 20 });
+  const rotateX = useTransform(ys, [-0.5, 0.5], ["7deg", "-7deg"]);
+  const rotateY = useTransform(xs, [-0.5, 0.5], ["-7deg", "7deg"]);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!cardRef.current) return;
@@ -71,8 +72,8 @@ const ProgramCard: React.FC<{ program: Program; index: number }> = ({ program, i
   };
 
   const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
+    x.set(0); y.set(0);
+    setHovered(false);
   };
 
   const Icon = program.icon;
@@ -81,47 +82,106 @@ const ProgramCard: React.FC<{ program: Program; index: number }> = ({ program, i
     <motion.div
       ref={cardRef}
       onMouseMove={handleMouseMove}
+      onMouseEnter={() => setHovered(true)}
       onMouseLeave={handleMouseLeave}
-      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+      style={{ rotateX, rotateY, transformStyle: "preserve-3d", height: "100%" }}
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.8, delay: index * 0.1 }}
-      className="relative group h-full"
     >
-      <div 
-        className="relative h-full bg-[#141412] rounded-[2.5rem] p-10 border border-white/5 flex flex-col overflow-hidden transition-all duration-500 group-hover:border-[#C9A96E]/40 shadow-2xl"
-      >
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#C9A96E] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div style={{
+        position: "relative",
+        height: "100%",
+        background: "#141412",
+        borderRadius: "2.5rem",
+        padding: "2.5rem",
+        border: hovered ? "1px solid rgba(201,169,110,0.4)" : "1px solid rgba(255,255,255,0.05)",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+        transition: "border-color 0.5s ease",
+        boxShadow: "0 25px 50px rgba(0,0,0,0.4)",
+      }}>
+        {/* Top gold shimmer line */}
+        <div style={{
+          position: "absolute", top: 0, left: 0, right: 0, height: "1px",
+          background: "linear-gradient(to right, transparent, #C9A96E, transparent)",
+          opacity: hovered ? 1 : 0,
+          transition: "opacity 0.4s ease",
+        }} />
 
-        <div className="flex justify-between items-start mb-10" style={{ transform: "translateZ(40px)" }}>
-          <div className="w-16 h-16 rounded-2xl bg-[#C9A96E]/10 flex items-center justify-center text-[#C9A96E] border border-[#C9A96E]/20 shadow-[0_0_20px_rgba(201,169,110,0.1)]">
+        {/* Icon + Tag row */}
+        <div style={{
+          display: "flex", justifyContent: "space-between", alignItems: "flex-start",
+          marginBottom: "2.5rem",
+          transform: "translateZ(40px)",
+        }}>
+          <div style={{
+            width: "64px", height: "64px", borderRadius: "1rem",
+            background: "rgba(201,169,110,0.1)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            color: "#C9A96E",
+            border: "1px solid rgba(201,169,110,0.2)",
+            boxShadow: "0 0 20px rgba(201,169,110,0.08)",
+          }}>
             <Icon size={28} strokeWidth={1.5} />
           </div>
-          <span className="text-[9px] font-black uppercase tracking-[0.3em] text-[#C9A96E] border border-[#C9A96E]/20 px-3 py-1.5 rounded-lg bg-[#C9A96E]/5">
+          <span style={{
+            fontSize: "0.6rem", fontWeight: 800,
+            textTransform: "uppercase", letterSpacing: "0.3em",
+            color: "#C9A96E",
+            border: "1px solid rgba(201,169,110,0.2)",
+            padding: "0.35rem 0.75rem",
+            borderRadius: "0.5rem",
+            background: "rgba(201,169,110,0.05)",
+          }}>
             {program.tag}
           </span>
         </div>
 
-        <div className="flex-1" style={{ transform: "translateZ(30px)" }}>
-          <h3 className="text-3xl font-['Playfair_Display'] font-bold text-white mb-4 leading-tight">
+        {/* Text content */}
+        <div style={{ flex: 1, transform: "translateZ(30px)" }}>
+          <h3 style={{
+            fontFamily: "'Playfair Display', serif",
+            fontSize: "clamp(1.5rem, 2.5vw, 1.85rem)",
+            fontWeight: 700, color: "#fff",
+            marginBottom: "1rem", lineHeight: 1.2,
+          }}>
             {program.title}
           </h3>
-          <p className="text-gray-400 font-light leading-relaxed mb-8">
+          <p style={{
+            color: "rgba(255,255,255,0.45)",
+            fontFamily: "'DM Sans', sans-serif",
+            fontWeight: 300, lineHeight: 1.7,
+            fontSize: "0.95rem", marginBottom: "2rem",
+          }}>
             {program.description}
           </p>
         </div>
 
+        {/* Expandable detail */}
         <AnimatePresence>
           {open && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden mb-8"
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              style={{ overflow: "hidden", marginBottom: "2rem" }}
             >
-              <div className="pt-6 border-t border-white/5">
-                <p className="text-sm text-[#C9A96E] leading-relaxed italic font-light">
+              <div style={{
+                paddingTop: "1.5rem",
+                borderTop: "1px solid rgba(255,255,255,0.05)",
+              }}>
+                <p style={{
+                  fontSize: "0.85rem",
+                  color: "#C9A96E",
+                  fontStyle: "italic",
+                  fontWeight: 300,
+                  lineHeight: 1.7,
+                  fontFamily: "'Playfair Display', serif",
+                }}>
                   {program.detail}
                 </p>
               </div>
@@ -129,94 +189,277 @@ const ProgramCard: React.FC<{ program: Program; index: number }> = ({ program, i
           )}
         </AnimatePresence>
 
+        {/* CTA */}
         <button
           onClick={() => setOpen(!open)}
-          className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-[#C9A96E] group/btn mt-auto"
+          style={{
+            display: "flex", alignItems: "center", gap: "0.75rem",
+            fontSize: "0.65rem", fontWeight: 800,
+            textTransform: "uppercase", letterSpacing: "0.3em",
+            color: "#C9A96E",
+            background: "transparent", border: "none",
+            cursor: "pointer", marginTop: "auto", padding: 0,
+            transition: "opacity 0.2s ease",
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.7")}
+          onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
         >
           {open ? "Show Less" : "Discover Impact"}
-          <ArrowUpRight className={`w-4 h-4 transition-all duration-500 ${open ? "rotate-45" : "group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1"}`} />
+          <ArrowUpRight
+            size={16}
+            style={{
+              transition: "transform 0.4s ease",
+              transform: open ? "rotate(45deg)" : "none",
+            }}
+          />
         </button>
       </div>
     </motion.div>
   );
 };
 
-// ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
-
+// ─── PROGRAMS SECTION ─────────────────────────────────────────────────────────
 const Programs: React.FC = () => {
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  React.useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
   return (
-    <section id="ourprograms" className="relative bg-[#0A0908] py-40 overflow-hidden text-white font-['DM_Sans',sans-serif]">
-      
-      {/* Background Ambience */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-        <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#C9A96E]/5 rounded-full blur-[120px]" />
-      </div>
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500;700&display=swap');
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        
-        {/* Header Section */}
-        <div className="mb-24">
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center gap-3 px-5 py-2 bg-[#C9A96E]/10 border border-[#C9A96E]/20 rounded-full mb-8"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-[#C9A96E]" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#C9A96E]">Our Strategic Pillars</span>
-          </motion.div>
-          
-          <h2 className="text-6xl md:text-8xl font-['Playfair_Display'] leading-[1.05] mb-10 tracking-tight">
-            Direct <span className="italic text-[#C9A96E]">Interventions.</span>
-          </h2>
-          <p className="text-xl text-gray-400 font-light max-w-2xl leading-relaxed border-l border-[#C9A96E]/30 pl-8">
-            Meaningful change requires more than just charity. It requires structured programs that provide the tools for self-reliance and community health.
-          </p>
-        </div>
+        .prog-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 2.5rem;
+          perspective: 2000px;
+        }
 
-        {/* 3D Programs Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 perspective-2000">
-          {PROGRAMS.map((program, i) => (
-            <ProgramCard key={program.title} program={program} index={i} />
-          ))}
-        </div>
+        .event-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          grid-auto-rows: 220px;
+          gap: 1.5rem;
+        }
 
-        {/* ── Colorful Bento Gallery ── */}
-        <div id="events" className="mt-48">
-          <div className="flex flex-col md:flex-row justify-between items-baseline mb-16 border-b border-white/10 pb-10">
-            <h2 className="text-5xl font-['Playfair_Display']">In the Field</h2>
-            <p className="text-[#C9A96E] font-bold text-[10px] uppercase tracking-[0.3em] mt-4 md:mt-0">Real Moments, Real Change</p>
+        @media (max-width: 900px) {
+          .prog-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+          }
+          .event-grid {
+            grid-template-columns: repeat(2, 1fr);
+            grid-auto-rows: 180px;
+            gap: 1rem;
+          }
+          .event-item { grid-area: auto !important; }
+          .prog-headline { font-size: clamp(2.8rem, 10vw, 5rem) !important; }
+        }
+
+        @media (max-width: 480px) {
+          .event-grid {
+            grid-template-columns: 1fr;
+            grid-auto-rows: 220px;
+          }
+          .prog-headline { font-size: clamp(2.2rem, 9vw, 3.5rem) !important; }
+        }
+
+        .event-photo-img {
+          width: 100%; height: 100%;
+          object-fit: cover;
+          transition: transform 1s ease, filter 0.5s ease;
+          filter: saturate(0.9);
+        }
+        .event-photo-wrap:hover .event-photo-img {
+          transform: scale(1.1);
+          filter: saturate(1.2);
+        }
+        .event-photo-overlay {
+          position: absolute; inset: 0;
+          background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.15) 50%, transparent 100%);
+          opacity: 0;
+          transition: opacity 0.5s ease;
+          display: flex; align-items: flex-end;
+          padding: 1.75rem;
+        }
+        .event-photo-wrap:hover .event-photo-overlay { opacity: 1; }
+      `}</style>
+
+      <section
+        id="ourprograms"
+        style={{
+          position: "relative",
+          background: "#0A0908",
+          padding: "10rem 0",
+          overflow: "hidden",
+          color: "#fff",
+          fontFamily: "'DM Sans', sans-serif",
+        }}
+      >
+        {/* Background orb */}
+        <div style={{
+          position: "absolute", top: "-10%", right: "-10%",
+          width: "50%", height: "50%",
+          background: "rgba(201,169,110,0.05)",
+          borderRadius: "50%", filter: "blur(120px)",
+          pointerEvents: "none",
+        }} />
+
+        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1.5rem", position: "relative", zIndex: 2 }}>
+
+          {/* ── HEADER ── */}
+          <div style={{ marginBottom: "6rem" }}>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              style={{
+                display: "inline-flex", alignItems: "center", gap: "0.6rem",
+                padding: "0.45rem 1.1rem",
+                background: "rgba(201,169,110,0.08)",
+                border: "1px solid rgba(201,169,110,0.2)",
+                borderRadius: "100px",
+                marginBottom: "2rem",
+              }}
+            >
+              <Sparkles size={14} color="#C9A96E" />
+              <span style={{
+                fontSize: "0.62rem", fontWeight: 700,
+                textTransform: "uppercase", letterSpacing: "0.3em",
+                color: "#C9A96E",
+              }}>
+                Our Strategic Pillars
+              </span>
+            </motion.div>
+
+            <motion.h2
+              className="prog-headline"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1, duration: 0.8 }}
+              style={{
+                fontFamily: "'Playfair Display', serif",
+                fontSize: "clamp(3rem, 7vw, 6rem)",
+                lineHeight: 1.05,
+                marginBottom: "2.5rem",
+                letterSpacing: "-0.01em",
+                fontWeight: 400,
+              }}
+            >
+              Direct{" "}
+              <span style={{ fontStyle: "italic", color: "#C9A96E" }}>Interventions.</span>
+            </motion.h2>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2, duration: 0.8 }}
+              style={{
+                fontSize: "1.1rem",
+                color: "rgba(255,255,255,0.4)",
+                fontWeight: 300,
+                maxWidth: "580px",
+                lineHeight: 1.8,
+                paddingLeft: "2rem",
+                borderLeft: "1px solid rgba(201,169,110,0.3)",
+              }}
+            >
+              Meaningful change requires more than just charity. It requires structured programs that provide the tools for self-reliance and community health.
+            </motion.p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[220px] gap-6">
-            {EVENT_PHOTOS.map((photo, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: i * 0.1 }}
-                className={`${photo.span} relative rounded-[2.5rem] overflow-hidden bg-[#141412] group border border-white/5 shadow-lg`}
-              >
-                {/* Removed grayscale, added vibrant hover effect */}
-                <img
-                  src={photo.src}
-                  alt={photo.alt}
-                  className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110 group-hover:saturate-[1.2]"
-                />
-                
-                {/* Overlay for text legibility on hover */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-end p-8">
-                  <p className="text-white text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-3">
-                    <ImageIcon size={14} className="text-[#C9A96E]" /> {photo.alt}
-                  </p>
-                </div>
-              </motion.div>
+          {/* ── PROGRAMS GRID ── */}
+          <div className="prog-grid">
+            {PROGRAMS.map((program, i) => (
+              <ProgramCard key={program.title} program={program} index={i} />
             ))}
           </div>
+
+          {/* ── EVENTS GALLERY ── */}
+          <div id="events" style={{ marginTop: "12rem" }}>
+            {/* Gallery header */}
+            <div style={{
+              display: "flex",
+              flexDirection: isMobile ? "column" : "row",
+              justifyContent: "space-between",
+              alignItems: isMobile ? "flex-start" : "baseline",
+              marginBottom: "4rem",
+              paddingBottom: "2.5rem",
+              borderBottom: "1px solid rgba(255,255,255,0.08)",
+              gap: "0.75rem",
+            }}>
+              <h2 style={{
+                fontFamily: "'Playfair Display', serif",
+                fontSize: "clamp(2rem, 5vw, 3.2rem)",
+                fontWeight: 400, color: "#fff",
+              }}>
+                In the Field
+              </h2>
+              <span style={{
+                fontSize: "0.6rem", fontWeight: 700,
+                textTransform: "uppercase", letterSpacing: "0.3em",
+                color: "#C9A96E",
+              }}>
+                Real Moments, Real Change
+              </span>
+            </div>
+
+            {/* Bento grid */}
+            <div className="event-grid">
+              {EVENT_PHOTOS.map((photo, i) => (
+                <motion.div
+                  key={i}
+                  className="event-photo-wrap event-item"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.7, delay: i * 0.08 }}
+                  style={{
+                    gridArea: isMobile ? "auto" : photo.gridArea,
+                    position: "relative",
+                    borderRadius: "2rem",
+                    overflow: "hidden",
+                    background: "#141412",
+                    border: "1px solid rgba(255,255,255,0.05)",
+                    boxShadow: "0 16px 40px rgba(0,0,0,0.4)",
+                  }}
+                >
+                  <img
+                    src={photo.src}
+                    alt={photo.alt}
+                    className="event-photo-img"
+                  />
+                  <div className="event-photo-overlay">
+                    <p style={{
+                      color: "#fff",
+                      fontSize: "0.6rem",
+                      fontWeight: 800,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.2em",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.6rem",
+                    }}>
+                      <ImageIcon size={13} color="#C9A96E" />
+                      {photo.alt}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 };
 

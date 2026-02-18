@@ -7,7 +7,6 @@ import {
 } from "lucide-react";
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
-
 interface ContactMethod {
   icon: React.ElementType;
   label: string;
@@ -27,7 +26,6 @@ interface FAQItem {
 }
 
 // ─── DATA ─────────────────────────────────────────────────────────────────────
-
 const CONTACT_METHODS: ContactMethod[] = [
   {
     icon: Mail,
@@ -67,28 +65,43 @@ const FAQS: FAQItem[] = [
   },
 ];
 
-// ─── COMPONENTS ───────────────────────────────────────────────────────────────
-
+// ─── EYEBROW ──────────────────────────────────────────────────────────────────
 const Eyebrow: React.FC<{ icon: React.ElementType; children: React.ReactNode }> = ({ icon: Icon, children }) => (
-  <motion.div 
+  <motion.div
     initial={{ opacity: 0, y: 10 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
-    className="inline-flex items-center gap-3 px-5 py-2 bg-[#C9A96E]/10 border border-[#C9A96E]/20 rounded-full mb-8"
+    style={{
+      display: "inline-flex", alignItems: "center", gap: "0.6rem",
+      padding: "0.45rem 1.1rem",
+      background: "rgba(201,169,110,0.08)",
+      border: "1px solid rgba(201,169,110,0.2)",
+      borderRadius: "100px",
+      marginBottom: "2rem",
+    }}
   >
-    <Icon className="w-3.5 h-3.5 text-[#C9A96E]" />
-    <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#C9A96E]">{children}</span>
+    <Icon size={14} color="#C9A96E" />
+    <span style={{
+      fontSize: "0.62rem", fontWeight: 700,
+      textTransform: "uppercase" as const, letterSpacing: "0.3em",
+      color: "#C9A96E",
+    }}>
+      {children}
+    </span>
   </motion.div>
 );
 
+// ─── PREMIUM PHOTO ────────────────────────────────────────────────────────────
 const PremiumPhoto: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
   const cardRef = useRef<HTMLDivElement>(null);
+  const [hovered, setHovered] = useState(false);
+
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const mouseXSpring = useSpring(x);
-  const mouseYSpring = useSpring(y);
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["5deg", "-5deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-5deg", "5deg"]);
+  const xs = useSpring(x, { stiffness: 120, damping: 20 });
+  const ys = useSpring(y, { stiffness: 120, damping: 20 });
+  const rotateX = useTransform(ys, [-0.5, 0.5], ["5deg", "-5deg"]);
+  const rotateY = useTransform(xs, [-0.5, 0.5], ["-5deg", "5deg"]);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!cardRef.current) return;
@@ -101,165 +114,441 @@ const PremiumPhoto: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
     <motion.div
       ref={cardRef}
       onMouseMove={handleMouseMove}
-      onMouseLeave={() => { x.set(0); y.set(0); }}
-      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      className="relative group w-full max-w-sm" // Reduced from max-w-md
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => { x.set(0); y.set(0); setHovered(false); }}
+      style={{
+        rotateX, rotateY, transformStyle: "preserve-3d",
+        position: "relative",
+        width: "100%", maxWidth: "380px",
+      }}
     >
-      <div className="absolute inset-0 bg-[#C9A96E]/15 rounded-[2.5rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-      <div className="relative rounded-[2.5rem] overflow-hidden border border-white/10 bg-[#141412] p-1.5"> {/* Reduced padding */}
-        <img 
-          src={src} 
-          alt={alt} 
-          className="w-full aspect-square object-contain bg-[#0A0908] rounded-[2.2rem] transition-all duration-700 group-hover:scale-105 group-hover:saturate-[1.1]" 
+      {/* Glow */}
+      <div style={{
+        position: "absolute", inset: 0,
+        background: "rgba(201,169,110,0.15)",
+        borderRadius: "2.5rem",
+        filter: "blur(32px)",
+        opacity: hovered ? 1 : 0,
+        transition: "opacity 0.7s ease",
+        pointerEvents: "none",
+      }} />
+
+      {/* Card */}
+      <div style={{
+        position: "relative",
+        borderRadius: "2.5rem",
+        overflow: "hidden",
+        border: "1px solid rgba(255,255,255,0.1)",
+        background: "#141412",
+        padding: "6px",
+      }}>
+        <img
+          src={src}
+          alt={alt}
+          style={{
+            width: "100%",
+            aspectRatio: "1 / 1",
+            objectFit: "contain",
+            background: "#0A0908",
+            borderRadius: "2.2rem",
+            display: "block",
+            transition: "transform 0.7s ease, filter 0.7s ease",
+            transform: hovered ? "scale(1.05)" : "scale(1)",
+            filter: hovered ? "saturate(1.1)" : "saturate(1)",
+          }}
         />
       </div>
     </motion.div>
   );
 };
 
-// ─── MAIN SECTION ────────────────────────────────────────────────────────────
+// ─── CONTACT CARD ─────────────────────────────────────────────────────────────
+const ContactCard: React.FC<{ method: ContactMethod }> = ({ method }) => {
+  const [hovered, setHovered] = useState(false);
+  const Icon = method.icon;
 
+  return (
+    <a
+      href={method.href}
+      target={method.href.startsWith("http") ? "_blank" : undefined}
+      rel="noreferrer"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "1.5rem",
+        borderRadius: "1.5rem",
+        background: "#141412",
+        border: hovered ? "1px solid rgba(201,169,110,0.4)" : "1px solid rgba(255,255,255,0.05)",
+        textDecoration: "none",
+        transition: "border-color 0.4s ease",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
+        <div style={{
+          width: "48px", height: "48px",
+          borderRadius: "0.875rem",
+          background: "rgba(201,169,110,0.1)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          color: "#C9A96E", flexShrink: 0,
+        }}>
+          <Icon size={20} />
+        </div>
+        <div>
+          <p style={{
+            fontSize: "0.6rem", fontWeight: 800,
+            textTransform: "uppercase" as const, letterSpacing: "0.2em",
+            color: "rgba(255,255,255,0.35)", marginBottom: "0.25rem",
+          }}>
+            {method.label}
+          </p>
+          <p style={{ color: "#fff", fontWeight: 500, fontSize: "0.95rem" }}>
+            {method.display}
+          </p>
+        </div>
+      </div>
+      <ExternalLink
+        size={16}
+        color={hovered ? "#C9A96E" : "rgba(255,255,255,0.2)"}
+        style={{ transition: "color 0.3s ease", flexShrink: 0 }}
+      />
+    </a>
+  );
+};
+
+// ─── FAQ ITEM ─────────────────────────────────────────────────────────────────
+const FAQAccordion: React.FC<{ faq: FAQItem; index: number; open: boolean; onToggle: () => void }> = ({
+  faq, open, onToggle,
+}) => {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <div style={{
+      background: "#141412",
+      borderRadius: "2rem",
+      border: "1px solid rgba(255,255,255,0.05)",
+      overflow: "hidden",
+    }}>
+      <button
+        onClick={onToggle}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          width: "100%", padding: "2rem 2.5rem",
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          background: "transparent", border: "none", cursor: "pointer",
+          textAlign: "left" as const,
+        }}
+      >
+        <span style={{
+          fontSize: "1.05rem", fontWeight: 500,
+          color: open || hovered ? "#C9A96E" : "#fff",
+          transition: "color 0.3s ease",
+          fontFamily: "'DM Sans', sans-serif",
+        }}>
+          {faq.question}
+        </span>
+        <motion.span
+          animate={{ rotate: open ? 180 : 0 }}
+          transition={{ duration: 0.4 }}
+          style={{ display: "flex", flexShrink: 0, marginLeft: "1rem" }}
+        >
+          <ChevronDown size={20} color="#C9A96E" />
+        </motion.span>
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            style={{ overflow: "hidden" }}
+          >
+            <p style={{
+              padding: "0 2.5rem 2rem",
+              color: "rgba(255,255,255,0.45)",
+              fontWeight: 300, lineHeight: 1.8,
+              fontSize: "0.95rem",
+              fontFamily: "'DM Sans', sans-serif",
+            }}>
+              {faq.answer}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+// ─── MAIN SECTION ─────────────────────────────────────────────────────────────
 const GetInvolved: React.FC = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   return (
-    <section id="getinvolved" className="relative bg-[#0A0908] py-40 overflow-hidden text-white font-['DM_Sans',sans-serif]">
-      
-      {/* Background Ambience */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-        <div className="absolute top-[20%] right-[-10%] w-[50%] h-[50%] bg-[#C9A96E]/5 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[20%] left-[-10%] w-[50%] h-[50%] bg-[#C9A96E]/5 rounded-full blur-[120px]" />
-      </div>
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500;700&display=swap');
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        
-        {/* 01. VOLUNTEER SECTION */}
-        <div id="volunteer" className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center mb-48 scroll-mt-20">
-          <motion.div 
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-          >
-            <Eyebrow icon={Users}>Collaboration</Eyebrow>
-            <h2 className="text-6xl md:text-7xl font-['Playfair_Display'] leading-[1.1] mb-8">
-              Your hands can <br /><span className="italic text-[#C9A96E]">build the future.</span>
-            </h2>
-            <p className="text-xl text-gray-400 font-light leading-relaxed mb-12 max-w-lg border-l border-[#C9A96E]/30 pl-8">
-              Whether you have professional skills to share or time to give, your presence strengthens our mission.
-            </p>
+        .gi-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 5rem;
+          align-items: center;
+        }
 
-            <div className="grid gap-4">
-              {CONTACT_METHODS.map((m) => (
-                <a key={m.label} href={m.href} className="group flex items-center justify-between p-6 rounded-3xl bg-[#141412] border border-white/5 hover:border-[#C9A96E]/40 transition-all duration-500">
-                  <div className="flex items-center gap-5">
-                    <div className="w-12 h-12 rounded-2xl bg-[#C9A96E]/10 flex items-center justify-center text-[#C9A96E]">
-                      <m.icon size={20} />
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">{m.label}</p>
-                      <p className="text-white font-medium">{m.display}</p>
-                    </div>
-                  </div>
-                  <ExternalLink size={16} className="text-gray-600 group-hover:text-[#C9A96E] transition-colors" />
-                </a>
-              ))}
-            </div>
-          </motion.div>
+        .gi-photo { display: flex; justify-content: flex-end; }
+        .gi-photo-left { display: flex; justify-content: flex-start; }
 
-          <div className="flex justify-center lg:justify-end">
-            <PremiumPhoto src="/volut.jpg" alt="Volunteers" />
-          </div>
+        .gi-headline {
+          font-family: 'Playfair Display', serif;
+          font-size: clamp(2.8rem, 5vw, 4.5rem);
+          line-height: 1.1;
+          font-weight: 400;
+          margin-bottom: 2rem;
+        }
+
+        .gi-donate-btn {
+          display: inline-flex; align-items: center; gap: 0.75rem;
+          padding: 1.1rem 2.5rem;
+          background: #C9A96E;
+          color: #080808;
+          border-radius: 100px;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 0.65rem; font-weight: 800;
+          text-transform: uppercase; letter-spacing: 0.3em;
+          text-decoration: none;
+          box-shadow: 0 10px 30px rgba(201,169,110,0.3);
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .gi-donate-btn:hover {
+          transform: scale(1.04);
+          box-shadow: 0 16px 40px rgba(201,169,110,0.45);
+        }
+
+        @media (max-width: 900px) {
+          .gi-grid { grid-template-columns: 1fr !important; gap: 3rem !important; }
+          .gi-photo, .gi-photo-left { justify-content: center !important; order: -1; }
+          .gi-order-fix { order: 1; }
+          .gi-headline { font-size: clamp(2.2rem, 8vw, 3.2rem) !important; }
+          .gi-faq-inner { padding: 0 !important; }
+        }
+
+        @media (max-width: 480px) {
+          .gi-headline { font-size: clamp(1.9rem, 8vw, 2.6rem) !important; }
+        }
+      `}</style>
+
+      <section
+        id="getinvolved"
+        style={{
+          position: "relative",
+          background: "#0A0908",
+          padding: "10rem 0",
+          overflow: "hidden",
+          color: "#fff",
+          fontFamily: "'DM Sans', sans-serif",
+        }}
+      >
+        {/* Ambient orbs */}
+        <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
+          <div style={{
+            position: "absolute", top: "20%", right: "-10%",
+            width: "50%", height: "50%",
+            background: "rgba(201,169,110,0.05)",
+            borderRadius: "50%", filter: "blur(120px)",
+          }} />
+          <div style={{
+            position: "absolute", bottom: "20%", left: "-10%",
+            width: "50%", height: "50%",
+            background: "rgba(201,169,110,0.05)",
+            borderRadius: "50%", filter: "blur(120px)",
+          }} />
         </div>
 
-        {/* 02. DONATION SECTION */}
-        <div id="donation" className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center mb-48 scroll-mt-20">
-          <div className="flex justify-center lg:justify-start order-2 lg:order-1">
-            <PremiumPhoto src="/donations.jpg" alt="Donations" />
+        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1.5rem", position: "relative", zIndex: 2 }}>
+
+          {/* ── 01. VOLUNTEER ── */}
+          <div id="volunteer" style={{ marginBottom: "12rem", scrollMarginTop: "80px" }}>
+            <div className="gi-grid">
+              {/* Text */}
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+              >
+                <Eyebrow icon={Users}>Collaboration</Eyebrow>
+
+                <h2 className="gi-headline">
+                  Your hands can{" "}
+                  <br />
+                  <span style={{ fontStyle: "italic", color: "#C9A96E" }}>build the future.</span>
+                </h2>
+
+                <p style={{
+                  fontSize: "1.05rem",
+                  color: "rgba(255,255,255,0.4)",
+                  fontWeight: 300, lineHeight: 1.8,
+                  marginBottom: "3rem",
+                  maxWidth: "480px",
+                  paddingLeft: "2rem",
+                  borderLeft: "1px solid rgba(201,169,110,0.3)",
+                }}>
+                  Whether you have professional skills to share or time to give, your presence strengthens our mission.
+                </p>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                  {CONTACT_METHODS.map((m) => (
+                    <ContactCard key={m.label} method={m} />
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* Photo */}
+              <div className="gi-photo">
+                <PremiumPhoto src="/volut.jpg" alt="Volunteers" />
+              </div>
+            </div>
           </div>
 
-          <motion.div 
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="order-1 lg:order-2"
-          >
-            <Eyebrow icon={Heart}>Impact</Eyebrow>
-            <h2 className="text-6xl md:text-7xl font-['Playfair_Display'] leading-[1.1] mb-8">
-              Transparency <br /><span className="italic text-[#C9A96E]">in every gift.</span>
-            </h2>
-            <p className="text-xl text-gray-400 font-light leading-relaxed mb-12 max-w-lg border-l border-[#C9A96E]/30 pl-8">
-              No overhead cuts. Your contributions fund education, livelihoods, and medical outreach directly.
-            </p>
+          {/* ── 02. DONATION ── */}
+          <div id="donation" style={{ marginBottom: "12rem", scrollMarginTop: "80px" }}>
+            <div className="gi-grid">
+              {/* Photo (left on desktop) */}
+              <div className="gi-photo-left">
+                <PremiumPhoto src="/donations.jpg" alt="Donations" />
+              </div>
 
-            <div className="space-y-8 mb-12">
-              {DONATION_METHODS.map((m) => (
-                <div key={m.title} className="flex gap-6">
-                  <div className="shrink-0 w-6 h-6 rounded-full bg-[#C9A96E]/20 flex items-center justify-center">
-                    <div className="w-2 h-2 rounded-full bg-[#C9A96E]" />
-                  </div>
-                  <div>
-                    <h4 className="text-white font-bold uppercase text-xs tracking-widest mb-2">{m.title}</h4>
-                    <p className="text-gray-400 text-sm leading-relaxed">{m.description}</p>
+              {/* Text */}
+              <motion.div
+                className="gi-order-fix"
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+              >
+                <Eyebrow icon={Heart}>Impact</Eyebrow>
+
+                <h2 className="gi-headline">
+                  Transparency{" "}
+                  <br />
+                  <span style={{ fontStyle: "italic", color: "#C9A96E" }}>in every gift.</span>
+                </h2>
+
+                <p style={{
+                  fontSize: "1.05rem",
+                  color: "rgba(255,255,255,0.4)",
+                  fontWeight: 300, lineHeight: 1.8,
+                  marginBottom: "3rem",
+                  maxWidth: "480px",
+                  paddingLeft: "2rem",
+                  borderLeft: "1px solid rgba(201,169,110,0.3)",
+                }}>
+                  No overhead cuts. Your contributions fund education, livelihoods, and medical outreach directly.
+                </p>
+
+                {/* Donation method bullets */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "2rem", marginBottom: "3rem" }}>
+                  {DONATION_METHODS.map((m) => {
+                    const Icon = m.icon;
+                    return (
+                      <div key={m.title} style={{ display: "flex", gap: "1.25rem" }}>
+                        <div style={{
+                          flexShrink: 0,
+                          width: "24px", height: "24px",
+                          borderRadius: "50%",
+                          background: "rgba(201,169,110,0.15)",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          marginTop: "2px",
+                        }}>
+                          <div style={{
+                            width: "8px", height: "8px",
+                            borderRadius: "50%",
+                            background: "#C9A96E",
+                          }} />
+                        </div>
+                        <div>
+                          <h4 style={{
+                            color: "#fff", fontWeight: 700,
+                            fontSize: "0.65rem",
+                            textTransform: "uppercase" as const,
+                            letterSpacing: "0.2em",
+                            marginBottom: "0.4rem",
+                          }}>
+                            {m.title}
+                          </h4>
+                          <p style={{
+                            color: "rgba(255,255,255,0.4)",
+                            fontSize: "0.9rem", fontWeight: 300, lineHeight: 1.7,
+                          }}>
+                            {m.description}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* CTA row */}
+                <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "2rem" }}>
+                  <a href="mailto:Giversgenerous@gmail.com" className="gi-donate-btn">
+                    Request Details <ArrowRight size={14} />
+                  </a>
+                  <div style={{
+                    display: "flex", alignItems: "center", gap: "0.6rem",
+                    fontSize: "0.62rem", fontWeight: 700,
+                    textTransform: "uppercase" as const, letterSpacing: "0.2em",
+                    color: "rgba(255,255,255,0.3)",
+                  }}>
+                    <ShieldCheck size={16} color="#C9A96E" /> Guaranteed Secure
                   </div>
                 </div>
+              </motion.div>
+            </div>
+          </div>
+
+          {/* ── 03. FAQ ── */}
+          <div
+            id="faq"
+            className="gi-faq-inner"
+            style={{
+              maxWidth: "780px", margin: "0 auto",
+              paddingTop: "5rem",
+              borderTop: "1px solid rgba(255,255,255,0.05)",
+              scrollMarginTop: "80px",
+            }}
+          >
+            {/* FAQ header */}
+            <div style={{ textAlign: "center", marginBottom: "5rem" }}>
+              <Eyebrow icon={Sparkles}>Clarity</Eyebrow>
+              <h2 style={{
+                fontFamily: "'Playfair Display', serif",
+                fontSize: "clamp(2rem, 5vw, 3.2rem)",
+                fontWeight: 400, color: "#fff",
+              }}>
+                Common Questions
+              </h2>
+            </div>
+
+            {/* Accordions */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              {FAQS.map((faq, i) => (
+                <FAQAccordion
+                  key={i}
+                  faq={faq}
+                  index={i}
+                  open={openFaq === i}
+                  onToggle={() => setOpenFaq(openFaq === i ? null : i)}
+                />
               ))}
             </div>
-
-            <div className="flex flex-wrap items-center gap-8">
-              <motion.a
-                href="mailto:Giversgenerous@gmail.com"
-                whileHover={{ scale: 1.05 }}
-                className="px-10 py-5 bg-[#C9A96E] text-black rounded-full font-black text-[10px] uppercase tracking-[0.3em] flex items-center gap-3 shadow-[0_10px_30px_rgba(201,169,110,0.3)]"
-              >
-                Request Details <ArrowRight size={14} />
-              </motion.a>
-              <div className="flex items-center gap-3 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                <ShieldCheck size={16} className="text-[#C9A96E]" /> Guaranteed Secure
-              </div>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* 03. FAQ SECTION */}
-        <div id="faq" className="max-w-3xl mx-auto pt-20 border-t border-white/5 scroll-mt-20">
-          <div className="text-center mb-20">
-            <Eyebrow icon={Sparkles}>Clarity</Eyebrow>
-            <h2 className="text-5xl font-['Playfair_Display']">Common Questions</h2>
           </div>
 
-          <div className="space-y-4">
-            {FAQS.map((faq, i) => (
-              <div key={i} className="group bg-[#141412] rounded-[2rem] border border-white/5 overflow-hidden">
-                <button 
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full px-10 py-8 flex items-center justify-between text-left transition-colors"
-                >
-                  <span className={`text-lg font-medium transition-colors ${openFaq === i ? 'text-[#C9A96E]' : 'text-white group-hover:text-[#C9A96E]'}`}>
-                    {faq.question}
-                  </span>
-                  <ChevronDown className={`text-[#C9A96E] transition-transform duration-500 ${openFaq === i ? "rotate-180" : ""}`} />
-                </button>
-                <AnimatePresence>
-                  {openFaq === i && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: "easeInOut" }}
-                    >
-                      <p className="px-10 pb-8 text-gray-400 font-light leading-relaxed">
-                        {faq.answer}
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            ))}
-          </div>
         </div>
-
-      </div>
-    </section>
+      </section>
+    </>
   );
 };
 
