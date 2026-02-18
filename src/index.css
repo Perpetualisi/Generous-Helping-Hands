@@ -1,21 +1,75 @@
-/* Smooth scroll for all links */
+/* 1. Global Resets & Smoothing */
 html {
   scroll-behavior: smooth;
+  /* Dark mode default background to prevent white flash */
+  background-color: #0A0908; 
 }
 
-/* Prevent horizontal scroll */
 html, body {
   overflow-x: hidden;
-  transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+  /* Luxury font smoothing for high-end typography */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.5s ease, color 0.5s ease;
 }
 
-/* Smooth transitions for elements */
-div, section, article {
-  transition: background-color 0.5s ease, border-color 0.5s ease;
+/* 2. Heritage Palette Selection */
+::selection {
+  background-color: #C9A96E;
+  color: #0A0908;
 }
 
-/* Remove static scroll-padding-top or scroll-margin-top */
-/* JS will handle the dynamic offset */
-.section {
-  /* no fixed scroll-margin-top */
+/* 3. Global Perspective for 3D Cards */
+:root {
+  --perspective: 2000px;
+}
+
+.perspective-2000 {
+  perspective: var(--perspective);
+}
+
+/* 4. Scrollbar Customization */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0A0908;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C9A96E;
+  border: 3px solid #0A0908;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #A68A56;
+}
+
+/* 5. Smooth Transition for Theme Switches */
+div, section, article, nav, footer, button {
+  transition: background-color 0.5s ease, border-color 0.5s ease, color 0.5s ease;
+}
+
+/* 6. Typography Refinements */
+h1, h2, h3, h4, .font-serif {
+  font-family: 'Playfair Display', serif;
+  letter-spacing: -0.02em;
+}
+
+p, span, button, .font-sans {
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* 7. Utilities for Premium Animations */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.gold-glow {
+  box-shadow: 0 0 30px rgba(201, 169, 110, 0.15);
 }

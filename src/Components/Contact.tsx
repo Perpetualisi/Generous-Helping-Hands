@@ -1,14 +1,12 @@
-import React from "react";
-import { Mail, Phone, Share2, MapPin, Heart } from "lucide-react";
+import React, { useRef } from "react";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { Mail, Phone, Share2, MapPin, Heart, ArrowRight, Sparkles } from "lucide-react";
 
 interface ContactInfo {
   icon: React.ComponentType<{ className?: string }>;
   title: string;
   content: string;
   link?: string;
-  color: string;
-  bgColor: string;
-  hoverColor: string;
 }
 
 const Contact: React.FC = () => {
@@ -18,122 +16,120 @@ const Contact: React.FC = () => {
       title: "Phone",
       content: "+234 903 685 4354",
       link: "tel:+2349036854354",
-      color: "text-gray-600 dark:text-gray-400",
-      bgColor: "bg-gray-100 dark:bg-gray-800/50",
-      hoverColor: "hover:bg-gray-200 dark:hover:bg-gray-800/70",
     },
     {
       icon: Mail,
       title: "Email",
       content: "Giversgenerous@gmail.com",
       link: "mailto:Giversgenerous@gmail.com",
-      color: "text-gray-600 dark:text-gray-400",
-      bgColor: "bg-gray-100 dark:bg-gray-800/50",
-      hoverColor: "hover:bg-gray-200 dark:hover:bg-gray-800/70",
     },
     {
       icon: Share2,
       title: "Social Media",
       content: "@GenerousHelpingHands",
       link: "https://instagram.com/generoushelpinghands",
-      color: "text-gray-600 dark:text-gray-400",
-      bgColor: "bg-gray-100 dark:bg-gray-800/50",
-      hoverColor: "hover:bg-gray-200 dark:hover:bg-gray-800/70",
     },
     {
       icon: MapPin,
       title: "Location",
       content: "Lagos, Nigeria",
-      color: "text-gray-600 dark:text-gray-400",
-      bgColor: "bg-gray-100 dark:bg-gray-800/50",
-      hoverColor: "hover:bg-gray-200 dark:hover:bg-gray-800/70",
     },
   ];
 
+  // ─── 3D TILT EFFECT LOGIC ──────────────────────────────────────────────────
+  const cardRef = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const mouseXSpring = useSpring(x);
+  const mouseYSpring = useSpring(y);
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["5deg", "-5deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-5deg", "5deg"]);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    x.set((e.clientX - rect.left) / rect.width - 0.5);
+    y.set((e.clientY - rect.top) / rect.height - 0.5);
+  };
+
   return (
-    <section
-      id="contact"
-      className="bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 dark:from-gray-900 dark:via-gray-850 dark:to-gray-900 py-12 sm:py-16 lg:py-20 transition-colors duration-300"
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="contact" className="relative bg-[#0A0908] py-40 overflow-hidden text-white font-['DM_Sans',sans-serif]">
+      
+      {/* Background Ambience */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#C9A96E]/5 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#C9A96E]/5 rounded-full blur-[120px]" />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        
         {/* Header */}
-        <div className="text-center mb-8 sm:mb-12">
-          <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-gray-200 dark:bg-gray-800 rounded-full mb-3 sm:mb-4">
-            <Heart className="w-7 h-7 sm:w-8 sm:h-8 text-gray-600 dark:text-gray-400" />
-          </div>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
-            Get in Touch
+        <div className="text-center mb-24">
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="inline-flex items-center gap-3 px-5 py-2 bg-[#C9A96E]/10 border border-[#C9A96E]/20 rounded-full mb-8"
+          >
+            <Heart className="w-3.5 h-3.5 text-[#C9A96E]" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#C9A96E]">Connect With Us</span>
+          </motion.div>
+          <h2 className="text-6xl md:text-7xl font-['Playfair_Display'] leading-tight mb-6">
+            Get in <span className="italic text-[#C9A96E]">Touch.</span>
           </h2>
-          <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base lg:text-lg max-w-2xl mx-auto px-4">
+          <p className="text-gray-400 text-xl font-light max-w-2xl mx-auto leading-relaxed border-t border-white/5 pt-8">
             Together, we can create a brighter future for women and girls everywhere.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-12 items-center">
-          {/* Left Side - Image */}
-          <div className="order-2 lg:order-1 relative rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden bg-gray-100 dark:bg-gray-800">
-            <div className="relative aspect-[4/3] w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+          
+          {/* Left Side - Premium Image Card with 3D Tilt */}
+          <motion.div
+            ref={cardRef}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={() => { x.set(0); y.set(0); }}
+            style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+            className="relative group hidden lg:block"
+          >
+            <div className="absolute inset-0 bg-[#C9A96E]/15 rounded-[3rem] blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+            <div className="relative rounded-[3rem] overflow-hidden border border-white/10 bg-[#141412] p-2">
               <img
                 src="/contact.png"
-                alt="Generous Helping Hands community outreach"
-                className="w-full h-full object-cover"
-                loading="lazy"
+                alt="Community outreach"
+                className="w-full aspect-[4/5] object-cover rounded-[2.8rem] transition-all duration-700 group-hover:scale-105"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0A0908] via-transparent to-transparent opacity-60" />
+              <div className="absolute bottom-12 left-12 right-12" style={{ transform: "translateZ(50px)" }}>
+                <h3 className="text-3xl font-['Playfair_Display'] font-bold mb-3 italic text-[#C9A96E]">We're Here to Help</h3>
+                <p className="text-gray-200 font-light leading-relaxed">Connect with us to learn more about our local programs and international initiatives.</p>
+              </div>
             </div>
+          </motion.div>
 
-            {/* Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-gray-900/50 dark:from-black/70 via-transparent to-transparent" />
-
-            {/* Overlay Text */}
-            <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 lg:p-8 text-white">
-              <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">
-                We're Here to Help
-              </h3>
-              <p className="text-white/90 text-xs sm:text-sm lg:text-base">
-                Connect with us to learn more about our programs and initiatives.
-              </p>
-            </div>
-          </div>
-
-          {/* Right Side - Contact Information */}
-          <div className="order-1 lg:order-2 space-y-5 sm:space-y-6">
-            {/* Contact Cards */}
-            <div className="bg-white dark:bg-gray-800 p-5 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 transition-colors duration-300">
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-5 sm:mb-6">
-                Contact Information
-              </h3>
-
-              <div className="space-y-3 sm:space-y-4">
+          {/* Right Side - Info & CTA */}
+          <div className="space-y-12">
+            
+            {/* Info Grid */}
+            <div className="bg-[#141412] p-10 rounded-[2.5rem] border border-white/5 shadow-2xl">
+              <h3 className="text-2xl font-['Playfair_Display'] font-bold text-white mb-8">Contact Information</h3>
+              <div className="grid gap-6">
                 {contactInfo.map((info, index) => {
                   const Icon = info.icon;
                   return (
-                    <div
-                      key={index}
-                      className={`p-3 sm:p-4 ${info.bgColor} ${info.hoverColor} rounded-lg sm:rounded-xl transition-all duration-300 hover:shadow-md`}
-                    >
-                      <div className="flex items-start gap-3 sm:gap-4">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white dark:bg-gray-700 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
-                          <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${info.color}`} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-gray-800 dark:text-white text-sm sm:text-base">
-                            {info.title}
-                          </h4>
-                          {info.link ? (
-                            <a
-                              href={info.link}
-                              className={`${info.color} hover:underline block text-xs sm:text-sm lg:text-base font-medium mt-0.5 sm:mt-1 break-words`}
-                              target={info.link.startsWith("http") ? "_blank" : undefined}
-                              rel="noopener noreferrer"
-                            >
-                              {info.content}
-                            </a>
-                          ) : (
-                            <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm lg:text-base mt-0.5 sm:mt-1">
-                              {info.content}
-                            </p>
-                          )}
-                        </div>
+                    <div key={index} className="group flex items-center gap-6 p-4 rounded-2xl hover:bg-white/5 transition-colors duration-300">
+                      <div className="w-14 h-14 rounded-2xl bg-[#C9A96E]/10 flex items-center justify-center text-[#C9A96E] group-hover:bg-[#C9A96E] group-hover:text-black transition-all duration-500">
+                        <Icon className="w-6 h-6" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1">{info.title}</h4>
+                        {info.link ? (
+                          <a href={info.link} className="text-white hover:text-[#C9A96E] font-medium transition-colors break-words">
+                            {info.content}
+                          </a>
+                        ) : (
+                          <p className="text-white font-medium">{info.content}</p>
+                        )}
                       </div>
                     </div>
                   );
@@ -141,30 +137,40 @@ const Contact: React.FC = () => {
               </div>
             </div>
 
-            {/* CTA - Neutral Background with Blue Buttons */}
-            <div className="bg-gray-100 dark:bg-gray-800 p-5 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl shadow-xl hover:shadow-2xl text-gray-900 dark:text-white transition-all duration-300">
-              <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2 sm:mb-3">
-                Ready to Make a Difference?
-              </h3>
-              <p className="mb-4 sm:mb-5 text-gray-700 dark:text-gray-300 text-sm sm:text-base lg:text-base">
-                Join us in empowering women and girls. Your support creates lasting change.
-              </p>
+            {/* CTA Card */}
+            <div className="relative overflow-hidden bg-[#C9A96E] p-10 rounded-[2.5rem] text-black">
+              <div className="absolute top-[-20%] right-[-10%] opacity-10 rotate-12">
+                <Sparkles size={200} />
+              </div>
+              <div className="relative z-10">
+                <h3 className="text-3xl font-['Playfair_Display'] font-bold mb-4 italic leading-tight">
+                  Ready to Make a Difference?
+                </h3>
+                <p className="font-medium mb-8 opacity-80 max-w-sm">
+                  Join us in empowering women and girls. Your support creates lasting change in our community.
+                </p>
 
-              <div className="flex flex-col sm:flex-row gap-3">
-                <a
-                  href="#donation"
-                  className="flex-1 px-5 sm:px-6 py-2.5 sm:py-3 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 font-semibold text-center shadow-md transition-colors text-sm sm:text-base"
-                >
-                  Donate Now
-                </a>
-                <a
-                  href="#volunteer"
-                  className="flex-1 px-5 sm:px-6 py-2.5 sm:py-3 bg-blue-500 dark:bg-blue-600 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-500 font-semibold text-center shadow-md transition-colors text-sm sm:text-base border border-white/20"
-                >
-                  Volunteer
-                </a>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <motion.a
+                    href="#donation"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex-1 px-8 py-4 bg-black text-white rounded-full font-black text-[10px] uppercase tracking-widest text-center shadow-xl flex items-center justify-center gap-2"
+                  >
+                    Donate Now <ArrowRight size={14} />
+                  </motion.a>
+                  <motion.a
+                    href="#volunteer"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex-1 px-8 py-4 bg-white/20 backdrop-blur-md border border-black/10 rounded-full font-black text-[10px] uppercase tracking-widest text-center"
+                  >
+                    Volunteer
+                  </motion.a>
+                </div>
               </div>
             </div>
+            
           </div>
         </div>
       </div>

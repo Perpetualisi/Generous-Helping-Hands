@@ -1,5 +1,6 @@
-import React from "react";
-import { Quote, Star } from "lucide-react";
+import React, { useRef } from "react";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { Quote, Star, Sparkles } from "lucide-react";
 
 type Testimonial = {
   message: string;
@@ -32,80 +33,108 @@ const testimonials: Testimonial[] = [
   },
 ];
 
-interface TestimonialCardProps {
-  testimonial: Testimonial;
-  index: number;
-}
+// ─── PREMIUM 3D CARD COMPONENT ───────────────────────────────────────────────
 
-const TestimonialCard: React.FC<TestimonialCardProps> = ({ testimonial, index }) => {
-  const { message, name, role, rating = 5 } = testimonial;
+const TestimonialCard: React.FC<{ testimonial: Testimonial; index: number }> = ({ testimonial, index }) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+  
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const mouseXSpring = useSpring(x);
+  const mouseYSpring = useSpring(y);
+  
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["6deg", "-6deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-6deg", "6deg"]);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    x.set((e.clientX - rect.left) / rect.width - 0.5);
+    y.set((e.clientY - rect.top) / rect.height - 0.5);
+  };
 
   return (
-    <div
-      className="group relative bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-400 transition-all duration-300 hover:-translate-y-1"
-      style={{ animationDelay: `${index * 150}ms` }}
+    <motion.div
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => { x.set(0); y.set(0); }}
+      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.8, delay: index * 0.1 }}
+      className="relative group"
     >
-      {/* Quote Icon */}
-      <div className="absolute -top-4 left-6 bg-blue-600 dark:bg-blue-500 p-2.5 rounded-full shadow-md group-hover:scale-110 transition-transform">
-        <Quote className="w-4 h-4 text-white" />
-      </div>
+      <div className="relative h-full bg-[#141412] rounded-[2.5rem] p-10 border border-white/5 flex flex-col transition-all duration-500 group-hover:border-[#C9A96E]/40 shadow-2xl">
+        
+        {/* Quote Icon Accent */}
+        <div className="absolute -top-4 right-10 bg-[#C9A96E] p-3 rounded-2xl shadow-xl rotate-12 group-hover:rotate-0 transition-transform duration-500">
+          <Quote className="w-5 h-5 text-[#0A0908]" />
+        </div>
 
-      {/* Rating Stars */}
-      <div className="flex gap-1 mt-4 mb-4">
-        {Array.from({ length: rating }).map((_, i) => (
-          <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-        ))}
-      </div>
+        {/* Rating */}
+        <div className="flex gap-1 mb-6" style={{ transform: "translateZ(30px)" }}>
+          {[...Array(testimonial.rating)].map((_, i) => (
+            <Star key={i} className="w-3.5 h-3.5 fill-[#C9A96E] text-[#C9A96E]" />
+          ))}
+        </div>
 
-      {/* Message */}
-      <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6 text-base italic">
-        "{message}"
-      </p>
-
-      {/* Author Info */}
-      <div className="border-t border-gray-100 dark:border-gray-700 pt-4">
-        <p className="font-semibold text-gray-900 dark:text-gray-100 text-base sm:text-lg">{name}</p>
-        {role && (
-          <p className="text-blue-600 dark:text-blue-400 font-medium text-sm sm:text-base mt-1">
-            {role}
+        {/* Message */}
+        <div className="flex-1" style={{ transform: "translateZ(40px)" }}>
+          <p className="text-gray-400 font-light leading-relaxed italic text-lg mb-8">
+            "{testimonial.message}"
           </p>
-        )}
+        </div>
+
+        {/* Author Info */}
+        <div className="pt-6 border-t border-white/5" style={{ transform: "translateZ(20px)" }}>
+          <p className="font-['Playfair_Display'] text-xl font-bold text-white leading-tight">
+            {testimonial.name}
+          </p>
+          <p className="text-[#C9A96E] text-[10px] font-black uppercase tracking-[0.2em] mt-2">
+            {testimonial.role}
+          </p>
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
-interface SectionHeaderProps {
-  title: string;
-  subtitle: string;
-}
-
-const SectionHeader: React.FC<SectionHeaderProps> = ({ title, subtitle }) => (
-  <div className="text-center mb-12 sm:mb-16">
-    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-      {title}
-    </h2>
-    <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-      {subtitle}
-    </p>
-  </div>
-);
+// ─── MAIN SECTION ────────────────────────────────────────────────────────────
 
 const Testimonials: React.FC = () => {
   return (
-    <section
-      id="testimonials"
-      className="bg-gray-50 dark:bg-gray-900 py-20 transition-colors duration-500"
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-24 space-y-16">
-        {/* Header */}
-        <SectionHeader
-          title="Testimonials"
-          subtitle="What Are People Saying?"
-        />
+    <section id="testimonials" className="relative bg-[#0A0908] py-40 overflow-hidden text-white font-['DM_Sans',sans-serif]">
+      
+      {/* Background Ambience */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+        <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-[#C9A96E]/5 rounded-full blur-[120px]" />
+      </div>
 
-        {/* Testimonials Grid */}
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        
+        {/* Header */}
+        <div className="text-center mb-24">
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="inline-flex items-center gap-3 px-5 py-2 bg-[#C9A96E]/10 border border-[#C9A96E]/20 rounded-full mb-8"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-[#C9A96E]" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#C9A96E]">Voice of the Community</span>
+          </motion.div>
+          
+          <h2 className="text-6xl md:text-7xl font-['Playfair_Display'] leading-tight mb-6">
+            Trusted <span className="italic text-[#C9A96E]">Testimonials.</span>
+          </h2>
+          <p className="text-gray-400 text-xl font-light max-w-2xl mx-auto leading-relaxed">
+            Real stories from those who have walked beside us in our journey to empower women and girls across Nigeria.
+          </p>
+        </div>
+
+        {/* Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 perspective-2000">
           {testimonials.map((testimonial, index) => (
             <TestimonialCard
               key={index}
@@ -115,15 +144,17 @@ const Testimonials: React.FC = () => {
           ))}
         </div>
 
-        {/* Call to Action */}
-        <div className="mt-16 text-center">
-          <div className="inline-flex items-center gap-2 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-6 py-3 rounded-full border border-blue-200 dark:border-blue-700">
-            <Quote className="w-4 h-4" />
-            <p className="text-sm font-medium">
-              Want to share your experience? Contact us today!
-            </p>
-          </div>
-        </div>
+        {/* Bottom CTA Overlay */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="mt-24 text-center"
+        >
+          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#C9A96E] opacity-60">
+            Impact in Motion
+          </p>
+        </motion.div>
       </div>
     </section>
   );

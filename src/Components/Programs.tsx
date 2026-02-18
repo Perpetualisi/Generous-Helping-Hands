@@ -2,10 +2,10 @@ import React, { useState, useRef } from "react";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 import {
   Briefcase, BookOpen, HeartPulse,
-  Image as ImageIcon, Zap, ArrowUpRight
+  Image as ImageIcon, Sparkles, ArrowUpRight
 } from "lucide-react";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// ─── TYPES ────────────────────────────────────────────────────────────────────
 
 interface Program {
   icon: React.ElementType;
@@ -13,11 +13,9 @@ interface Program {
   description: string;
   detail: string;
   tag: string;
-  accent: string; // Tailwind color name like 'blue' or 'rose'
-  gradient: string;
 }
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
+// ─── DATA ─────────────────────────────────────────────────────────────────────
 
 const PROGRAMS: Program[] = [
   {
@@ -26,8 +24,6 @@ const PROGRAMS: Program[] = [
     tag: "Independence",
     description: "We give women the skills and start-up support they need to run their own businesses.",
     detail: "Our vocational training covers tailoring, catering, and digital skills. Since 2018, over 200 women have launched independent businesses with our seed grants.",
-    accent: "amber",
-    gradient: "from-amber-400 to-orange-500",
   },
   {
     icon: BookOpen,
@@ -35,8 +31,6 @@ const PROGRAMS: Program[] = [
     tag: "Future Leaders",
     description: "We pay school fees and provide materials so nothing stops girls from finishing school.",
     detail: "Every scholarship covers tuition, books, and uniforms. We also run after-school STEM clubs in five Lagos secondary schools to bridge the tech gap.",
-    accent: "rose",
-    gradient: "from-rose-500 to-purple-600",
   },
   {
     icon: HeartPulse,
@@ -44,8 +38,6 @@ const PROGRAMS: Program[] = [
     tag: "Community Care",
     description: "We run free clinics and wellness workshops, bringing care to families who need it most.",
     detail: "Our mobile clinics offer free antenatal checks and medications. Last year, we trained 50 community health ambassadors to serve 1,200+ mothers.",
-    accent: "emerald",
-    gradient: "from-emerald-400 to-teal-600",
   },
 ];
 
@@ -58,29 +50,24 @@ const EVENT_PHOTOS = [
   { src: "/events6.jpg", alt: "Advocacy walk", span: "col-span-1" },
 ];
 
-// ─── 3D Program Card ──────────────────────────────────────────────────────────
+// ─── 3D PROGRAM CARD ──────────────────────────────────────────────────────────
 
 const ProgramCard: React.FC<{ program: Program; index: number }> = ({ program, index }) => {
   const [open, setOpen] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   
-  // Motion values for 3D tilt
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const mouseXSpring = useSpring(x);
   const mouseYSpring = useSpring(y);
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["10deg", "-10deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-10deg", "10deg"]);
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7deg", "-7deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7deg", "7deg"]);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    x.set(mouseX / width - 0.5);
-    y.set(mouseY / height - 0.5);
+    x.set((e.clientX - rect.left) / rect.width - 0.5);
+    y.set((e.clientY - rect.top) / rect.height - 0.5);
   };
 
   const handleMouseLeave = () => {
@@ -96,51 +83,45 @@ const ProgramCard: React.FC<{ program: Program; index: number }> = ({ program, i
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      initial={{ opacity: 0, y: 50 }}
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
+      transition={{ duration: 0.8, delay: index * 0.1 }}
       className="relative group h-full"
     >
       <div 
-        className={`relative h-full bg-white dark:bg-gray-900 rounded-[2.5rem] p-8 border border-gray-100 dark:border-gray-800 shadow-2xl transition-all duration-500 group-hover:shadow-${program.accent}-500/10 flex flex-col`}
-        style={{ transform: "translateZ(20px)" }}
+        className="relative h-full bg-[#141412] rounded-[2.5rem] p-10 border border-white/5 flex flex-col overflow-hidden transition-all duration-500 group-hover:border-[#C9A96E]/40 shadow-2xl"
       >
-        {/* Decorative Background Blur */}
-        <div className={`absolute -top-10 -right-10 w-32 h-32 bg-${program.accent}-500/10 blur-[50px] group-hover:bg-${program.accent}-500/20 transition-colors duration-500`} />
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#C9A96E] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
-        {/* Icon & Tag */}
-        <div className="flex justify-between items-start mb-8" style={{ transform: "translateZ(40px)" }}>
-          <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${program.gradient} flex items-center justify-center text-white shadow-lg`}>
-            <Icon size={28} />
+        <div className="flex justify-between items-start mb-10" style={{ transform: "translateZ(40px)" }}>
+          <div className="w-16 h-16 rounded-2xl bg-[#C9A96E]/10 flex items-center justify-center text-[#C9A96E] border border-[#C9A96E]/20 shadow-[0_0_20px_rgba(201,169,110,0.1)]">
+            <Icon size={28} strokeWidth={1.5} />
           </div>
-          <span className={`text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-lg bg-${program.accent}-50 dark:bg-${program.accent}-500/10 text-${program.accent}-600 dark:text-${program.accent}-400 border border-${program.accent}-100 dark:border-${program.accent}-500/20`}>
+          <span className="text-[9px] font-black uppercase tracking-[0.3em] text-[#C9A96E] border border-[#C9A96E]/20 px-3 py-1.5 rounded-lg bg-[#C9A96E]/5">
             {program.tag}
           </span>
         </div>
 
-        {/* Content */}
         <div className="flex-1" style={{ transform: "translateZ(30px)" }}>
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 tracking-tight">
+          <h3 className="text-3xl font-['Playfair_Display'] font-bold text-white mb-4 leading-tight">
             {program.title}
           </h3>
-          <p className="text-gray-500 dark:text-gray-400 leading-relaxed font-light mb-6">
+          <p className="text-gray-400 font-light leading-relaxed mb-8">
             {program.description}
           </p>
         </div>
 
-        {/* Detail Accordion */}
         <AnimatePresence>
           {open && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="overflow-hidden mb-6"
+              className="overflow-hidden mb-8"
             >
-              <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
-                <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed italic">
+              <div className="pt-6 border-t border-white/5">
+                <p className="text-sm text-[#C9A96E] leading-relaxed italic font-light">
                   {program.detail}
                 </p>
               </div>
@@ -148,106 +129,86 @@ const ProgramCard: React.FC<{ program: Program; index: number }> = ({ program, i
           )}
         </AnimatePresence>
 
-        {/* Action Button */}
         <button
           onClick={() => setOpen(!open)}
-          className="flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white group/btn"
+          className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-[#C9A96E] group/btn mt-auto"
         >
-          <span className="relative overflow-hidden">
-            <span className="block transition-transform duration-300 group-hover/btn:-translate-y-full">
-              {open ? "Close" : "Learn More"}
-            </span>
-            <span className="absolute top-0 block transition-transform duration-300 translate-y-full group-hover/btn:translate-y-0">
-              {open ? "Close" : "Learn More"}
-            </span>
-          </span>
-          <ArrowUpRight className={`w-4 h-4 transition-transform duration-300 ${open ? "rotate-180" : "group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1"}`} />
+          {open ? "Show Less" : "Discover Impact"}
+          <ArrowUpRight className={`w-4 h-4 transition-all duration-500 ${open ? "rotate-45" : "group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1"}`} />
         </button>
       </div>
     </motion.div>
   );
 };
 
-// ─── Main Section ─────────────────────────────────────────────────────────────
+// ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
 
 const Programs: React.FC = () => {
   return (
-    <section
-      id="ourprograms"
-      className="relative bg-[#FCFCFD] dark:bg-gray-950 py-24 md:py-40 overflow-hidden"
-    >
-      {/* Cinematic Background Elements */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/5 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[50%] bg-rose-500/5 rounded-full blur-[120px]" />
+    <section id="ourprograms" className="relative bg-[#0A0908] py-40 overflow-hidden text-white font-['DM_Sans',sans-serif]">
+      
+      {/* Background Ambience */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+        <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#C9A96E]/5 rounded-full blur-[120px]" />
       </div>
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
+        {/* Header Section */}
+        <div className="mb-24">
           <motion.div 
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="max-w-2xl"
+            className="inline-flex items-center gap-3 px-5 py-2 bg-[#C9A96E]/10 border border-[#C9A96E]/20 rounded-full mb-8"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest mb-6">
-              <Zap size={12} fill="currentColor" /> Our Impact
-            </div>
-            <h2 className="text-5xl md:text-7xl font-bold tracking-tighter text-gray-900 dark:text-white leading-[0.9]">
-              Our Programs
-            </h2>
-            <p className="mt-8 text-xl text-gray-500 dark:text-gray-400 font-light leading-relaxed">
-              Three focused areas where we put our energy to make real, lasting change for Nigerian women and girls.
-            </p>
+            <Sparkles className="w-3.5 h-3.5 text-[#C9A96E]" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#C9A96E]">Our Strategic Pillars</span>
           </motion.div>
-
-          <div className="hidden lg:block text-[12rem] font-black text-gray-900/[0.02] dark:text-white/[0.02] absolute right-0 top-0 select-none -z-10 tracking-tighter">
-            IMPACT
-          </div>
+          
+          <h2 className="text-6xl md:text-8xl font-['Playfair_Display'] leading-[1.05] mb-10 tracking-tight">
+            Direct <span className="italic text-[#C9A96E]">Interventions.</span>
+          </h2>
+          <p className="text-xl text-gray-400 font-light max-w-2xl leading-relaxed border-l border-[#C9A96E]/30 pl-8">
+            Meaningful change requires more than just charity. It requires structured programs that provide the tools for self-reliance and community health.
+          </p>
         </div>
 
         {/* 3D Programs Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 perspective-1000">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 perspective-2000">
           {PROGRAMS.map((program, i) => (
             <ProgramCard key={program.title} program={program} index={i} />
           ))}
         </div>
 
-        {/* ── Events Section ── */}
-        <div id="events" className="mt-40">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-16 text-center"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tighter text-gray-900 dark:text-white mb-4">
-              From the Field
-            </h2>
-            <div className="w-12 h-1 bg-blue-600 mx-auto rounded-full" />
-          </motion.div>
+        {/* ── Colorful Bento Gallery ── */}
+        <div id="events" className="mt-48">
+          <div className="flex flex-col md:flex-row justify-between items-baseline mb-16 border-b border-white/10 pb-10">
+            <h2 className="text-5xl font-['Playfair_Display']">In the Field</h2>
+            <p className="text-[#C9A96E] font-bold text-[10px] uppercase tracking-[0.3em] mt-4 md:mt-0">Real Moments, Real Change</p>
+          </div>
 
-          {/* Cinematic Bento Gallery */}
-          <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[200px] gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[220px] gap-6">
             {EVENT_PHOTOS.map((photo, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.05 }}
-                className={`${photo.span} relative rounded-3xl overflow-hidden bg-gray-100 dark:bg-gray-800 group cursor-pointer`}
+                transition={{ duration: 0.8, delay: i * 0.1 }}
+                className={`${photo.span} relative rounded-[2.5rem] overflow-hidden bg-[#141412] group border border-white/5 shadow-lg`}
               >
+                {/* Removed grayscale, added vibrant hover effect */}
                 <img
                   src={photo.src}
                   alt={photo.alt}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110 group-hover:saturate-[1.2]"
                 />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6">
-                  <p className="text-white text-xs font-bold uppercase tracking-widest flex items-center gap-2">
-                    <ImageIcon size={14} /> {photo.alt}
+                
+                {/* Overlay for text legibility on hover */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-end p-8">
+                  <p className="text-white text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-3">
+                    <ImageIcon size={14} className="text-[#C9A96E]" /> {photo.alt}
                   </p>
                 </div>
               </motion.div>

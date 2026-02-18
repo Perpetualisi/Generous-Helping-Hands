@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Menu, X, Sun, Moon, ChevronDown, Heart } from "lucide-react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X, ChevronDown, Heart } from "lucide-react";
 
-// ------------------ TYPES ------------------
+// ─── TYPES ────────────────────────────────────────────────────────────────────
 interface SubLink {
   name: string;
   href: string;
@@ -13,301 +14,429 @@ interface MenuItem {
   subLinks?: SubLink[];
 }
 
-// ------------------ DATA ------------------
+interface DesktopDropdownProps {
+  item: MenuItem;
+  onNavigate: (id: string) => void;
+}
+
+interface MobileMenuItemProps {
+  item: MenuItem;
+  openDropdown: string | null;
+  onToggle: (name: string) => void;
+  onNavigate: (id: string) => void;
+}
+
+// ─── DATA ─────────────────────────────────────────────────────────────────────
 const MENU_ITEMS: MenuItem[] = [
-  { name: "Home", href: "home" },
+  { name: "Home", href: "hero" },
   {
     name: "About",
     subLinks: [
       { name: "Why Our Work Matters", href: "whyitmatters" },
-      { name: "Our Story", href: "ourstory" },
-      { name: "Our Mission", href: "missionstatement" },
-      { name: "Our Vision", href: "visionstatement" },
-      { name: "Meet the Team", href: "meettheteam" },
+      { name: "Our Story",           href: "ourstory" },
+      { name: "Our Mission",          href: "missionstatement" },
+      { name: "Our Vision",           href: "visionstatement" },
+      { name: "Meet the Team",        href: "meettheteam" },
     ],
   },
   {
     name: "Programs",
     subLinks: [
       { name: "Our Programs", href: "ourprograms" },
-      { name: "Events", href: "events" },
+      { name: "Events",       href: "events" },
     ],
   },
   {
     name: "Get Involved",
     subLinks: [
       { name: "Volunteer", href: "volunteer" },
-      { name: "Donate", href: "donation" },
+      { name: "Donate",    href: "donation" },
     ],
   },
   { name: "Testimonials", href: "testimonials" },
-  { name: "Contact", href: "contact" },
+  { name: "Contact",       href: "contact" },
 ];
 
-// ------------------ HOOKS ------------------
-const useTheme = () => {
-  const [darkMode, setDarkMode] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const isDark = savedTheme === "dark" || (!savedTheme && prefersDark);
-    
-    setDarkMode(isDark);
-    document.documentElement.classList.toggle("dark", isDark);
-  }, []);
-
-  const toggleDarkMode = useCallback(() => {
-    setDarkMode((prev) => {
-      const newMode = !prev;
-      document.documentElement.classList.toggle("dark", newMode);
-      localStorage.setItem("theme", newMode ? "dark" : "light");
-      return newMode;
-    });
-  }, []);
-
-  return { darkMode, toggleDarkMode };
-};
-
-const useScrolled = () => {
+// ─── HOOK ─────────────────────────────────────────────────────────────────────
+const useScrolled = (): boolean => {
   const [scrolled, setScrolled] = useState(false);
-
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
   return scrolled;
 };
 
-// ------------------ REUSABLE COMPONENTS ------------------
-
-const Logo: React.FC<{ darkMode: boolean; onClick: () => void }> = ({ darkMode, onClick }) => (
-  <button 
-    onClick={onClick} 
-    className="relative h-10 w-32 md:h-12 md:w-40 flex-shrink-0 focus:outline-none"
+// ─── IMPROVED RESPONSIVE LOGO ──────────────────────────────────────────────────
+const ResponsiveLogo: React.FC<{ onClick: () => void }> = ({ onClick }) => (
+  <button
+    onClick={onClick}
     aria-label="Go to home"
+    style={{
+      background: "transparent",
+      border: "none",
+      cursor: "pointer",
+      padding: 0,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "flex-start",
+      lineHeight: 1.1,
+    }}
   >
-    <img
-      src="/logo_light.jpg"
-      alt="Logo"
-      className={`absolute inset-0 h-full w-auto object-contain transition-opacity duration-300 ${
-        darkMode ? "opacity-0" : "opacity-100"
-      }`}
-    />
-    <img
-      src="/logodark.png"
-      alt="Logo"
-      className={`absolute inset-0 h-full w-auto object-contain transition-opacity duration-300 ${
-        darkMode ? "opacity-100" : "opacity-0"
-      }`}
-    />
+    <div style={{ display: "flex", alignItems: "baseline" }}>
+      <span style={{
+        fontFamily: "'Playfair Display', serif",
+        fontSize: "clamp(0.9rem, 4vw, 1.15rem)",
+        fontWeight: 700,
+        color: "#fff",
+        letterSpacing: "0.02em",
+      }}>
+        Generous <span className="logo-italic" style={{ color: "#C9A96E", fontStyle: "italic" }}>Helping</span> Hands
+      </span>
+    </div>
+    <span className="logo-subtext" style={{
+      fontFamily: "'DM Sans', sans-serif",
+      fontSize: "clamp(0.45rem, 1.5vw, 0.6rem)",
+      fontWeight: 600,
+      color: "rgba(201,169,110,0.8)",
+      letterSpacing: "0.3em",
+      textTransform: "uppercase",
+      marginTop: "2px",
+    }}>
+      Foundation
+    </span>
   </button>
 );
 
-const DesktopMenuItem: React.FC<{
-  item: MenuItem;
-  onNavigate: (href: string) => void;
-}> = ({ item, onNavigate }) => {
-  if (item.subLinks) {
+// ─── DESKTOP DROPDOWN ─────────────────────────────────────────────────────────
+const DesktopDropdown: React.FC<DesktopDropdownProps> = ({ item, onNavigate }) => {
+  const [open, setOpen] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const show = () => { if (timer.current) clearTimeout(timer.current); setOpen(true); };
+  const hide = () => { timer.current = setTimeout(() => setOpen(false), 150); };
+
+  const linkStyle: React.CSSProperties = {
+    background: "transparent",
+    border: "none",
+    padding: "0.5rem 0.8rem",
+    fontFamily: "'DM Sans', sans-serif",
+    fontSize: "0.78rem",
+    letterSpacing: "0.08em",
+    textTransform: "uppercase",
+    color: open ? "#C9A96E" : "rgba(255,255,255,0.65)",
+    cursor: "pointer",
+    transition: "all 0.3s ease",
+    display: "flex",
+    alignItems: "center",
+    gap: "0.3rem",
+    fontWeight: 500,
+  };
+
+  if (!item.subLinks) {
     return (
-      <div className="relative group">
-        <button 
-          className="px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-semibold flex items-center gap-1 transition-colors"
-        >
-          {item.name}
-          <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform" />
-        </button>
-        <div className="absolute left-0 mt-0 pt-2 w-52 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-          <div className="bg-white dark:bg-gray-800 shadow-xl rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
-            {item.subLinks.map((sub) => (
+      <button
+        style={linkStyle}
+        onClick={() => onNavigate(item.href!)}
+        onMouseEnter={(e) => (e.currentTarget.style.color = "#C9A96E")}
+        onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.65)")}
+      >
+        {item.name}
+      </button>
+    );
+  }
+
+  return (
+    <div style={{ position: "relative" }} onMouseEnter={show} onMouseLeave={hide}>
+      <button style={linkStyle}>
+        {item.name}
+        <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
+          <ChevronDown size={13} />
+        </motion.span>
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 8, scale: 0.95 }}
+            transition={{ duration: 0.2, ease: "circOut" }}
+            style={{
+              position: "absolute",
+              top: "100%",
+              left: "0",
+              minWidth: "220px",
+              background: "rgba(10, 9, 8, 0.98)",
+              border: "1px solid rgba(201,169,110,0.2)",
+              borderRadius: "12px",
+              padding: "0.5rem 0",
+              boxShadow: "0 20px 50px rgba(0,0,0,0.6)",
+              backdropFilter: "blur(20px)",
+              zIndex: 200,
+              marginTop: "8px"
+            }}
+          >
+            {item.subLinks!.map((sub) => (
               <button
                 key={sub.href}
-                onClick={() => onNavigate(sub.href)}
-                className="block w-full text-left px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 transition-colors"
+                onClick={() => { onNavigate(sub.href); setOpen(false); }}
+                className="dropdown-item"
+                style={{
+                  display: "block",
+                  width: "100%",
+                  textAlign: "left",
+                  padding: "0.75rem 1.25rem",
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.75rem",
+                  color: "rgba(255,255,255,0.6)",
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                }}
               >
                 {sub.name}
               </button>
             ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <button
-      onClick={() => onNavigate(item.href!)}
-      className="px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 font-semibold transition-colors"
-    >
-      {item.name}
-    </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 };
 
-const MobileMenuItem: React.FC<{
-  item: MenuItem;
-  openDropdown: string | null;
-  onToggleDropdown: (name: string) => void;
-  onNavigate: (href: string) => void;
-}> = ({ item, openDropdown, onToggleDropdown, onNavigate }) => {
-  if (item.subLinks) {
-    const isOpen = openDropdown === item.name;
-
-    return (
-      <div className="border-b border-gray-50 dark:border-gray-800/50 last:border-none">
-        <button
-          onClick={() => onToggleDropdown(item.name)}
-          className="w-full flex justify-between items-center py-4 font-semibold text-gray-900 dark:text-white"
-        >
-          {item.name}
-          <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
-        </button>
-        <div className={`pl-4 space-y-1 overflow-hidden transition-all duration-300 ${isOpen ? "max-h-64 pb-4" : "max-h-0"}`}>
-          {item.subLinks.map((sub) => (
-            <button
-              key={sub.href}
-              onClick={() => onNavigate(sub.href)}
-              className="block w-full text-left py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600"
-            >
-              {sub.name}
-            </button>
-          ))}
-        </div>
-      </div>
-    );
-  }
+// ─── MOBILE MENU ITEM ─────────────────────────────────────────────────────────
+const MobileMenuItem: React.FC<MobileMenuItemProps> = ({ item, openDropdown, onToggle, onNavigate }) => {
+  const isOpen = openDropdown === item.name;
 
   return (
-    <button
-      onClick={() => onNavigate(item.href!)}
-      className="block w-full text-left py-4 font-semibold text-gray-900 dark:text-white border-b border-gray-50 dark:border-gray-800/50 last:border-none"
-    >
-      {item.name}
-    </button>
+    <div style={{ width: "100%" }}>
+      <button
+        onClick={() => item.subLinks ? onToggle(item.name) : onNavigate(item.href!)}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "100%",
+          padding: "1.2rem 0",
+          fontFamily: "'DM Sans', sans-serif",
+          fontSize: "0.9rem",
+          letterSpacing: "0.1em",
+          textTransform: "uppercase",
+          background: "transparent",
+          border: "none",
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          color: isOpen ? "#C9A96E" : "rgba(255,255,255,0.8)",
+          fontWeight: isOpen ? 600 : 400,
+        }}
+      >
+        <span>{item.name}</span>
+        {item.subLinks && (
+          <motion.div animate={{ rotate: isOpen ? 180 : 0 }}>
+            <ChevronDown size={16} color={isOpen ? "#C9A96E" : "rgba(255,255,255,0.3)"} />
+          </motion.div>
+        )}
+      </button>
+
+      <AnimatePresence>
+        {isOpen && item.subLinks && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            style={{ overflow: "hidden", background: "rgba(201,169,110,0.02)" }}
+          >
+            {item.subLinks.map((sub) => (
+              <button
+                key={sub.href}
+                onClick={() => onNavigate(sub.href)}
+                style={{
+                  display: "block",
+                  width: "100%",
+                  textAlign: "left",
+                  padding: "1rem 1.5rem",
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.8rem",
+                  color: "rgba(255,255,255,0.5)",
+                  background: "transparent",
+                  border: "none",
+                  borderLeft: "2px solid rgba(201,169,110,0.3)",
+                }}
+              >
+                {sub.name}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 };
 
-// ------------------ MAIN COMPONENT ------------------
+// ─── NAVBAR ───────────────────────────────────────────────────────────────────
+export const NAVBAR_HEIGHT = 72;
+
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const navRef = useRef<HTMLElement>(null);
-  
-  const { darkMode, toggleDarkMode } = useTheme();
   const scrolled = useScrolled();
 
-  const handleScrollTo = useCallback((id: string) => {
+  const handleNavigate = useCallback((id: string) => {
     setIsOpen(false);
     setOpenDropdown(null);
-
     setTimeout(() => {
-      const section = document.getElementById(id);
-      if (!section) return;
-
-      const navbarHeight = navRef.current?.offsetHeight || 64;
-      const buffer = 20;
-      const targetPosition = section.getBoundingClientRect().top + window.pageYOffset - navbarHeight - buffer;
-
-      window.scrollTo({ top: targetPosition, behavior: "smooth" });
-    }, 100);
+      const el = document.getElementById(id);
+      if (!el) return;
+      const top = el.getBoundingClientRect().top + window.pageYOffset - NAVBAR_HEIGHT - 10;
+      window.scrollTo({ top, behavior: "smooth" });
+    }, 150);
   }, []);
 
   useEffect(() => {
-    if (isOpen) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "";
-    return () => { document.body.style.overflow = ""; };
+    document.body.style.overflow = isOpen ? "hidden" : "";
   }, [isOpen]);
 
-  if (darkMode === null) return <div className="h-16 w-full bg-white dark:bg-gray-900 fixed top-0 z-50" />;
-
   return (
-    <nav
-      ref={navRef}
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        scrolled ? "bg-white/95 dark:bg-gray-900/95 shadow-sm backdrop-blur-md h-16" : "bg-white dark:bg-gray-900 h-16 lg:h-20"
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-4 lg:px-8 h-full flex items-center justify-between">
-        <Logo darkMode={darkMode} onClick={() => handleScrollTo("home")} />
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+        
+        .dropdown-item:hover {
+          color: #C9A96E !important;
+          background: rgba(201,169,110,0.06) !important;
+          padding-left: 1.5rem !important;
+        }
 
-        {/* Desktop Navigation */}
-        <div className="hidden lg:flex items-center gap-1">
-          {MENU_ITEMS.map((item) => (
-            <DesktopMenuItem key={item.name} item={item} onNavigate={handleScrollTo} />
-          ))}
-          
-          {/* Desktop Theme Toggle */}
-          <button 
-            onClick={toggleDarkMode} 
-            className="mx-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors"
-          >
-            {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-          </button>
+        .nb-desktop { display: flex; align-items: center; }
+        .nb-mobile-toggle { display: none; }
 
-          {/* Clean Desktop Donate Button (No shadows) */}
-          <button 
-            onClick={() => handleScrollTo("donation")} 
-            className="ml-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full text-sm flex items-center gap-2 transition-transform active:scale-95"
+        @media (max-width: 1024px) {
+          .nb-desktop { display: none; }
+          .nb-mobile-toggle { display: flex; }
+        }
+
+        @media (max-width: 480px) {
+          .logo-subtext { letter-spacing: 0.15em !important; }
+          .logo-italic { display: none; } /* Shortens logo on very small screens */
+        }
+      `}</style>
+
+      <motion.nav
+        ref={navRef}
+        initial={{ y: -NAVBAR_HEIGHT }}
+        animate={{ y: 0 }}
+        style={{
+          position: "fixed",
+          top: 0, left: 0, right: 0,
+          zIndex: 1000,
+          height: `${NAVBAR_HEIGHT}px`,
+          background: scrolled ? "rgba(6, 6, 8, 0.95)" : "#060608",
+          borderBottom: "1px solid rgba(255,255,255,0.05)",
+          backdropFilter: scrolled ? "blur(15px)" : "none",
+          transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+        }}
+      >
+        <div style={{
+          maxWidth: "1400px", margin: "0 auto", padding: "0 1.5rem",
+          height: "100%", display: "flex", alignItems: "center",
+          justifyContent: "space-between",
+        }}>
+          <ResponsiveLogo onClick={() => handleNavigate("hero")} />
+
+          {/* Desktop Navigation */}
+          <div className="nb-desktop" style={{ gap: "0.5rem" }}>
+            {MENU_ITEMS.map((item) => (
+              <DesktopDropdown key={item.name} item={item} onNavigate={handleNavigate} />
+            ))}
+            <div style={{ width: "1px", height: "20px", background: "rgba(255,255,255,0.1)", margin: "0 1rem" }} />
+            <button
+              onClick={() => handleNavigate("donation")}
+              style={{
+                padding: "0.6rem 1.4rem",
+                background: "linear-gradient(135deg, #C9A96E, #a07840)",
+                border: "none", borderRadius: "100px",
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: "0.75rem", fontWeight: 700,
+                color: "#080808", cursor: "pointer",
+                display: "flex", alignItems: "center", gap: "0.5rem",
+                boxShadow: "0 4px 15px rgba(201,169,110,0.2)",
+              }}
+            >
+              <Heart size={14} fill="#080808" /> Donate
+            </button>
+          </div>
+
+          {/* Mobile Toggle */}
+          <button
+            className="nb-mobile-toggle"
+            onClick={() => setIsOpen(!isOpen)}
+            style={{
+              background: "rgba(255,255,255,0.03)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: "10px", padding: "0.5rem",
+              color: "#fff", cursor: "pointer"
+            }}
           >
-            <Heart size={14} fill="currentColor" /> Donate
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
-
-        {/* Mobile Toggle Button */}
-        <button 
-          onClick={() => setIsOpen(!isOpen)} 
-          className="lg:hidden p-2 text-gray-600 dark:text-gray-300 rounded-lg focus:outline-none"
-          aria-label="Toggle Menu"
-        >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </div>
+      </motion.nav>
 
       {/* Mobile Menu Overlay */}
-      <div 
-        className={`lg:hidden absolute top-full left-0 w-full bg-white dark:bg-gray-900 border-t dark:border-gray-800 transition-all duration-300 ease-in-out ${
-          isOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"
-        }`}
-        style={{ height: isOpen ? 'calc(100vh - 64px)' : '0' }}
-      >
-        <div className="px-6 py-4 flex flex-col h-full overflow-y-auto">
-          <div className="flex-1">
-            {MENU_ITEMS.map((item) => (
-              <MobileMenuItem
-                key={item.name}
-                item={item}
-                openDropdown={openDropdown}
-                onToggleDropdown={(name) => setOpenDropdown(openDropdown === name ? null : name)}
-                onNavigate={handleScrollTo}
-              />
-            ))}
-          </div>
-          
-          <div className="py-6 space-y-4 border-t dark:border-gray-800 mt-auto">
-            {/* Mobile Theme Toggle */}
-            <button 
-              onClick={toggleDarkMode} 
-              className="flex items-center justify-center w-full gap-2 px-6 py-3 bg-gray-100 dark:bg-gray-800 rounded-xl text-gray-700 dark:text-gray-300 font-medium"
-            >
-              {darkMode ? <><Sun size={18} /> Light Mode</> : <><Moon size={18} /> Dark Mode</>}
-            </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, x: "100%" }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            style={{
+              position: "fixed",
+              top: 0, right: 0, bottom: 0, left: 0,
+              zIndex: 999,
+              background: "#060608",
+              padding: `${NAVBAR_HEIGHT + 20}px 1.5rem 2rem`,
+              display: "flex", flexDirection: "column"
+            }}
+          >
+            <div style={{ flex: 1, overflowY: "auto" }}>
+              {MENU_ITEMS.map((item, i) => (
+                <motion.div
+                  key={item.name}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                >
+                  <MobileMenuItem
+                    item={item}
+                    openDropdown={openDropdown}
+                    onToggle={(name) => setOpenDropdown(openDropdown === name ? null : name)}
+                    onNavigate={handleNavigate}
+                  />
+                </motion.div>
+              ))}
+            </div>
 
-            {/* Clean Mobile Donate Button (No shadows) */}
-            <button 
-              onClick={() => handleScrollTo("donation")} 
-              className="w-full px-6 py-3.5 bg-blue-600 text-white font-bold rounded-xl flex items-center justify-center gap-2"
+            <button
+              onClick={() => handleNavigate("donation")}
+              style={{
+                width: "100%", padding: "1.2rem",
+                background: "linear-gradient(135deg, #C9A96E, #a07840)",
+                border: "none", borderRadius: "12px",
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: "0.9rem", fontWeight: 700,
+                color: "#080808", marginTop: "2rem"
+              }}
             >
-              <Heart size={18} fill="currentColor" /> Donate Now
+              Donate Now
             </button>
-          </div>
-        </div>
-      </div>
-    </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 

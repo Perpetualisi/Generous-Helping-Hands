@@ -1,36 +1,103 @@
-import React from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { Heart, Users, Award, ArrowRight, ChevronDown, Sparkles } from "lucide-react";
+import { Heart, Users, Award, ArrowRight, MoveRight } from "lucide-react";
 
-// ------------------ TYPES ------------------
+// ─── TYPES ────────────────────────────────────────────────────────────────────
+type IconComponent = React.ComponentType<{ size?: number; color?: string; fill?: string; style?: React.CSSProperties }>;
+
 interface Stat {
-  icon: React.ComponentType<{ className?: string }>;
+  icon: IconComponent;
   value: string;
   label: string;
 }
 
-// ------------------ DATA ------------------
+interface StatItemProps extends Stat {
+  index: number;
+}
+
+interface CinematicImageProps {
+  isMobile: boolean;
+}
+
+// ─── DATA ─────────────────────────────────────────────────────────────────────
 const STATS: Stat[] = [
   { icon: Users, value: "500+", label: "Lives Impacted" },
-  { icon: Heart, value: "50+", label: "Volunteers" },
-  { icon: Award, value: "10+", label: "Programs" },
+  { icon: Heart, value: "50+",  label: "Volunteers"      },
+  { icon: Award, value: "10+",  label: "Programs"         },
 ];
 
-// ------------------ 3D IMAGE COMPONENT ------------------
-const CinematicHeroImage = () => {
+const MARQUEE_ITEMS: string[] = [
+  "Empower", "Transform", "Uplift", "Mentor", "Support", "Inspire",
+];
+
+// ─── STAT ITEM ────────────────────────────────────────────────────────────────
+const StatItem: React.FC<StatItemProps> = ({ icon: Icon, value, label, index }) => (
+  <div
+    className="h-stat"
+    style={{
+      flex: 1,
+      transition: "transform 0.4s cubic-bezier(0.2, 1, 0.3, 1)",
+    }}
+  >
+    <Icon size={15} color="#C9A96E" className="h-stat-icon" style={{ marginBottom: "0.6rem", display: "block" }} />
+    <div className="h-stat-value" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 500, color: "#fff", lineHeight: 1 }}>
+      {value}
+    </div>
+    <div className="h-stat-label" style={{ letterSpacing: "0.13em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginTop: "0.3rem" }}>
+      {label}
+    </div>
+  </div>
+);
+
+// ─── MARQUEE ──────────────────────────────────────────────────────────────────
+const MarqueeStrip: React.FC = () => {
+  const items = useMemo(
+    () => [...MARQUEE_ITEMS, ...MARQUEE_ITEMS, ...MARQUEE_ITEMS, ...MARQUEE_ITEMS],
+    []
+  );
+
+  return (
+    <div style={{
+      overflow: "hidden",
+      borderTop: "1px solid rgba(201,169,110,0.15)",
+      borderBottom: "1px solid rgba(201,169,110,0.15)",
+      padding: "14px 0",
+      background: "rgba(201,169,110,0.02)",
+    }}>
+      <motion.div
+        style={{ display: "flex", gap: "3.5rem", whiteSpace: "nowrap" }}
+        animate={{ x: ["0%", "-50%"] }}
+        transition={{ ease: "linear", duration: 25, repeat: Infinity }}
+      >
+        {items.map((w, i) => (
+          <span key={i} style={{
+            fontFamily: "'Playfair Display', serif",
+            fontSize: "0.7rem",
+            letterSpacing: "0.35em",
+            textTransform: "uppercase",
+            color: i % 2 === 0 ? "#C9A96E" : "rgba(255,255,255,0.2)",
+            fontStyle: i % 2 === 0 ? "italic" : "normal",
+          }}>
+            {w}&nbsp;{i % 2 === 0 ? "✦" : "·"}
+          </span>
+        ))}
+      </motion.div>
+    </div>
+  );
+};
+
+// ─── CINEMATIC IMAGE ──────────────────────────────────────────────────────────
+const CinematicImage: React.FC<CinematicImageProps> = ({ isMobile }) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
+  const xs = useSpring(x, { stiffness: 60, damping: 15 });
+  const ys = useSpring(y, { stiffness: 60, damping: 15 });
+  const rotateX = useTransform(ys, [-0.5, 0.5], [10, -10]);
+  const rotateY = useTransform(xs, [-0.5, 0.5], [-10, 10]);
 
-  // Smooth out the mouse movement for a "liquid" feel
-  const mouseXSpring = useSpring(x, { stiffness: 150, damping: 20 });
-  const mouseYSpring = useSpring(y, { stiffness: 150, damping: 20 });
-
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["15deg", "-15deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-15deg", "15deg"]);
-
-  const handleMouseMove = (e: React.MouseEvent) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isMobile) return;
     const rect = e.currentTarget.getBoundingClientRect();
-    // Normalize mouse position between -0.5 and 0.5
     x.set((e.clientX - rect.left) / rect.width - 0.5);
     y.set((e.clientY - rect.top) / rect.height - 0.5);
   };
@@ -42,163 +109,353 @@ const CinematicHeroImage = () => {
 
   return (
     <motion.div
+      style={{ perspective: "1500px", position: "relative", width: "100%" }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      style={{
-        rotateX,
-        rotateY,
-        transformStyle: "preserve-3d",
-        perspective: "1000px",
-      }}
-      className="relative w-full max-w-[320px] sm:max-w-md lg:max-w-lg aspect-square flex items-center justify-center cursor-pointer mt-8 lg:mt-0"
     >
-      {/* Background Glow */}
-      <div className="absolute inset-0 bg-blue-500/20 dark:bg-blue-400/10 blur-[60px] lg:blur-[100px] rounded-full animate-pulse" />
+      <motion.div
+        style={{
+          position: "absolute", inset: "-20px",
+          background: "radial-gradient(circle at 50% 50%, rgba(201,169,110,0.12) 0%, transparent 75%)",
+          filter: "blur(40px)", zIndex: 0, borderRadius: "40px", pointerEvents: "none",
+        }}
+        animate={{ opacity: [0.3, 0.5, 0.3], scale: [1, 1.05, 1] }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+      />
 
-      {/* Main Image Card */}
-      <motion.div 
-        style={{ transform: "translateZ(50px)" }}
-        className="relative z-10 w-full h-full bg-white dark:bg-gray-800 rounded-[2rem] lg:rounded-[2.5rem] p-2 sm:p-3 shadow-2xl border border-white/20"
-      >
+      <motion.div style={{
+        rotateX: isMobile ? 0 : rotateX,
+        rotateY: isMobile ? 0 : rotateY,
+        transformStyle: "preserve-3d",
+        position: "relative", zIndex: 1,
+        borderRadius: "24px", overflow: "hidden",
+        boxShadow: "0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(201,169,110,0.1)",
+        background: "#0a0a0a",
+        willChange: "transform"
+      }}>
         <img
           src="/Hero.png"
-          alt="Community Empowerment"
-          className="w-full h-full object-contain rounded-[1.8rem] lg:rounded-[2rem]"
+          alt="Mother and daughter"
+          style={{
+            width: "100%", display: "block",
+            objectFit: "cover", objectPosition: "center",
+            minHeight: isMobile ? "400px" : "580px",
+          }}
         />
-        
-        {/* Floating cinematic badge */}
-        <motion.div 
-          style={{ transform: "translateZ(80px)" }}
-          className="absolute -bottom-4 -right-4 md:right-0 p-3 lg:p-4 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 flex items-center gap-3"
-        >
-          <div className="p-2 bg-blue-600 rounded-lg text-white">
-            <Sparkles className="w-4 h-4 lg:w-5 lg:h-5" />
+
+        <div style={{
+          position: "absolute", bottom: 0, left: 0, right: 0,
+          background: "linear-gradient(to top, rgba(0,0,0,0.95) 15%, transparent 100%)",
+          padding: isMobile ? "2rem 1.25rem" : "4rem 2.5rem 2.5rem",
+        }}>
+          <p style={{
+            fontFamily: "'Playfair Display', serif",
+            fontSize: isMobile ? "1.1rem" : "1.4rem",
+            fontStyle: "italic", color: "#fff", margin: 0, lineHeight: 1.4,
+          }}>
+            "Every woman deserves<br />a chance to rise."
+          </p>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.8rem", marginTop: "1rem" }}>
+            <div style={{ width: "30px", height: "1px", background: "#C9A96E" }} />
+            <span style={{ fontSize: "0.65rem", letterSpacing: "0.25em", color: "#C9A96E", textTransform: "uppercase", fontWeight: 600 }}>
+              GHHF Mission
+            </span>
           </div>
-          <div className="text-left">
-            <p className="text-[10px] lg:text-[11px] font-bold text-gray-900 dark:text-white leading-tight uppercase">Join the Movement</p>
-            <p className="text-[9px] lg:text-[10px] text-gray-600 dark:text-gray-400">Making a difference together.</p>
-          </div>
-        </motion.div>
+        </div>
+
+        <div style={{
+          position: "absolute", top: "1rem", right: "1rem",
+          border: "1px solid rgba(201,169,110,0.3)", borderRadius: "50%",
+          width: "44px", height: "44px",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          backdropFilter: "blur(15px)", background: "rgba(0,0,0,0.4)",
+        }}>
+          <Heart size={16} fill="#C9A96E" color="#C9A96E" />
+        </div>
       </motion.div>
 
-      {/* Decorative Frame */}
-      <motion.div 
-        style={{ transform: "translateZ(-20px)" }}
-        className="absolute inset-0 border-2 border-blue-500/30 rounded-[2.5rem] lg:rounded-[3rem] scale-105"
-      />
+      {/* Stats Floating Pill */}
+      <motion.div
+        className="h-floating-pill"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8, duration: 0.8 }}
+      >
+        <div className="h-pill-icon">
+          <Users size={16} color="#fff" />
+        </div>
+        <div style={{ whiteSpace: "nowrap" }}>
+          <div style={{ fontSize: "1rem", fontWeight: 700, color: "#fff", lineHeight: 1 }}>500+</div>
+          <div style={{ fontSize: "0.55rem", color: "rgba(255,255,255,0.4)", letterSpacing: "0.1em", textTransform: "uppercase", marginTop: "2px" }}>
+            Lives Changed
+          </div>
+        </div>
+      </motion.div>
     </motion.div>
   );
 };
 
-// ------------------ MAIN COMPONENT ------------------
+// ─── HERO ─────────────────────────────────────────────────────────────────────
 const Hero: React.FC = () => {
-  const scrollToContent = () => {
-    const section = document.getElementById("missionstatement") || 
-                    document.getElementById("about") || 
-                    document.getElementById("ourprograms");
-    section?.scrollIntoView({ behavior: "smooth" });
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const mouseX = useMotionValue(0.5);
+  const mouseY = useMotionValue(0.5);
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 1024);
+    const onMove = (e: MouseEvent) => {
+      if (window.innerWidth >= 1024) {
+        mouseX.set(e.clientX / window.innerWidth);
+        mouseY.set(e.clientY / window.innerHeight);
+      }
+    };
+    onResize();
+    window.addEventListener("resize", onResize);
+    window.addEventListener("mousemove", onMove);
+    return () => {
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("mousemove", onMove);
+    };
+  }, [mouseX, mouseY]);
+
+  const orbX = useTransform(mouseX, [0, 1], [-30, 30]);
+  const orbY = useTransform(mouseY, [0, 1], [-30, 30]);
+
+  const scrollDown = (): void => {
+    const id = ["missionstatement", "about", "ourprograms"].find(
+      (i) => document.getElementById(i)
+    );
+    if (id) document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <section 
-      id="home" 
-      className="relative min-h-screen flex items-center justify-center bg-[#F8FAFC] dark:bg-[#020617] pt-28 pb-20 lg:py-0 overflow-hidden"
-    >
-      {/* Background Ambient Effects */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-400/10 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[0%] right-[-5%] w-[40%] h-[40%] bg-indigo-500/10 rounded-full blur-[120px]" />
-      </div>
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;700&display=swap');
+        
+        :root { --gold: #C9A96E; --dark: #060608; }
 
-      <div className="container mx-auto px-6 lg:px-12 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
-          
-          {/* Text Content */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+        .h-cta-primary {
+          background: linear-gradient(135deg, var(--gold), #a07840);
+          color: #080808; border: none;
+          padding: 0.9rem 2rem; border-radius: 100px;
+          font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 700;
+          letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
+          display: inline-flex; align-items: center; gap: 0.7rem;
+          transition: all 0.4s cubic-bezier(0.2, 1, 0.3, 1);
+          box-shadow: 0 10px 30px rgba(201,169,110,0.2);
+          text-decoration: none;
+        }
+
+        .h-cta-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(201,169,110,0.3); }
+
+        .h-cta-secondary {
+          background: transparent; color: rgba(255,255,255,0.8);
+          border: 1px solid rgba(255,255,255,0.15);
+          padding: 0.9rem 2rem; border-radius: 100px;
+          font-family: 'DM Sans', sans-serif; font-size: 0.8rem;
+          letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
+          display: inline-flex; align-items: center; gap: 0.7rem;
+          transition: all 0.3s ease; text-decoration: none;
+        }
+
+        .h-cta-secondary:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,169,110,0.03); }
+
+        /* Desktop Stats Styling */
+        .h-stat { border-left: 1px solid rgba(255,255,255,0.07); padding: 0 2rem; }
+        .h-stat:first-child { border-left: none; padding-left: 0; }
+        .h-stat-value { font-size: 2rem; }
+        .h-stat-label { font-size: 0.65rem; }
+
+        .h-floating-pill {
+          position: absolute; bottom: 3rem; left: -2rem;
+          background: rgba(10,10,12,0.98); border: 1px solid rgba(201,169,110,0.3);
+          border-radius: 100px; padding: 0.7rem 1.2rem; backdrop-filter: blur(20px);
+          display: flex; align-items: center; gap: 0.8rem; z-index: 10;
+          box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .h-pill-icon {
+          width: 32px; height: 32px; border-radius: 50%;
+          background: linear-gradient(135deg, #C9A96E, #a07840);
+          display: flex; align-items: center; justifyContent: center; flex-shrink: 0;
+        }
+
+        /* RESPONSIVE BREAKPOINTS */
+        @media (max-width: 1024px) {
+          .h-grid { flex-direction: column !important; padding: 4rem 1.5rem 5rem !important; gap: 4rem !important; }
+          .h-text { align-items: center !important; text-align: center !important; }
+          .h-eyebrow, .h-ctas { justify-content: center !important; }
+          .h-divider { display: none !important; }
+          .h-headline { white-space: normal !important; text-align: center; margin-bottom: 1.5rem !important; }
+          .h-body { text-align: center; margin: 0 auto !important; }
+          .h-imgcol { width: 100% !important; flex: none !important; max-width: 550px; }
+          .h-stats { flex-wrap: wrap; justify-content: center; gap: 2rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 2rem !important; }
+          .h-stat { border-left: none; padding: 0 1rem; flex: none !important; min-width: 120px; text-align: center; }
+          .h-stat-icon { margin: 0 auto 0.6rem !important; }
+          .h-floating-pill { left: 50%; transform: translateX(-50%); bottom: -1.25rem; }
+          .h-footer { flex-direction: column; gap: 1.5rem; text-align: center; padding: 2rem 1.5rem !important; }
+        }
+
+        @media (max-width: 480px) {
+          .h-headline { font-size: 2.5rem !important; }
+          .h-ctas { flex-direction: column; width: 100%; }
+          .h-cta-primary, .h-cta-secondary { justify-content: center; width: 100%; }
+          .h-stat-value { font-size: 1.6rem; }
+        }
+      `}</style>
+
+      <div
+        id="hero"
+        style={{
+          background: "var(--dark)",
+          minHeight: "100vh",
+          position: "relative",
+          overflow: "hidden",
+          color: "#fff",
+          fontFamily: "'DM Sans', sans-serif",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {/* Background Grain */}
+        <div style={{
+          position: "absolute", inset: 0, opacity: 0.03, pointerEvents: "none", zIndex: 1,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+        }} />
+
+        {/* Dynamic Orbs - Hidden on mobile for performance */}
+        {!isMobile && (
+          <motion.div style={{
+            position: "absolute", width: "800px", height: "800px", borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(201,169,110,0.07) 0%, transparent 70%)",
+            top: "-10%", right: "-10%", filter: "blur(80px)", pointerEvents: "none", zIndex: 0,
+            x: orbX, y: orbY,
+          }} />
+        )}
+
+        <div style={{ position: "relative", zIndex: 5, paddingTop: "100px" }}>
+          <MarqueeStrip />
+        </div>
+
+        <main
+          className="h-grid"
+          style={{
+            display: "flex", alignItems: "center",
+            gap: "4rem", padding: "4rem 6%",
+            maxWidth: "1400px", margin: "0 auto",
+            position: "relative", zIndex: 2,
+            flex: 1, width: "100%"
+          }}
+        >
+          {/* TEXT CONTENT */}
+          <motion.div
+            className="h-text"
+            style={{ flex: 1.2, display: "flex", flexDirection: "column", alignItems: "flex-start" }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="lg:col-span-7 space-y-6 lg:space-y-8 text-center lg:text-left order-1"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-gray-800 shadow-xl border border-gray-100 dark:border-gray-700 mx-auto lg:mx-0">
-              <Heart className="w-4 h-4 text-rose-500 fill-rose-500 animate-pulse" />
-              <span className="text-[9px] lg:text-[10px] font-black uppercase tracking-[0.2em] text-gray-600 dark:text-gray-300">
-                Women Empowerment NGO
+            <div className="h-eyebrow" style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "2rem" }}>
+              <div style={{ width: "30px", height: "1px", background: "#C9A96E" }} />
+              <span style={{ fontSize: "0.65rem", letterSpacing: "0.4em", textTransform: "uppercase", color: "#C9A96E", fontWeight: 600 }}>
+                Women Empowerment Initiative
               </span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-gray-900 dark:text-white leading-[1.1] tracking-tighter">
-              Generous Helping <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-400 bg-[length:200%_auto] animate-[gradient_4s_linear_infinite]">
-                Hands Foundation
-              </span>
+            <h1
+              className="h-headline"
+              style={{
+                fontFamily: "'Playfair Display', serif",
+                fontSize: "clamp(2.5rem, 4.5vw, 4.8rem)",
+                lineHeight: 1.1, fontWeight: 400,
+                marginBottom: "2rem",
+              }}
+            >
+              Generous{" "}
+              <span style={{ fontStyle: "italic", color: "#C9A96E" }}>Helping</span>
+              <br />Hands Foundation
             </h1>
 
-            <p className="text-base lg:text-xl text-gray-600 dark:text-gray-400 leading-relaxed max-w-xl font-medium mx-auto lg:mx-0">
-              We provide women and girls with the essential resources, 
-              mentorship, and community support needed to break barriers and 
-              build thriving futures.
-            </p>
+            <div style={{ display: "flex", gap: "1.5rem", alignItems: "flex-start", marginBottom: "2.5rem" }}>
+              <div
+                className="h-divider"
+                style={{ width: "1px", background: "rgba(201,169,110,0.2)", flexShrink: 0, alignSelf: "stretch", marginTop: "8px" }}
+              />
+              <p
+                className="h-body"
+                style={{ color: "rgba(255,255,255,0.55)", fontSize: "1.05rem", lineHeight: 1.7, fontWeight: 300, maxWidth: "480px", margin: 0 }}
+              >
+                We provide women and girls with the essential resources, mentorship, and community support needed to break barriers and build thriving futures.
+              </p>
+            </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 lg:gap-5 items-center justify-center lg:justify-start">
-              <a href="#donation" className="w-full sm:w-auto group px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold transition-all hover:shadow-[0_20px_40px_-10px_rgba(37,99,235,0.4)] hover:-translate-y-1 flex items-center justify-center gap-3 text-sm tracking-wide">
-                Donate Now <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            <div className="h-ctas" style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+              <a href="#donation" className="h-cta-primary">
+                Donate Now <ArrowRight size={16} />
               </a>
-              <a href="#volunteer" className="w-full sm:w-auto px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-2xl font-bold transition-all hover:bg-gray-50 dark:hover:bg-gray-700 text-sm tracking-wide shadow-sm flex justify-center">
-                Become a Volunteer
+              <a href="#volunteer" className="h-cta-secondary">
+                Join Community <MoveRight size={16} />
               </a>
             </div>
 
-            {/* Stats Row */}
-            <div className="pt-10 border-t border-gray-200 dark:border-gray-800 grid grid-cols-3 gap-4 lg:gap-6">
+            {/* Stats Group */}
+            <div
+              className="h-stats"
+              style={{
+                display: "flex", width: "100%",
+                marginTop: "4rem", paddingTop: "2.5rem",
+                borderTop: "1px solid rgba(255,255,255,0.08)",
+              }}
+            >
               {STATS.map((stat, i) => (
-                <div key={i} className="text-center lg:text-left">
-                  <div className="flex flex-col lg:flex-row items-center gap-1 lg:gap-2 mb-1 justify-center lg:justify-start">
-                    <stat.icon className="w-4 h-4 lg:w-5 lg:h-5 text-blue-600" />
-                    <span className="text-xl lg:text-3xl font-black text-gray-900 dark:text-white">{stat.value}</span>
-                  </div>
-                  <p className="text-[8px] lg:text-[10px] uppercase tracking-widest font-bold text-gray-400">{stat.label}</p>
-                </div>
+                <StatItem key={i} {...stat} index={i} />
               ))}
             </div>
           </motion.div>
 
-          {/* Right Content */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1 }}
-            className="lg:col-span-5 flex justify-center lg:justify-end order-2"
+          {/* VISUAL CONTENT */}
+          <motion.div
+            className="h-imgcol"
+            style={{ flex: 1, position: "relative", width: "100%" }}
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, delay: 0.2 }}
           >
-            <CinematicHeroImage />
+            <CinematicImage isMobile={isMobile} />
           </motion.div>
+        </main>
 
-        </div>
-      </div>
-
-      {/* Scroll Down Button */}
-      <button 
-        onClick={scrollToContent}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-gray-400 hover:text-blue-500 transition-all cursor-pointer z-20 group"
-      >
-        <span className="text-[9px] lg:text-[10px] uppercase font-black tracking-[0.3em]">Explore</span>
-        <motion.div 
-          animate={{ y: [0, 8, 0] }} 
-          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+        <footer
+          className="h-footer"
+          style={{
+            display: "flex", justifyContent: "space-between", alignItems: "center",
+            padding: "1.5rem 6%",
+            borderTop: "1px solid rgba(255,255,255,0.05)",
+            background: "rgba(5,5,7,0.8)",
+            backdropFilter: "blur(10px)",
+            position: "relative", zIndex: 10,
+          }}
         >
-          <ChevronDown className="w-5 h-5" />
-        </motion.div>
-      </button>
-
-      {/* Wave Background Divider */}
-      <div className="absolute bottom-0 w-full leading-[0] fill-white dark:fill-[#020617] z-10">
-        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-12 lg:h-16">
-          <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5,73.84-4.36,147.54,16.88,218.2,35.26,69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113,2,1200,0V120H0Z"></path>
-        </svg>
+          <span style={{ fontSize: "0.6rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+            © 2024 Generous Helping Hands Foundation · All Rights Reserved
+          </span>
+          <button
+            onClick={scrollDown}
+            style={{
+              background: "none", border: "1px solid rgba(255,255,255,0.12)",
+              borderRadius: "100px", padding: "0.6rem 1.4rem",
+              color: "rgba(255,255,255,0.5)", fontSize: "0.65rem",
+              letterSpacing: "0.15em", textTransform: "uppercase",
+              cursor: "pointer", display: "flex", alignItems: "center", gap: "0.5rem",
+              transition: "all 0.3s ease",
+            }}
+          >
+            Explore More <ArrowRight size={14} />
+          </button>
+        </footer>
       </div>
-    </section>
+    </>
   );
 };
 

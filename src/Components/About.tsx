@@ -1,24 +1,22 @@
 import React, { useRef } from "react";
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
-import { Users, TrendingUp, Shield, Target, Quote, Globe, Sparkles } from "lucide-react";
+import { motion, useScroll, useTransform, useSpring, useInView } from "framer-motion";
+import { Users, TrendingUp, Shield, Target, Quote, Globe, Sparkles, ArrowUpRight } from "lucide-react";
 
-/**
- * DEVELOPER NOTES:
- * IDs match your Navbar: whyitmatters, ourstory, missionstatement, visionstatement, meettheteam.
- */
-const IMAGE_ASSETS = {
-  hero_bg: "https://images.unsplash.com/photo-1518005020250-6eb5f3f2f669?q=80&w=1600&auto=format&fit=crop",
-  mission_bg: "https://images.unsplash.com/photo-1509099836639-18ba1795216d?auto=format&fit=crop&q=80&w=1200" 
+// ─── ANIMATION VARIANTS ──────────────────────────────────────────────────────
+const fadeIn = {
+  initial: { opacity: 0, y: 30 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
 };
 
-const TEAM_MEMBERS = [
-  { name: "Leadership", role: "Vision & Strategy", emoji: "🎯", description: "Providing direction and leadership to drive our mission forward." },
-  { name: "Program Coordinators", role: "Community Programs", emoji: "📦", description: "Planning and delivering outreach programs that meet real needs." },
-  { name: "Education & Welfare", role: "Learning & Support", emoji: "📚", description: "Supporting access to education and skills development." },
-  { name: "Community Engagement", role: "Partnerships", emoji: "🤝", description: "Building strong relationships with families and partners." },
-  { name: "Advocacy", role: "Voice for Vulnerable", emoji: "📢", description: "Raising awareness and advocating for dignity and care." },
-  { name: "Admin Support", role: "Operations", emoji: "⚙️", description: "Ensuring transparency and smooth daily operations." },
-];
+const staggerContainer = {
+  animate: { transition: { staggerChildren: 0.1 } }
+};
+
+// ─── ASSETS (Nigerian Context) ───────────────────────────────────────────────
+const IMAGE_ASSETS = {
+  heritage: "https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?q=80&w=2070&auto=format&fit=crop", // Community gathering
+  mission_bg: "https://images.unsplash.com/photo-1509099836639-18ba1795216d?q=80&w=2031&auto=format&fit=crop", // Warm, hopeful portraits
+};
 
 const VISION_POINTS = [
   { icon: TrendingUp, title: "Stable Futures", text: "Empowering Nigerian families toward long-term economic independence." },
@@ -26,184 +24,190 @@ const VISION_POINTS = [
   { icon: Users, title: "Stronger Communities", text: "Building local resilience through trust and shared values." },
 ];
 
-const SectionBadge = ({ icon: Icon, children }: { icon: React.ElementType; children: React.ReactNode }) => (
+const TEAM_MEMBERS = [
+  { name: "Leadership", role: "Vision & Strategy", emoji: "🎯", description: "Providing direction and leadership to drive our mission forward." },
+  { name: "Program Coordinators", role: "Community Programs", emoji: "📦", description: "Planning and delivering outreach programs that meet real needs." },
+  { name: "Education & Welfare", role: "Learning & Support", emoji: "📚", description: "Supporting access to education and skills development." },
+];
+
+// ─── COMPONENTS ──────────────────────────────────────────────────────────────
+const PremiumBadge = ({ icon: Icon, children }: { icon: React.ElementType; children: React.ReactNode }) => (
   <motion.div 
-    initial={{ opacity: 0, scale: 0.9 }}
-    whileInView={{ opacity: 1, scale: 1 }}
-    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50/80 dark:bg-blue-900/20 backdrop-blur-sm text-blue-700 dark:text-blue-400 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-6 border border-blue-100 dark:border-blue-800/50"
+    variants={fadeIn}
+    className="inline-flex items-center gap-3 px-5 py-2 bg-[#C9A96E]/10 border border-[#C9A96E]/20 rounded-full mb-8"
   >
-    <Icon className="w-3.5 h-3.5" /> {children}
+    <Icon className="w-3.5 h-3.5 text-[#C9A96E]" />
+    <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#C9A96E]">{children}</span>
   </motion.div>
 );
 
 const About = () => {
-  const containerRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  });
-
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
-  const scale = useTransform(smoothProgress, [0, 0.1], [1, 0.97]);
+  const heritageRef = useRef(null);
+  const isHeritageInView = useInView(heritageRef, { once: true, margin: "-100px" });
 
   return (
-    <div ref={containerRef} className="bg-[#FCFCFD] dark:bg-gray-950 transition-colors duration-700">
+    <div className="bg-[#0A0908] text-white font-['DM_Sans',sans-serif] selection:bg-[#C9A96E] selection:text-black">
       
       {/* 1. WHY OUR WORK MATTERS */}
-      <section 
-        id="whyitmatters" 
-        className="relative min-h-[70vh] flex items-center justify-center px-6 overflow-hidden pt-24 scroll-mt-20"
-      >
-        <div className="absolute inset-0 z-0">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-400/10 rounded-full blur-[120px] animate-pulse" />
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-emerald-400/10 rounded-full blur-[120px]" />
-        </div>
-
-        <motion.div style={{ scale }} className="relative z-10 max-w-4xl mx-auto text-center">
-          <SectionBadge icon={Globe}>Nigeria Focus</SectionBadge>
-          <h1 className="text-4xl md:text-7xl font-serif text-gray-900 dark:text-gray-100 leading-[1.1] mb-8">
-            Every act of <span className="italic text-blue-600">kindness</span> ripples across a nation.
-          </h1>
-          <div className="flex justify-center gap-4 mb-10">
-            <Quote className="w-8 h-8 text-blue-500/20" />
-            <p className="text-xl md:text-2xl text-gray-500 dark:text-gray-400 font-light max-w-2xl italic leading-relaxed">
-              "In the heart of Nigeria, families face hurdles that stifle growth. We exist to clear the path."
+      <section id="whyitmatters" className="relative min-h-[90vh] flex items-center justify-center px-6 overflow-hidden">
+        <motion.div 
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true }}
+          variants={staggerContainer}
+          className="relative z-10 max-w-5xl mx-auto text-center"
+        >
+          <PremiumBadge icon={Globe}>Lagos • Abuja • Port Harcourt</PremiumBadge>
+          <motion.h1 variants={fadeIn} className="text-5xl md:text-8xl font-['Playfair_Display'] leading-[1.05] mb-10 tracking-tight">
+            Every Hand <span className="italic text-[#C9A96E]">Lifts</span> <br/>
+            a Thriving Future.
+          </motion.h1>
+          <motion.div variants={fadeIn} className="flex flex-col items-center gap-8">
+            <p className="text-lg md:text-xl text-gray-400 font-light max-w-2xl leading-relaxed">
+              In the vibrant heart of Nigeria, potential often meets unyielding barriers. We are the bridge between survival and <span className="text-white font-medium">soaring success.</span>
             </p>
-          </div>
+            <div className="w-px h-24 bg-gradient-to-b from-[#C9A96E] to-transparent" />
+          </motion.div>
         </motion.div>
       </section>
 
-      {/* 2. OUR STORY */}
-      <section id="ourstory" className="py-32 px-6 relative overflow-hidden scroll-mt-24">
-        {/* Background Decorative Grid - Fixed 'size' error here */}
-        <div 
-          className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none" 
-          style={{ 
-            backgroundImage: `radial-gradient(#2563eb 1px, transparent 1px)`, 
-            backgroundSize: '40px 40px' 
-          }} 
-        />
-        
-        <div className="max-w-5xl mx-auto relative z-10 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="space-y-12"
+      {/* 2. OUR STORY (Editorial Scroll Reveal) */}
+      <section id="ourstory" ref={heritageRef} className="py-40 px-6 relative bg-white text-[#0A0908]">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-24 items-center">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9, rotate: -2 }}
+            animate={isHeritageInView ? { opacity: 1, scale: 1, rotate: 0 } : {}}
+            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+            className="relative group"
           >
-            <div className="inline-block relative">
-                <h2 className="text-5xl md:text-7xl font-black tracking-tighter text-gray-900 dark:text-gray-100 uppercase italic opacity-10 absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap select-none">
-                    Our Heritage
-                </h2>
-                <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 uppercase relative">
-                    Our Story
-                </h2>
-                <div className="w-12 h-1 bg-blue-600 mx-auto mt-4 rounded-full" />
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-12 text-left items-start">
-                <p className="text-2xl md:text-3xl font-serif leading-tight text-gray-800 dark:text-gray-200 italic border-l-4 border-blue-600 pl-6">
-                    Generous Helping Hands Foundation was born from a simple observation in our local neighborhoods.
-                </p>
-                <div className="space-y-6">
-                    <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed font-light">
-                        We saw immense potential held back by the weight of systemic poverty. What began as individual acts of charity has evolved into a <span className="font-semibold text-blue-600 dark:text-blue-400">structured pillar of hope</span>. 
-                    </p>
-                    <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed font-light">
-                        Today, we provide the strategic tools and compassionate support necessary for Nigerian families to reclaim their dignity and build a self-sustaining future.
-                    </p>
-                </div>
+            <div className="absolute -inset-4 border border-[#C9A96E]/20 rounded-[2.5rem] scale-95 group-hover:scale-100 transition-transform duration-700" />
+            <img 
+              src={IMAGE_ASSETS.heritage} 
+              alt="Nigerian Heritage" 
+              className="rounded-[2rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.2)] z-10 relative"
+            />
+            <div className="absolute bottom-8 left-8 z-20 bg-white/90 backdrop-blur-md p-6 rounded-xl border-l-4 border-[#C9A96E]">
+              <p className="text-[10px] font-black uppercase tracking-widest text-[#C9A96E] mb-1">Impact Verified</p>
+              <p className="font-['Playfair_Display'] text-xl italic font-bold">Reshaping 1,200+ Lives</p>
             </div>
           </motion.div>
+
+          <div className="space-y-10">
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={isHeritageInView ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <h2 className="text-[#C9A96E] text-xs font-black uppercase tracking-[0.4em] mb-4">The Heritage</h2>
+              <h2 className="text-5xl md:text-6xl font-['Playfair_Display'] font-bold leading-[1.15]">
+                A legacy built on <br/>
+                <span className="italic">unwavering</span> empathy.
+              </h2>
+            </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={isHeritageInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="space-y-6 text-lg text-gray-600 font-light leading-relaxed"
+            >
+              <p>
+                Generous Helping Hands Foundation began as a quiet promise to the neighborhoods of Nigeria. We recognized that poverty isn't a lack of character—it's a lack of <span className="text-black font-semibold">access.</span>
+              </p>
+              <p>
+                Our history is written in the success stories of local traders, the health of our elders, and the laughter in our schools. We don't just give; we invest in the human spirit.
+              </p>
+              <button className="flex items-center gap-3 text-[#C9A96E] font-bold text-xs uppercase tracking-widest pt-4 group">
+                Download Impact Report <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+              </button>
+            </motion.div>
+          </div>
         </div>
       </section>
 
       {/* 3. OUR MISSION */}
-      <section id="missionstatement" className="relative py-40 px-6 overflow-hidden scroll-mt-24 bg-blue-600 dark:bg-blue-900">
-        <div className="absolute inset-0 z-0 opacity-20">
-            <img src={IMAGE_ASSETS.mission_bg} className="w-full h-full object-cover mix-blend-overlay" alt="" />
+      <section id="missionstatement" className="relative py-48 px-6 overflow-hidden bg-black">
+        <div className="absolute inset-0 z-0">
+          <img src={IMAGE_ASSETS.mission_bg} className="w-full h-full object-cover opacity-30 grayscale" alt="" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0A0908] via-[#0A0908]/80 to-transparent" />
         </div>
         
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md text-white rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-8 border border-white/20">
-            <Target className="w-3.5 h-3.5" /> The Mission
-          </div>
-          <h2 className="text-4xl md:text-6xl font-bold text-white mb-8 leading-tight uppercase tracking-tighter">
-            Supporting Lives,<br/>Building Hope
-          </h2>
-          <p className="text-xl text-blue-50 font-light max-w-2xl mx-auto leading-relaxed opacity-90">
-            Our mission is simple: to improve lives through compassionate support and practical assistance, 
-            focusing on measurable impact and personal dignity for every Nigerian we serve.
-          </p>
+        <div className="max-w-7xl mx-auto relative z-10 grid lg:grid-cols-2 items-center">
+          <motion.div 
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="max-w-xl"
+          >
+            <PremiumBadge icon={Target}>Our Core Mission</PremiumBadge>
+            <h2 className="text-5xl md:text-7xl font-['Playfair_Display'] text-white mb-8 leading-tight">
+              Compassion <br/>in Action.
+            </h2>
+            <p className="text-xl text-gray-300 font-light leading-relaxed border-l border-[#C9A96E]/40 pl-8">
+              "To improve lives through practical assistance, focusing on measurable impact and personal dignity for every Nigerian we serve."
+            </p>
+          </motion.div>
         </div>
       </section>
 
-      {/* 4. OUR VISION */}
-      <section id="visionstatement" className="py-32 px-6 bg-gray-50 dark:bg-gray-900/40 relative overflow-hidden scroll-mt-24">
-        <div className="max-w-6xl mx-auto relative z-10">
-          <div className="text-center mb-20">
-            <SectionBadge icon={Sparkles}>Our Strategy</SectionBadge>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight uppercase">Our Vision</h2>
+      {/* 4. OUR VISION GRID */}
+      <section id="visionstatement" className="py-40 px-6 bg-[#0A0908] relative">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-24">
+            <PremiumBadge icon={Sparkles}>Strategic Horizon</PremiumBadge>
+            <h2 className="text-5xl md:text-6xl font-['Playfair_Display'] text-white">Shaping Tomorrow</h2>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {VISION_POINTS.map((v, i) => (
               <motion.div 
                 key={v.title}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
+                transition={{ delay: i * 0.15, duration: 0.8 }}
                 viewport={{ once: true }}
-                whileHover={{ y: -10 }}
-                className="p-10 bg-white dark:bg-gray-800/60 backdrop-blur-xl rounded-[2.5rem] border border-white dark:border-gray-800 shadow-xl shadow-gray-200/50 dark:shadow-none group"
+                className="p-12 bg-[#141412] border border-white/5 rounded-[3rem] hover:border-[#C9A96E]/30 transition-all duration-500 relative group overflow-hidden"
               >
-                <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-blue-500/30">
-                  <v.icon className="w-7 h-7 text-white" />
-                </div>
-                <h3 className="font-bold text-xl mb-4 tracking-tight text-gray-900 dark:text-white">{v.title}</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed font-light">{v.text}</p>
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#C9A96E] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <v.icon className="w-10 h-10 text-[#C9A96E] mb-8" />
+                <h3 className="font-bold text-2xl mb-4 font-['Playfair_Display'] text-white uppercase tracking-tight">{v.title}</h3>
+                <p className="text-gray-500 font-light leading-relaxed">{v.text}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
-
-      {/* 5. MEET THE TEAM */}
-      <section id="meettheteam" className="py-32 px-6 max-w-7xl mx-auto scroll-mt-24">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-20 px-4">
-          <div className="max-w-xl">
-            <h2 className="text-4xl font-bold mb-4 tracking-tighter uppercase text-gray-900 dark:text-white">Meet the Team</h2>
-            <p className="text-gray-500 font-light">The dedicated hearts driving change across Nigeria.</p>
+      
+      {/* 5. MEET THE TEAM (Minimalist Premium) */}
+      <section id="meettheteam" className="py-40 px-6 bg-white text-black">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-baseline mb-24">
+            <h2 className="text-5xl font-['Playfair_Display']">The Stewards</h2>
+            <p className="text-[#C9A96E] font-bold text-xs uppercase tracking-[0.3em] mt-4 md:mt-0">Leading with Integrity</p>
           </div>
-          <div className="hidden md:block w-32 h-px bg-gray-200 dark:bg-gray-800 mb-4" />
-        </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {TEAM_MEMBERS.map((member, i) => (
-            <motion.div 
-              key={member.name}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ delay: i * 0.05 }}
-              viewport={{ once: true }}
-              whileHover={{ scale: 1.02 }}
-              className="group p-8 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-[2.5rem] hover:bg-blue-600 dark:hover:bg-blue-600 transition-all duration-500 overflow-hidden relative"
-            >
-              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 group-hover:scale-150 transition-all text-6xl pointer-events-none">
-                {member.emoji}
-              </div>
-              <p className="text-blue-600 dark:text-blue-400 group-hover:text-blue-100 text-[9px] font-black uppercase tracking-[0.2em] mb-2 transition-colors">
-                {member.role}
-              </p>
-              <h3 className="font-bold text-xl text-gray-900 dark:text-white group-hover:text-white transition-colors">{member.name}</h3>
-              <p className="text-gray-500 dark:text-gray-400 group-hover:text-blue-50 mt-6 text-sm leading-relaxed font-light transition-colors">
-                {member.description}
-              </p>
-            </motion.div>
-          ))}
+          <div className="grid md:grid-cols-3 gap-12">
+            {TEAM_MEMBERS.map((member, i) => (
+              <motion.div 
+                key={member.name}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.2 }}
+                className="group cursor-default"
+              >
+                <div className="relative mb-8 overflow-hidden rounded-2xl bg-[#F4F4F4] aspect-[4/5] flex items-center justify-center text-7xl grayscale group-hover:grayscale-0 transition-all duration-700">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                  {member.emoji}
+                </div>
+                <h3 className="text-2xl font-['Playfair_Display'] font-bold mb-2">{member.name}</h3>
+                <p className="text-[#C9A96E] text-[10px] font-black uppercase tracking-[0.2em] mb-4">{member.role}</p>
+                <p className="text-gray-500 text-sm font-light leading-relaxed pr-6">{member.description}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
-
     </div>
   );
 };
