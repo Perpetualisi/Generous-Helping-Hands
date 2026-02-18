@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 import {
   Briefcase, BookOpen, HeartPulse,
@@ -48,7 +48,7 @@ const EVENT_PHOTOS = [
   { src: "/events6.jpg",  alt: "Advocacy walk",        gridArea: "4 / 1 / 5 / 2" },
 ];
 
-// Mobile order (simple sequential)
+// Correctly map mobile photos to clear the gridArea for sequential layout
 const EVENT_PHOTOS_MOBILE = EVENT_PHOTOS.map((p) => ({ ...p, gridArea: "auto" }));
 
 // ─── 3D PROGRAM CARD ─────────────────────────────────────────────────────────
@@ -103,7 +103,6 @@ const ProgramCard: React.FC<{ program: Program; index: number }> = ({ program, i
         transition: "border-color 0.5s ease",
         boxShadow: "0 25px 50px rgba(0,0,0,0.4)",
       }}>
-        {/* Top gold shimmer line */}
         <div style={{
           position: "absolute", top: 0, left: 0, right: 0, height: "1px",
           background: "linear-gradient(to right, transparent, #C9A96E, transparent)",
@@ -111,7 +110,6 @@ const ProgramCard: React.FC<{ program: Program; index: number }> = ({ program, i
           transition: "opacity 0.4s ease",
         }} />
 
-        {/* Icon + Tag row */}
         <div style={{
           display: "flex", justifyContent: "space-between", alignItems: "flex-start",
           marginBottom: "2.5rem",
@@ -140,7 +138,6 @@ const ProgramCard: React.FC<{ program: Program; index: number }> = ({ program, i
           </span>
         </div>
 
-        {/* Text content */}
         <div style={{ flex: 1, transform: "translateZ(30px)" }}>
           <h3 style={{
             fontFamily: "'Playfair Display', serif",
@@ -160,7 +157,6 @@ const ProgramCard: React.FC<{ program: Program; index: number }> = ({ program, i
           </p>
         </div>
 
-        {/* Expandable detail */}
         <AnimatePresence>
           {open && (
             <motion.div
@@ -189,7 +185,6 @@ const ProgramCard: React.FC<{ program: Program; index: number }> = ({ program, i
           )}
         </AnimatePresence>
 
-        {/* CTA */}
         <button
           onClick={() => setOpen(!open)}
           style={{
@@ -220,14 +215,17 @@ const ProgramCard: React.FC<{ program: Program; index: number }> = ({ program, i
 
 // ─── PROGRAMS SECTION ─────────────────────────────────────────────────────────
 const Programs: React.FC = () => {
-  const [isMobile, setIsMobile] = React.useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
     check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
+
+  // Use the mobile data set when on mobile screens to fix TS error and improve UI
+  const galleryData = isMobile ? EVENT_PHOTOS_MOBILE : EVENT_PHOTOS;
 
   return (
     <>
@@ -258,7 +256,6 @@ const Programs: React.FC = () => {
             grid-auto-rows: 180px;
             gap: 1rem;
           }
-          .event-item { grid-area: auto !important; }
           .prog-headline { font-size: clamp(2.8rem, 10vw, 5rem) !important; }
         }
 
@@ -302,7 +299,6 @@ const Programs: React.FC = () => {
           fontFamily: "'DM Sans', sans-serif",
         }}
       >
-        {/* Background orb */}
         <div style={{
           position: "absolute", top: "-10%", right: "-10%",
           width: "50%", height: "50%",
@@ -313,7 +309,6 @@ const Programs: React.FC = () => {
 
         <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1.5rem", position: "relative", zIndex: 2 }}>
 
-          {/* ── HEADER ── */}
           <div style={{ marginBottom: "6rem" }}>
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -376,16 +371,13 @@ const Programs: React.FC = () => {
             </motion.p>
           </div>
 
-          {/* ── PROGRAMS GRID ── */}
           <div className="prog-grid">
             {PROGRAMS.map((program, i) => (
               <ProgramCard key={program.title} program={program} index={i} />
             ))}
           </div>
 
-          {/* ── EVENTS GALLERY ── */}
           <div id="events" style={{ marginTop: "12rem" }}>
-            {/* Gallery header */}
             <div style={{
               display: "flex",
               flexDirection: isMobile ? "column" : "row",
@@ -412,18 +404,17 @@ const Programs: React.FC = () => {
               </span>
             </div>
 
-            {/* Bento grid */}
             <div className="event-grid">
-              {EVENT_PHOTOS.map((photo, i) => (
+              {galleryData.map((photo, i) => (
                 <motion.div
                   key={i}
-                  className="event-photo-wrap event-item"
+                  className="event-photo-wrap"
                   initial={{ opacity: 0, scale: 0.95 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.7, delay: i * 0.08 }}
                   style={{
-                    gridArea: isMobile ? "auto" : photo.gridArea,
+                    gridArea: photo.gridArea,
                     position: "relative",
                     borderRadius: "2rem",
                     overflow: "hidden",
@@ -456,7 +447,6 @@ const Programs: React.FC = () => {
               ))}
             </div>
           </div>
-
         </div>
       </section>
     </>

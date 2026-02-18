@@ -122,7 +122,6 @@ const PremiumPhoto: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
         width: "100%", maxWidth: "380px",
       }}
     >
-      {/* Glow */}
       <div style={{
         position: "absolute", inset: 0,
         background: "rgba(201,169,110,0.15)",
@@ -133,7 +132,6 @@ const PremiumPhoto: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
         pointerEvents: "none",
       }} />
 
-      {/* Card */}
       <div style={{
         position: "relative",
         borderRadius: "2.5rem",
@@ -148,7 +146,7 @@ const PremiumPhoto: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
           style={{
             width: "100%",
             aspectRatio: "1 / 1",
-            objectFit: "contain",
+            objectFit: "cover",
             background: "#0A0908",
             borderRadius: "2.2rem",
             display: "block",
@@ -351,7 +349,6 @@ const GetInvolved: React.FC = () => {
           fontFamily: "'DM Sans', sans-serif",
         }}
       >
-        {/* Ambient orbs */}
         <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
           <div style={{
             position: "absolute", top: "20%", right: "-10%",
@@ -372,7 +369,6 @@ const GetInvolved: React.FC = () => {
           {/* ── 01. VOLUNTEER ── */}
           <div id="volunteer" style={{ marginBottom: "12rem", scrollMarginTop: "80px" }}>
             <div className="gi-grid">
-              {/* Text */}
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -406,7 +402,6 @@ const GetInvolved: React.FC = () => {
                 </div>
               </motion.div>
 
-              {/* Photo */}
               <div className="gi-photo">
                 <PremiumPhoto src="/volut.jpg" alt="Volunteers" />
               </div>
@@ -416,12 +411,10 @@ const GetInvolved: React.FC = () => {
           {/* ── 02. DONATION ── */}
           <div id="donation" style={{ marginBottom: "12rem", scrollMarginTop: "80px" }}>
             <div className="gi-grid">
-              {/* Photo (left on desktop) */}
               <div className="gi-photo-left">
                 <PremiumPhoto src="/donations.jpg" alt="Donations" />
               </div>
 
-              {/* Text */}
               <motion.div
                 className="gi-order-fix"
                 initial={{ opacity: 0, x: 30 }}
@@ -449,25 +442,20 @@ const GetInvolved: React.FC = () => {
                   No overhead cuts. Your contributions fund education, livelihoods, and medical outreach directly.
                 </p>
 
-                {/* Donation method bullets */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "2rem", marginBottom: "3rem" }}>
                   {DONATION_METHODS.map((m) => {
-                    const Icon = m.icon;
+                    const Icon = m.icon; // Correctly referencing and using the Icon
                     return (
                       <div key={m.title} style={{ display: "flex", gap: "1.25rem" }}>
                         <div style={{
                           flexShrink: 0,
-                          width: "24px", height: "24px",
-                          borderRadius: "50%",
-                          background: "rgba(201,169,110,0.15)",
+                          width: "36px", height: "36px",
+                          borderRadius: "10px",
+                          background: "rgba(201,169,110,0.1)",
                           display: "flex", alignItems: "center", justifyContent: "center",
-                          marginTop: "2px",
+                          color: "#C9A96E"
                         }}>
-                          <div style={{
-                            width: "8px", height: "8px",
-                            borderRadius: "50%",
-                            background: "#C9A96E",
-                          }} />
+                          <Icon size={18} />
                         </div>
                         <div>
                           <h4 style={{
@@ -491,7 +479,6 @@ const GetInvolved: React.FC = () => {
                   })}
                 </div>
 
-                {/* CTA row */}
                 <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "2rem" }}>
                   <a href="mailto:Giversgenerous@gmail.com" className="gi-donate-btn">
                     Request Details <ArrowRight size={14} />
@@ -520,7 +507,6 @@ const GetInvolved: React.FC = () => {
               scrollMarginTop: "80px",
             }}
           >
-            {/* FAQ header */}
             <div style={{ textAlign: "center", marginBottom: "5rem" }}>
               <Eyebrow icon={Sparkles}>Clarity</Eyebrow>
               <h2 style={{
@@ -532,7 +518,6 @@ const GetInvolved: React.FC = () => {
               </h2>
             </div>
 
-            {/* Accordions */}
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               {FAQS.map((faq, i) => (
                 <FAQAccordion
