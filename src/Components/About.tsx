@@ -1,21 +1,32 @@
 import React, { useRef } from "react";
-import { motion, useScroll, useTransform, useSpring, useInView } from "framer-motion";
-import { Users, TrendingUp, Shield, Target, Quote, Globe, Sparkles, ArrowUpRight } from "lucide-react";
+import { motion, useInView, type Variants } from "framer-motion";
+import { Users, TrendingUp, Shield, Target, Globe, Sparkles, ArrowUpRight } from "lucide-react";
 
 // ─── ANIMATION VARIANTS ──────────────────────────────────────────────────────
-const fadeIn = {
+const fadeIn: Variants = {
   initial: { opacity: 0, y: 30 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
+  animate: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { 
+      duration: 0.8, 
+      ease: [0.22, 1, 0.36, 1] 
+    } 
+  }
 };
 
-const staggerContainer = {
-  animate: { transition: { staggerChildren: 0.1 } }
+const staggerContainer: Variants = {
+  animate: { 
+    transition: { 
+      staggerChildren: 0.1 
+    } 
+  }
 };
 
 // ─── ASSETS (Nigerian Context) ───────────────────────────────────────────────
 const IMAGE_ASSETS = {
-  heritage: "https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?q=80&w=2070&auto=format&fit=crop", // Community gathering
-  mission_bg: "https://images.unsplash.com/photo-1509099836639-18ba1795216d?q=80&w=2031&auto=format&fit=crop", // Warm, hopeful portraits
+  heritage: "https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?q=80&w=2070&auto=format&fit=crop", 
+  mission_bg: "https://images.unsplash.com/photo-1509099836639-18ba1795216d?q=80&w=2031&auto=format&fit=crop", 
 };
 
 const VISION_POINTS = [
@@ -42,7 +53,7 @@ const PremiumBadge = ({ icon: Icon, children }: { icon: React.ElementType; child
 );
 
 const About = () => {
-  const heritageRef = useRef(null);
+  const heritageRef = useRef<HTMLElement>(null);
   const isHeritageInView = useInView(heritageRef, { once: true, margin: "-100px" });
 
   return (

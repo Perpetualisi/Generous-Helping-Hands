@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ChevronDown, Heart } from "lucide-react";
 
@@ -58,17 +58,23 @@ const MENU_ITEMS: MenuItem[] = [
 ];
 
 // ─── HOOK ─────────────────────────────────────────────────────────────────────
-const useScrolled = (): boolean => {
+const useScrolled = (threshold = 20): boolean => {
   const [scrolled, setScrolled] = useState(false);
+  
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    const onScroll = () => {
+      const isOverThreshold = window.scrollY > threshold;
+      setScrolled((prev) => (prev !== isOverThreshold ? isOverThreshold : prev));
+    };
+    
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [threshold]);
+  
   return scrolled;
 };
 
-// ─── IMPROVED RESPONSIVE LOGO ──────────────────────────────────────────────────
+// ─── LOGO ─────────────────────────────────────────────────────────────────────
 const ResponsiveLogo: React.FC<{ onClick: () => void }> = ({ onClick }) => (
   <button
     onClick={onClick}
@@ -117,7 +123,7 @@ const DesktopDropdown: React.FC<DesktopDropdownProps> = ({ item, onNavigate }) =
   const show = () => { if (timer.current) clearTimeout(timer.current); setOpen(true); };
   const hide = () => { timer.current = setTimeout(() => setOpen(false), 150); };
 
-  const linkStyle: React.CSSProperties = {
+  const baseLinkStyle: React.CSSProperties = {
     background: "transparent",
     border: "none",
     padding: "0.5rem 0.8rem",
@@ -125,7 +131,7 @@ const DesktopDropdown: React.FC<DesktopDropdownProps> = ({ item, onNavigate }) =
     fontSize: "0.78rem",
     letterSpacing: "0.08em",
     textTransform: "uppercase",
-    color: open ? "#C9A96E" : "rgba(255,255,255,0.65)",
+    color: "rgba(255,255,255,0.65)",
     cursor: "pointer",
     transition: "all 0.3s ease",
     display: "flex",
@@ -137,8 +143,8 @@ const DesktopDropdown: React.FC<DesktopDropdownProps> = ({ item, onNavigate }) =
   if (!item.subLinks) {
     return (
       <button
-        style={linkStyle}
-        onClick={() => onNavigate(item.href!)}
+        style={baseLinkStyle}
+        onClick={() => onNavigate(item.href || "hero")}
         onMouseEnter={(e) => (e.currentTarget.style.color = "#C9A96E")}
         onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.65)")}
       >
@@ -149,7 +155,11 @@ const DesktopDropdown: React.FC<DesktopDropdownProps> = ({ item, onNavigate }) =
 
   return (
     <div style={{ position: "relative" }} onMouseEnter={show} onMouseLeave={hide}>
-      <button style={linkStyle}>
+      <button 
+        style={{ ...baseLinkStyle, color: open ? "#C9A96E" : "rgba(255,255,255,0.65)" }}
+        aria-haspopup="true"
+        aria-expanded={open}
+      >
         {item.name}
         <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
           <ChevronDown size={13} />
@@ -178,7 +188,7 @@ const DesktopDropdown: React.FC<DesktopDropdownProps> = ({ item, onNavigate }) =
               marginTop: "8px"
             }}
           >
-            {item.subLinks!.map((sub) => (
+            {item.subLinks.map((sub) => (
               <button
                 key={sub.href}
                 onClick={() => { onNavigate(sub.href); setOpen(false); }}
@@ -214,7 +224,8 @@ const MobileMenuItem: React.FC<MobileMenuItemProps> = ({ item, openDropdown, onT
   return (
     <div style={{ width: "100%" }}>
       <button
-        onClick={() => item.subLinks ? onToggle(item.name) : onNavigate(item.href!)}
+        onClick={() => item.subLinks ? onToggle(item.name) : onNavigate(item.href || "hero")}
+        aria-expanded={isOpen}
         style={{
           display: "flex",
           alignItems: "center",
@@ -281,51 +292,51 @@ export const NAVBAR_HEIGHT = 72;
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const navRef = useRef<HTMLElement>(null);
   const scrolled = useScrolled();
 
   const handleNavigate = useCallback((id: string) => {
     setIsOpen(false);
     setOpenDropdown(null);
+    
+    // Slight delay to allow overlay to begin closing before jump
     setTimeout(() => {
       const el = document.getElementById(id);
       if (!el) return;
-      const top = el.getBoundingClientRect().top + window.pageYOffset - NAVBAR_HEIGHT - 10;
+      const top = el.getBoundingClientRect().top + window.pageYOffset - NAVBAR_HEIGHT;
       window.scrollTo({ top, behavior: "smooth" });
-    }, 150);
+    }, 100);
   }, []);
 
   useEffect(() => {
+    // Prevent body scroll when mobile menu is active
+    const originalStyle = window.getComputedStyle(document.body).overflow;
     document.body.style.overflow = isOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = originalStyle; };
   }, [isOpen]);
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
-        
         .dropdown-item:hover {
           color: #C9A96E !important;
           background: rgba(201,169,110,0.06) !important;
           padding-left: 1.5rem !important;
         }
-
         .nb-desktop { display: flex; align-items: center; }
         .nb-mobile-toggle { display: none; }
-
+        
         @media (max-width: 1024px) {
           .nb-desktop { display: none; }
           .nb-mobile-toggle { display: flex; }
         }
-
+        
         @media (max-width: 480px) {
           .logo-subtext { letter-spacing: 0.15em !important; }
-          .logo-italic { display: none; } /* Shortens logo on very small screens */
+          .logo-italic { opacity: 0.8; } /* Keep it visible but subtle on tiny screens */
         }
       `}</style>
 
       <motion.nav
-        ref={navRef}
         initial={{ y: -NAVBAR_HEIGHT }}
         animate={{ y: 0 }}
         style={{
@@ -336,7 +347,7 @@ const Navbar: React.FC = () => {
           background: scrolled ? "rgba(6, 6, 8, 0.95)" : "#060608",
           borderBottom: "1px solid rgba(255,255,255,0.05)",
           backdropFilter: scrolled ? "blur(15px)" : "none",
-          transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+          transition: "background 0.4s ease, backdrop-filter 0.4s ease",
         }}
       >
         <div style={{
@@ -372,6 +383,7 @@ const Navbar: React.FC = () => {
           {/* Mobile Toggle */}
           <button
             className="nb-mobile-toggle"
+            aria-label={isOpen ? "Close menu" : "Open menu"}
             onClick={() => setIsOpen(!isOpen)}
             style={{
               background: "rgba(255,255,255,0.03)",
@@ -392,7 +404,7 @@ const Navbar: React.FC = () => {
             initial={{ opacity: 0, x: "100%" }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            transition={{ type: "spring", damping: 30, stiffness: 300 }}
             style={{
               position: "fixed",
               top: 0, right: 0, bottom: 0, left: 0,

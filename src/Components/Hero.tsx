@@ -3,10 +3,8 @@ import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Heart, Users, Award, ArrowRight, MoveRight } from "lucide-react";
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
-type IconComponent = React.ComponentType<{ size?: number; color?: string; fill?: string; style?: React.CSSProperties }>;
-
 interface Stat {
-  icon: IconComponent;
+  icon: React.ElementType;
   value: string;
   label: string;
 }
@@ -31,7 +29,7 @@ const MARQUEE_ITEMS: string[] = [
 ];
 
 // ─── STAT ITEM ────────────────────────────────────────────────────────────────
-const StatItem: React.FC<StatItemProps> = ({ icon: Icon, value, label, index }) => (
+const StatItem: React.FC<StatItemProps> = ({ icon: Icon, value, label }) => (
   <div
     className="h-stat"
     style={{
@@ -39,7 +37,12 @@ const StatItem: React.FC<StatItemProps> = ({ icon: Icon, value, label, index }) 
       transition: "transform 0.4s cubic-bezier(0.2, 1, 0.3, 1)",
     }}
   >
-    <Icon size={15} color="#C9A96E" className="h-stat-icon" style={{ marginBottom: "0.6rem", display: "block" }} />
+    {/* Removed className to avoid TS2769 and used style for consistency */}
+    <Icon 
+      size={15} 
+      color="#C9A96E" 
+      style={{ marginBottom: "0.6rem", display: "block" }} 
+    />
     <div className="h-stat-value" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 500, color: "#fff", lineHeight: 1 }}>
       {value}
     </div>
@@ -181,7 +184,7 @@ const CinematicImage: React.FC<CinematicImageProps> = ({ isMobile }) => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8, duration: 0.8 }}
       >
-        <div className="h-pill-icon">
+        <div className="h-pill-icon" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
           <Users size={16} color="#fff" />
         </div>
         <div style={{ whiteSpace: "nowrap" }}>
@@ -261,7 +264,6 @@ const Hero: React.FC = () => {
 
         .h-cta-secondary:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,169,110,0.03); }
 
-        /* Desktop Stats Styling */
         .h-stat { border-left: 1px solid rgba(255,255,255,0.07); padding: 0 2rem; }
         .h-stat:first-child { border-left: none; padding-left: 0; }
         .h-stat-value { font-size: 2rem; }
@@ -278,10 +280,9 @@ const Hero: React.FC = () => {
         .h-pill-icon {
           width: 32px; height: 32px; border-radius: 50%;
           background: linear-gradient(135deg, #C9A96E, #a07840);
-          display: flex; align-items: center; justifyContent: center; flex-shrink: 0;
+          flex-shrink: 0;
         }
 
-        /* RESPONSIVE BREAKPOINTS */
         @media (max-width: 1024px) {
           .h-grid { flex-direction: column !important; padding: 4rem 1.5rem 5rem !important; gap: 4rem !important; }
           .h-text { align-items: center !important; text-align: center !important; }
@@ -318,13 +319,11 @@ const Hero: React.FC = () => {
           flexDirection: "column",
         }}
       >
-        {/* Background Grain */}
         <div style={{
           position: "absolute", inset: 0, opacity: 0.03, pointerEvents: "none", zIndex: 1,
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
         }} />
 
-        {/* Dynamic Orbs - Hidden on mobile for performance */}
         {!isMobile && (
           <motion.div style={{
             position: "absolute", width: "800px", height: "800px", borderRadius: "50%",
@@ -348,7 +347,6 @@ const Hero: React.FC = () => {
             flex: 1, width: "100%"
           }}
         >
-          {/* TEXT CONTENT */}
           <motion.div
             className="h-text"
             style={{ flex: 1.2, display: "flex", flexDirection: "column", alignItems: "flex-start" }}
@@ -399,7 +397,6 @@ const Hero: React.FC = () => {
               </a>
             </div>
 
-            {/* Stats Group */}
             <div
               className="h-stats"
               style={{
@@ -414,7 +411,6 @@ const Hero: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* VISUAL CONTENT */}
           <motion.div
             className="h-imgcol"
             style={{ flex: 1, position: "relative", width: "100%" }}
