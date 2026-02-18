@@ -37,7 +37,6 @@ const StatItem: React.FC<StatItemProps> = ({ icon: Icon, value, label }) => (
       transition: "transform 0.4s cubic-bezier(0.2, 1, 0.3, 1)",
     }}
   >
-    {/* Removed className to avoid TS2769 and used style for consistency */}
     <Icon 
       size={15} 
       color="#C9A96E" 
@@ -291,9 +290,23 @@ const Hero: React.FC = () => {
           .h-headline { white-space: normal !important; text-align: center; margin-bottom: 1.5rem !important; }
           .h-body { text-align: center; margin: 0 auto !important; }
           .h-imgcol { width: 100% !important; flex: none !important; max-width: 550px; }
-          .h-stats { flex-wrap: wrap; justify-content: center; gap: 2rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 2rem !important; }
-          .h-stat { border-left: none; padding: 0 1rem; flex: none !important; min-width: 120px; text-align: center; }
+          
+          /* Forced single line stats on mobile */
+          .h-stats { 
+             display: flex !important; 
+             flex-direction: row !important; 
+             flex-wrap: nowrap !important; 
+             justify-content: space-between !important; 
+             gap: 0.5rem !important; 
+             border-top: 1px solid rgba(255,255,255,0.08); 
+             padding-top: 2rem !important; 
+             width: 100% !important;
+          }
+          .h-stat { border-left: none; padding: 0; flex: 1 !important; text-align: center; }
           .h-stat-icon { margin: 0 auto 0.6rem !important; }
+          .h-stat-value { font-size: 1.4rem !important; }
+          .h-stat-label { font-size: 0.55rem !important; white-space: nowrap; }
+
           .h-floating-pill { left: 50%; transform: translateX(-50%); bottom: -1.25rem; }
           .h-footer { flex-direction: column; gap: 1.5rem; text-align: center; padding: 2rem 1.5rem !important; }
         }
@@ -302,7 +315,6 @@ const Hero: React.FC = () => {
           .h-headline { font-size: 2.5rem !important; }
           .h-ctas { flex-direction: column; width: 100%; }
           .h-cta-primary, .h-cta-secondary { justify-content: center; width: 100%; }
-          .h-stat-value { font-size: 1.6rem; }
         }
       `}</style>
 
