@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 import {
-  Briefcase, BookOpen, HeartPulse,
+  Briefcase, BookOpen, HeartPulse, Star,
   Image as ImageIcon, Sparkles, ArrowUpRight,
 } from "lucide-react";
 
@@ -20,59 +20,69 @@ const PROGRAMS: Program[] = [
     icon: Briefcase,
     title: "Economic Empowerment",
     tag: "Independence",
-    description: "We give women the skills and start-up support they need to run their own businesses.",
-    detail: "Our vocational training covers tailoring, catering, and digital skills. Since 2018, over 200 women have launched independent businesses with our seed grants.",
+    description: "Helping women gain financial independence through training, resources, and support to build sustainable livelihoods.",
+    detail: "Our vocational training covers tailoring, catering, and digital skills. Since 2018, over 200 women have launched independent businesses with our seed grants and mentorship support.",
   },
   {
     icon: BookOpen,
-    title: "Education Support",
+    title: "Educational Initiatives",
     tag: "Future Leaders",
-    description: "We pay school fees and provide materials so nothing stops girls from finishing school.",
-    detail: "Every scholarship covers tuition, books, and uniforms. We also run after-school STEM clubs in five Lagos secondary schools to bridge the tech gap.",
+    description: "Providing scholarships, mentorship, and workshops that unlock learning and open doors for women, girls, and young people.",
+    detail: "Every scholarship covers tuition, books, and uniforms. We also run after-school STEM clubs in Lagos secondary schools to bridge the opportunity gap for girls in tech.",
   },
   {
     icon: HeartPulse,
     title: "Health & Wellbeing",
     tag: "Community Care",
-    description: "We run free clinics and wellness workshops, bringing care to families who need it most.",
-    detail: "Our mobile clinics offer free antenatal checks and medications. Last year, we trained 50 community health ambassadors to serve 1,200+ mothers.",
+    description: "Ensuring access to vital sexual and reproductive health information and services so individuals can live healthy, confident lives.",
+    detail: "Our mobile clinics offer free antenatal checks and reproductive health services. Last year, we trained 50 community health ambassadors to serve over 1,200 mothers across Lagos.",
+  },
+  {
+    icon: Star,
+    title: "Youth Empowerment",
+    tag: "Next Generation",
+    description: "Equipping young people with leadership skills, life skills, and opportunities to realize their potential and become agents of change.",
+    detail: "Our youth programmes run leadership academies, mentorship circles, and community action projects — giving young people the confidence and skills to drive change in their own communities.",
   },
 ];
 
 const EVENT_PHOTOS = [
-  { src: "/event11.jpeg", alt: "Community outreach",   gridArea: "1 / 1 / 3 / 3" },
-  { src: "/event22.jpeg", alt: "Skills training",      gridArea: "1 / 3 / 2 / 4" },
-  { src: "/events3.jpg",  alt: "Youth mentorship",     gridArea: "2 / 3 / 3 / 4" },
-  { src: "/events4.jpg",  alt: "Medical outreach",     gridArea: "3 / 1 / 4 / 3" },
-  { src: "/events5.jpg",  alt: "Empowerment summit",   gridArea: "3 / 3 / 4 / 4" },
-  { src: "/events6.jpg",  alt: "Advocacy walk",        gridArea: "4 / 1 / 5 / 2" },
+  { src: "/event11.jpeg", alt: "Community outreach",  gridArea: "large" },
+  { src: "/event22.jpeg", alt: "Skills training",     gridArea: "top-right" },
+  { src: "/events3.jpg",  alt: "Youth mentorship",    gridArea: "mid-right" },
+  { src: "/events4.jpg",  alt: "Medical outreach",    gridArea: "bottom-left" },
+  { src: "/events5.jpg",  alt: "Empowerment summit",  gridArea: "bottom-mid" },
+  { src: "/events6.jpg",  alt: "Advocacy walk",       gridArea: "bottom-right" },
 ];
 
-// Correctly map mobile photos to clear the gridArea for sequential layout
-const EVENT_PHOTOS_MOBILE = EVENT_PHOTOS.map((p) => ({ ...p, gridArea: "auto" }));
-
 // ─── 3D PROGRAM CARD ─────────────────────────────────────────────────────────
-const ProgramCard: React.FC<{ program: Program; index: number }> = ({ program, index }) => {
+const ProgramCard: React.FC<{ program: Program; index: number; isMobile: boolean }> = ({ program, index, isMobile }) => {
   const [open, setOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const xs = useSpring(x, { stiffness: 120, damping: 20 });
-  const ys = useSpring(y, { stiffness: 120, damping: 20 });
-  const rotateX = useTransform(ys, [-0.5, 0.5], ["7deg", "-7deg"]);
-  const rotateY = useTransform(xs, [-0.5, 0.5], ["-7deg", "7deg"]);
+  const mouseXSpring = useSpring(x, { stiffness: 150, damping: 20 });
+  const mouseYSpring = useSpring(y, { stiffness: 150, damping: 20 });
+  
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["10deg", "-10deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-10deg", "10deg"]);
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!cardRef.current) return;
+    if (!cardRef.current || isMobile) return;
     const rect = cardRef.current.getBoundingClientRect();
-    x.set((e.clientX - rect.left) / rect.width - 0.5);
-    y.set((e.clientY - rect.top) / rect.height - 0.5);
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    x.set(mouseX / width - 0.5);
+    y.set(mouseY / height - 0.5);
   };
 
   const handleMouseLeave = () => {
-    x.set(0); y.set(0);
+    x.set(0); 
+    y.set(0);
     setHovered(false);
   };
 
@@ -84,103 +94,88 @@ const ProgramCard: React.FC<{ program: Program; index: number }> = ({ program, i
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={handleMouseLeave}
-      style={{ rotateX, rotateY, transformStyle: "preserve-3d", height: "100%" }}
+      style={{
+        rotateX: isMobile ? 0 : rotateX,
+        rotateY: isMobile ? 0 : rotateY,
+        transformStyle: "preserve-3d",
+      }}
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.8, delay: index * 0.1 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.6, delay: index * 0.1 }}
     >
       <div style={{
         position: "relative",
-        height: "100%",
-        background: "#141412",
-        borderRadius: "2.5rem",
-        padding: "2.5rem",
-        border: hovered ? "1px solid rgba(201,169,110,0.4)" : "1px solid rgba(255,255,255,0.05)",
+        background: "linear-gradient(145deg, #141412 0%, #0d0d0c 100%)",
+        borderRadius: isMobile ? "1.25rem" : "1.75rem",
+        padding: isMobile ? "1.5rem" : "2rem",
+        border: "1px solid",
+        borderColor: hovered ? "rgba(201,169,110,0.4)" : "rgba(255,255,255,0.06)",
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",
-        transition: "border-color 0.5s ease",
-        boxShadow: "0 25px 50px rgba(0,0,0,0.4)",
+        transition: "border-color 0.3s ease, box-shadow 0.3s ease",
+        boxShadow: hovered ? "0 25px 50px -12px rgba(0, 0, 0, 0.5)" : "0 10px 30px -10px rgba(0, 0, 0, 0.3)",
       }}>
+        {/* Glow Effect */}
         <div style={{
-          position: "absolute", top: 0, left: 0, right: 0, height: "1px",
-          background: "linear-gradient(to right, transparent, #C9A96E, transparent)",
-          opacity: hovered ? 1 : 0,
+          position: "absolute", inset: 0,
+          background: `radial-gradient(circle at 50% 0%, rgba(201,169,110,0.08), transparent 70%)`,
+          opacity: hovered ? 1 : 0.5,
           transition: "opacity 0.4s ease",
+          pointerEvents: "none"
         }} />
 
-        <div style={{
-          display: "flex", justifyContent: "space-between", alignItems: "flex-start",
-          marginBottom: "2.5rem",
-          transform: "translateZ(40px)",
-        }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem", position: "relative" }}>
           <div style={{
-            width: "64px", height: "64px", borderRadius: "1rem",
+            width: "44px", height: "44px", borderRadius: "10px",
             background: "rgba(201,169,110,0.1)",
             display: "flex", alignItems: "center", justifyContent: "center",
-            color: "#C9A96E",
-            border: "1px solid rgba(201,169,110,0.2)",
-            boxShadow: "0 0 20px rgba(201,169,110,0.08)",
+            color: "#C9A96E", border: "1px solid rgba(201,169,110,0.2)",
           }}>
-            <Icon size={28} strokeWidth={1.5} />
+            <Icon size={20} />
           </div>
           <span style={{
-            fontSize: "0.6rem", fontWeight: 800,
-            textTransform: "uppercase", letterSpacing: "0.3em",
-            color: "#C9A96E",
-            border: "1px solid rgba(201,169,110,0.2)",
-            padding: "0.35rem 0.75rem",
-            borderRadius: "0.5rem",
-            background: "rgba(201,169,110,0.05)",
+            fontSize: "0.5rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.2em",
+            color: "#C9A96E", padding: "0.4rem 0.7rem", borderRadius: "20px",
+            background: "rgba(201,169,110,0.05)", border: "1px solid rgba(201,169,110,0.1)",
           }}>
             {program.tag}
           </span>
         </div>
 
-        <div style={{ flex: 1, transform: "translateZ(30px)" }}>
+        <div style={{ position: "relative" }}>
           <h3 style={{
             fontFamily: "'Playfair Display', serif",
-            fontSize: "clamp(1.5rem, 2.5vw, 1.85rem)",
-            fontWeight: 700, color: "#fff",
-            marginBottom: "1rem", lineHeight: 1.2,
+            fontSize: "1.25rem",
+            fontWeight: 700, color: "#fff", marginBottom: "0.75rem",
+            lineHeight: 1.3
           }}>
             {program.title}
           </h3>
           <p style={{
-            color: "rgba(255,255,255,0.45)",
-            fontFamily: "'DM Sans', sans-serif",
-            fontWeight: 300, lineHeight: 1.7,
-            fontSize: "0.95rem", marginBottom: "2rem",
+            color: "rgba(255,255,255,0.5)", fontFamily: "'DM Sans', sans-serif",
+            fontSize: "0.85rem", lineHeight: 1.6, marginBottom: "1.5rem",
           }}>
             {program.description}
           </p>
         </div>
 
-        <AnimatePresence>
+        <AnimatePresence initial={false}>
           {open && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-              style={{ overflow: "hidden", marginBottom: "2rem" }}
+              style={{ overflow: "hidden" }}
             >
-              <div style={{
-                paddingTop: "1.5rem",
-                borderTop: "1px solid rgba(255,255,255,0.05)",
+              <p style={{
+                fontSize: "0.85rem", color: "#C9A96E", fontStyle: "italic",
+                lineHeight: 1.6, paddingBottom: "1.5rem", fontFamily: "'Playfair Display', serif",
+                borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "1rem"
               }}>
-                <p style={{
-                  fontSize: "0.85rem",
-                  color: "#C9A96E",
-                  fontStyle: "italic",
-                  fontWeight: 300,
-                  lineHeight: 1.7,
-                  fontFamily: "'Playfair Display', serif",
-                }}>
-                  {program.detail}
-                </p>
-              </div>
+                {program.detail}
+              </p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -188,260 +183,165 @@ const ProgramCard: React.FC<{ program: Program; index: number }> = ({ program, i
         <button
           onClick={() => setOpen(!open)}
           style={{
-            display: "flex", alignItems: "center", gap: "0.75rem",
-            fontSize: "0.65rem", fontWeight: 800,
-            textTransform: "uppercase", letterSpacing: "0.3em",
-            color: "#C9A96E",
-            background: "transparent", border: "none",
-            cursor: "pointer", marginTop: "auto", padding: 0,
-            transition: "opacity 0.2s ease",
+            display: "flex", alignItems: "center", gap: "0.5rem",
+            fontSize: "0.6rem", fontWeight: 800, textTransform: "uppercase",
+            letterSpacing: "0.15em", color: "#C9A96E", background: "none",
+            border: "none", cursor: "pointer", padding: "0.5rem 0",
+            position: "relative", width: "fit-content", marginTop: "auto"
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.7")}
-          onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
         >
           {open ? "Show Less" : "Discover Impact"}
-          <ArrowUpRight
-            size={16}
-            style={{
-              transition: "transform 0.4s ease",
-              transform: open ? "rotate(45deg)" : "none",
-            }}
-          />
+          <motion.div animate={{ rotate: open ? 45 : 0 }}>
+            <ArrowUpRight size={14} />
+          </motion.div>
         </button>
       </div>
     </motion.div>
   );
 };
 
-// ─── PROGRAMS SECTION ─────────────────────────────────────────────────────────
+// ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
 const Programs: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
+    const mediaQuery = window.matchMedia("(max-width: 1024px)");
+    setIsMobile(mediaQuery.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mediaQuery.addEventListener("change", handler);
+    return () => mediaQuery.removeEventListener("change", handler);
   }, []);
-
-  // Use the mobile data set when on mobile screens to fix TS error and improve UI
-  const galleryData = isMobile ? EVENT_PHOTOS_MOBILE : EVENT_PHOTOS;
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500;700&display=swap');
-
+        /* Desktop: Forces 4 columns on one line */
         .prog-grid {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 2.5rem;
-          perspective: 2000px;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 1.5rem;
+          margin-top: 4rem;
+          align-items: flex-start; /* Prevents cards from stretching when one expands */
+        }
+
+        /* Responsive Grid Adjustments */
+        @media (max-width: 1100px) {
+          .prog-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 640px) {
+          .prog-grid { grid-template-columns: 1fr; }
         }
 
         .event-grid {
           display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          grid-auto-rows: 220px;
           gap: 1.5rem;
+          grid-template-areas: 
+            "large large top-right"
+            "large large mid-right"
+            "bottom-left bottom-mid bottom-right";
+          grid-template-columns: repeat(3, 1fr);
+          grid-auto-rows: 240px;
         }
 
-        @media (max-width: 900px) {
-          .prog-grid {
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-          }
+        @media (max-width: 1024px) {
           .event-grid {
+            grid-template-areas: none;
             grid-template-columns: repeat(2, 1fr);
-            grid-auto-rows: 180px;
+            grid-auto-rows: 200px;
+          }
+          .event-photo-wrap { grid-area: auto !important; }
+        }
+
+        @media (max-width: 640px) {
+          .event-grid {
+            grid-template-columns: 1fr;
+            grid-auto-rows: 250px;
             gap: 1rem;
           }
-          .prog-headline { font-size: clamp(2.8rem, 10vw, 5rem) !important; }
         }
 
-        @media (max-width: 480px) {
-          .event-grid {
-            grid-template-columns: 1fr;
-            grid-auto-rows: 220px;
-          }
-          .prog-headline { font-size: clamp(2.2rem, 9vw, 3.5rem) !important; }
+        .img-zoom {
+          width: 100%; height: 100%; object-fit: cover;
+          transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        .event-photo-img {
-          width: 100%; height: 100%;
-          object-fit: cover;
-          transition: transform 1s ease, filter 0.5s ease;
-          filter: saturate(0.9);
-        }
-        .event-photo-wrap:hover .event-photo-img {
-          transform: scale(1.1);
-          filter: saturate(1.2);
-        }
-        .event-photo-overlay {
-          position: absolute; inset: 0;
-          background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.15) 50%, transparent 100%);
-          opacity: 0;
-          transition: opacity 0.5s ease;
-          display: flex; align-items: flex-end;
-          padding: 1.75rem;
-        }
-        .event-photo-wrap:hover .event-photo-overlay { opacity: 1; }
+        .event-photo-wrap:hover .img-zoom { transform: scale(1.1); }
       `}</style>
 
-      <section
-        id="ourprograms"
-        style={{
-          position: "relative",
-          background: "#0A0908",
-          padding: "10rem 0",
-          overflow: "hidden",
-          color: "#fff",
-          fontFamily: "'DM Sans', sans-serif",
-        }}
-      >
-        <div style={{
-          position: "absolute", top: "-10%", right: "-10%",
-          width: "50%", height: "50%",
-          background: "rgba(201,169,110,0.05)",
-          borderRadius: "50%", filter: "blur(120px)",
-          pointerEvents: "none",
-        }} />
-
-        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1.5rem", position: "relative", zIndex: 2 }}>
-
-          <div style={{ marginBottom: "6rem" }}>
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
+      <section id="ourprograms" style={{ background: "#0A0908", padding: isMobile ? "4rem 0" : "8rem 0", color: "#fff", overflow: "hidden" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1.5rem" }}>
+          
+          {/* Header */}
+          <div style={{ maxWidth: "700px", marginBottom: "4rem" }}>
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              style={{
-                display: "inline-flex", alignItems: "center", gap: "0.6rem",
-                padding: "0.45rem 1.1rem",
-                background: "rgba(201,169,110,0.08)",
-                border: "1px solid rgba(201,169,110,0.2)",
-                borderRadius: "100px",
-                marginBottom: "2rem",
-              }}
+              style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "#C9A96E", marginBottom: "1rem" }}
             >
-              <Sparkles size={14} color="#C9A96E" />
-              <span style={{
-                fontSize: "0.62rem", fontWeight: 700,
-                textTransform: "uppercase", letterSpacing: "0.3em",
-                color: "#C9A96E",
-              }}>
-                Our Strategic Pillars
-              </span>
+              <Sparkles size={16} />
+              <span style={{ fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.3em" }}>Our Programs</span>
             </motion.div>
-
-            <motion.h2
-              className="prog-headline"
+            
+            <motion.h2 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.1, duration: 0.8 }}
-              style={{
-                fontFamily: "'Playfair Display', serif",
-                fontSize: "clamp(3rem, 7vw, 6rem)",
-                lineHeight: 1.05,
-                marginBottom: "2.5rem",
-                letterSpacing: "-0.01em",
-                fontWeight: 400,
-              }}
+              style={{ fontFamily: "'Playfair Display', serif", fontSize: isMobile ? "2.5rem" : "4rem", lineHeight: 1.1, marginBottom: "1.5rem" }}
             >
-              Direct{" "}
-              <span style={{ fontStyle: "italic", color: "#C9A96E" }}>Interventions.</span>
+              Creating <span style={{ fontStyle: "italic", color: "#C9A96E" }}>Real Impact.</span>
             </motion.h2>
 
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+            <motion.p 
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.2, duration: 0.8 }}
-              style={{
-                fontSize: "1.1rem",
-                color: "rgba(255,255,255,0.4)",
-                fontWeight: 300,
-                maxWidth: "580px",
-                lineHeight: 1.8,
-                paddingLeft: "2rem",
-                borderLeft: "1px solid rgba(201,169,110,0.3)",
-              }}
+              style={{ color: "rgba(255,255,255,0.4)", fontSize: "1.05rem", lineHeight: 1.7, borderLeft: "2px solid #C9A96E", paddingLeft: "1.5rem" }}
             >
-              Meaningful change requires more than just charity. It requires structured programs that provide the tools for self-reliance and community health.
+              We empower women, girls, and youth to thrive through programs that create real, lasting change — from financial independence and education to health and leadership.
             </motion.p>
           </div>
 
+          {/* Cards Grid - Now strictly 4 columns on desktop */}
           <div className="prog-grid">
-            {PROGRAMS.map((program, i) => (
-              <ProgramCard key={program.title} program={program} index={i} />
+            {PROGRAMS.map((p, i) => (
+              <ProgramCard key={i} program={p} index={i} isMobile={isMobile} />
             ))}
           </div>
 
-          <div id="events" style={{ marginTop: "12rem" }}>
-            <div style={{
-              display: "flex",
-              flexDirection: isMobile ? "column" : "row",
-              justifyContent: "space-between",
-              alignItems: isMobile ? "flex-start" : "baseline",
-              marginBottom: "4rem",
-              paddingBottom: "2.5rem",
-              borderBottom: "1px solid rgba(255,255,255,0.08)",
-              gap: "0.75rem",
-            }}>
-              <h2 style={{
-                fontFamily: "'Playfair Display', serif",
-                fontSize: "clamp(2rem, 5vw, 3.2rem)",
-                fontWeight: 400, color: "#fff",
-              }}>
-                In the Field
-              </h2>
-              <span style={{
-                fontSize: "0.6rem", fontWeight: 700,
-                textTransform: "uppercase", letterSpacing: "0.3em",
-                color: "#C9A96E",
-              }}>
-                Real Moments, Real Change
-              </span>
+          {/* Gallery Section */}
+          <div id="events" style={{ marginTop: isMobile ? "6rem" : "10rem" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "3rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "1.5rem" }}>
+              <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: isMobile ? "2rem" : "2.5rem" }}>In the Field</h2>
+              {!isMobile && <span style={{ color: "#C9A96E", fontSize: "0.6rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.2em" }}>Real Moments, Real Change</span>}
             </div>
 
             <div className="event-grid">
-              {galleryData.map((photo, i) => (
+              {EVENT_PHOTOS.map((photo, i) => (
                 <motion.div
                   key={i}
                   className="event-photo-wrap"
                   initial={{ opacity: 0, scale: 0.95 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.7, delay: i * 0.08 }}
-                  style={{
-                    gridArea: photo.gridArea,
-                    position: "relative",
-                    borderRadius: "2rem",
-                    overflow: "hidden",
-                    background: "#141412",
-                    border: "1px solid rgba(255,255,255,0.05)",
-                    boxShadow: "0 16px 40px rgba(0,0,0,0.4)",
+                  transition={{ delay: i * 0.05 }}
+                  style={{ 
+                    gridArea: photo.gridArea, 
+                    position: "relative", 
+                    overflow: "hidden", 
+                    borderRadius: "1rem",
+                    background: "#141412"
                   }}
                 >
-                  <img
-                    src={photo.src}
-                    alt={photo.alt}
-                    className="event-photo-img"
-                  />
-                  <div className="event-photo-overlay">
-                    <p style={{
-                      color: "#fff",
-                      fontSize: "0.6rem",
-                      fontWeight: 800,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.2em",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.6rem",
-                    }}>
-                      <ImageIcon size={13} color="#C9A96E" />
-                      {photo.alt}
-                    </p>
+                  <img src={photo.src} alt={photo.alt} className="img-zoom" />
+                  <div style={{
+                    position: "absolute", inset: 0, 
+                    background: "linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%)",
+                    display: "flex", alignItems: "flex-end", padding: "1.25rem"
+                  }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "#fff" }}>
+                      <ImageIcon size={14} color="#C9A96E" />
+                      <span style={{ fontSize: "0.65rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em" }}>{photo.alt}</span>
+                    </div>
                   </div>
                 </motion.div>
               ))}
