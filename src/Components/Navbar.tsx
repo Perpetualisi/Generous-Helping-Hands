@@ -85,33 +85,20 @@ const ResponsiveLogo: React.FC<{ onClick: () => void }> = ({ onClick }) => (
       cursor: "pointer",
       padding: 0,
       display: "flex",
-      flexDirection: "column",
-      alignItems: "flex-start",
-      lineHeight: 1.1,
+      alignItems: "center",
+      height: "100%",
     }}
   >
-    <div style={{ display: "flex", alignItems: "baseline" }}>
-      <span style={{
-        fontFamily: "'Playfair Display', serif",
-        fontSize: "clamp(0.9rem, 4vw, 1.15rem)",
-        fontWeight: 700,
-        color: "#fff",
-        letterSpacing: "0.02em",
-      }}>
-        Generous <span className="logo-italic" style={{ color: "#C9A96E", fontStyle: "italic" }}>Helping</span> Hands
-      </span>
-    </div>
-    <span className="logo-subtext" style={{
-      fontFamily: "'DM Sans', sans-serif",
-      fontSize: "clamp(0.45rem, 1.5vw, 0.6rem)",
-      fontWeight: 600,
-      color: "rgba(201,169,110,0.8)",
-      letterSpacing: "0.3em",
-      textTransform: "uppercase",
-      marginTop: "2px",
-    }}>
-      Foundation
-    </span>
+    <img 
+      src="/ghhf-logo.jpeg" // Replace with your actual path (e.g., /logo.svg or /logo.png)
+      alt="Generous Helping Hands Foundation Logo"
+      style={{
+        height: "45px", // Adjust size to fit your design
+        width: "auto",
+        display: "block",
+        objectFit: "contain"
+      }}
+    />
   </button>
 );
 
@@ -298,7 +285,6 @@ const Navbar: React.FC = () => {
     setIsOpen(false);
     setOpenDropdown(null);
     
-    // Slight delay to allow overlay to begin closing before jump
     setTimeout(() => {
       const el = document.getElementById(id);
       if (!el) return;
@@ -308,7 +294,6 @@ const Navbar: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Prevent body scroll when mobile menu is active
     const originalStyle = window.getComputedStyle(document.body).overflow;
     document.body.style.overflow = isOpen ? "hidden" : "";
     return () => { document.body.style.overflow = originalStyle; };
@@ -328,11 +313,6 @@ const Navbar: React.FC = () => {
         @media (max-width: 1024px) {
           .nb-desktop { display: none; }
           .nb-mobile-toggle { display: flex; }
-        }
-        
-        @media (max-width: 480px) {
-          .logo-subtext { letter-spacing: 0.15em !important; }
-          .logo-italic { opacity: 0.8; } /* Keep it visible but subtle on tiny screens */
         }
       `}</style>
 
