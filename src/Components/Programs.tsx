@@ -73,11 +73,11 @@ const PROGRAMS: Program[] = [
 
 const EVENT_PHOTOS = [
   { src: "/event11.jpeg", alt: "Community outreach", gridArea: "large" },
-  { src: "/event22.jpeg", alt: "Skills training",    gridArea: "top-right" },
-  { src: "/events3.jpg",  alt: "Youth mentorship",   gridArea: "mid-right" },
-  { src: "/events4.jpg",  alt: "Medical outreach",   gridArea: "bottom-left" },
+  { src: "/event22.jpeg", alt: "Skills training",     gridArea: "top-right" },
+  { src: "/events3.jpg",  alt: "Youth mentorship",    gridArea: "mid-right" },
+  { src: "/events4.jpg",  alt: "Medical outreach",    gridArea: "bottom-left" },
   { src: "/events5.jpg",  alt: "Empowerment summit", gridArea: "bottom-mid" },
-  { src: "/events6.jpg",  alt: "Advocacy walk",      gridArea: "bottom-right" },
+  { src: "/events6.jpg",  alt: "Advocacy walk",       gridArea: "bottom-right" },
 ];
 
 // ─── SUB-COMPONENTS ──────────────────────────────────────────────────────────
@@ -94,7 +94,8 @@ const PremiumEyebrow: React.FC<{ icon: React.ElementType; children: React.ReactN
   </motion.div>
 );
 
-const ProgramCard: React.FC<{ program: Program; index: number; isMobile: boolean }> = ({ program, index, isMobile }) => {
+// Removed unused 'index' prop to pass build checks
+const ProgramCard: React.FC<{ program: Program; isMobile: boolean }> = ({ program, isMobile }) => {
   const [open, setOpen] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
@@ -233,7 +234,7 @@ const Programs: React.FC = () => {
           className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-40 md:mb-64"
         >
           {PROGRAMS.map((p, i) => (
-            <ProgramCard key={i} program={p} index={i} isMobile={isMobile} />
+            <ProgramCard key={i} program={p} isMobile={isMobile} />
           ))}
         </motion.div>
 

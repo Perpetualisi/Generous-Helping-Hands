@@ -8,7 +8,7 @@ import {
   type Variants 
 } from "framer-motion";
 import {
-  Users, Globe, Sparkles, Heart, Target, ChevronRight, Download, Quote, ArrowUpRight
+  Users, Globe, Sparkles, Heart, Target, Download, Quote, ArrowUpRight
 } from "lucide-react";
 
 /**
@@ -16,7 +16,7 @@ import {
  * Reflecting a premium, warm "Ice Cream" aesthetic
  */
 const COLORS = {
-  accent: "#F59E0B", // Amber 500
+  accent: "#D4AF37", // Gold Primary
   textMain: "#2D241E",
   bgWarm: "#FFFDF9",
 };
@@ -43,9 +43,9 @@ const PremiumEyebrow: React.FC<{ icon: React.ElementType; children: React.ReactN
   <motion.div 
     variants={fadeUp}
     className="inline-flex items-center gap-2 px-3 py-1 rounded-full border mb-4 md:mb-6 bg-white shadow-sm"
-    style={{ borderColor: "rgba(245,158,11,0.15)" }}
+    style={{ borderColor: "rgba(212,175,55,0.15)" }}
   >
-    <Icon size={12} className="text-amber-500" />
+    <Icon size={12} className="text-[#D4AF37]" />
     <span className="font-['DM_Sans'] text-[0.6rem] font-bold tracking-[0.1em] uppercase text-amber-800 whitespace-nowrap">
       {children}
     </span>
@@ -62,7 +62,7 @@ const ImpactTicker = () => (
       {[...Array(10)].map((_, i) => (
         <div key={i} className="flex items-center gap-6">
           <span className="text-white/20 font-serif text-xl">●</span>
-          <span className="text-amber-500 font-bold tracking-[0.2em] uppercase text-[0.55rem] md:text-[0.65rem]">Impact Verified</span>
+          <span className="text-[#D4AF37] font-bold tracking-[0.2em] uppercase text-[0.55rem] md:text-[0.65rem]">Impact Verified</span>
           <span className="text-white font-['Playfair_Display'] text-sm md:text-xl italic">500+ Lives Reshaped</span>
         </div>
       ))}
@@ -95,8 +95,8 @@ const InteractiveTeamCard: React.FC<{ title: string; role: string; initial: stri
       className="group relative h-full"
     >
       <div className="bg-white rounded-2xl p-6 md:p-8 h-full border border-stone-100 shadow-sm hover:shadow-xl transition-all duration-500 group-hover:border-amber-200">
-        <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-amber-50 flex items-center justify-center mb-6 group-hover:bg-amber-600 transition-colors">
-             <span className="font-['Playfair_Display'] text-xl md:text-2xl font-bold text-amber-600 group-hover:text-white">{initial}</span>
+        <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-amber-50 flex items-center justify-center mb-6 group-hover:bg-[#D4AF37] transition-colors">
+             <span className="font-['Playfair_Display'] text-xl md:text-2xl font-bold text-[#D4AF37] group-hover:text-white">{initial}</span>
         </div>
         <div className="text-[0.55rem] md:text-[0.6rem] font-black tracking-widest text-amber-600 uppercase mb-2">{role}</div>
         <h3 className="font-['Playfair_Display'] text-xl md:text-2xl font-bold mb-3 text-stone-800">{title}</h3>
@@ -119,7 +119,7 @@ const About: React.FC = () => {
         .text-balance { text-wrap: balance; }
       `}</style>
 
-      {/* ─── SECTION 1: HERO (WHY OUR WORK MATTERS) ─── */}
+      {/* ─── SECTION 1: HERO ─── */}
       <section id="whyitmatters" className="pt-16 pb-12 lg:pt-40 lg:pb-32 px-5">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="max-w-6xl mx-auto text-center">
           <PremiumEyebrow icon={Globe}>Empowering Women · Uplifting Communities</PremiumEyebrow>
@@ -127,7 +127,7 @@ const About: React.FC = () => {
           <motion.div variants={fadeUp} className="mb-8 lg:mb-16">
             <h1 className="font-['Playfair_Display'] text-3xl md:text-7xl lg:text-8xl font-bold leading-[1.1] tracking-tight text-stone-900">
               Every Woman, Every Girl
-              <span className="block italic font-normal text-amber-500 mt-2">Deserves to Rise.</span>
+              <span className="block italic font-normal text-[#D4AF37] mt-2">Deserves to Rise.</span>
             </h1>
             <p className="mt-6 md:mt-8 text-stone-500 text-base md:text-2xl font-light italic">
               Because dignity is not a privilege — it is a right.
@@ -142,7 +142,7 @@ const About: React.FC = () => {
             </div>
             <div className="bg-stone-900 p-6 md:p-12 rounded-[2rem] md:rounded-[2.5rem] text-stone-300 flex flex-col justify-center">
               <p className="leading-relaxed opacity-90 font-light text-xs md:text-base">
-                Through compassionate community engagement, youth empowerment, and advocacy, our work strengthens families, uplifts communities, and creates lasting change — empowering individuals to shape brighter futures for themselves and generations to come.
+                Through compassionate community engagement, youth empowerment, and advocacy, our work strengthens families, uplifts communities, and creates lasting change.
               </p>
             </div>
           </motion.div>
@@ -155,7 +155,7 @@ const About: React.FC = () => {
                 { l: "Commitment", v: "100%" }
             ].map((stat, i) => (
                 <motion.div key={i} variants={fadeUp} className="p-4 md:p-6 rounded-xl md:rounded-2xl bg-white border border-stone-100">
-                    <div className="text-2xl md:text-4xl font-bold font-['Playfair_Display'] text-amber-600">{stat.v}</div>
+                    <div className="text-2xl md:text-4xl font-bold font-['Playfair_Display'] text-[#D4AF37]">{stat.v}</div>
                     <div className="text-[0.5rem] md:text-[0.6rem] font-black uppercase tracking-widest text-stone-400 mt-1">{stat.l}</div>
                 </motion.div>
             ))}
@@ -183,11 +183,10 @@ const About: React.FC = () => {
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="space-y-4 md:space-y-6 lg:order-2">
             <PremiumEyebrow icon={Heart}>Our Story</PremiumEyebrow>
             <motion.h2 variants={fadeUp} className="font-['Playfair_Display'] text-2xl md:text-5xl lg:text-6xl font-bold leading-tight text-stone-900">
-              Built on the belief that <br /><em className="text-amber-500 font-normal italic">dignity is a right,</em> not a privilege.
+              Built on the belief that <br /><em className="text-[#D4AF37] font-normal italic">dignity is a right,</em> not a privilege.
             </motion.h2>
             <motion.div variants={fadeUp} className="space-y-3 md:space-y-4 text-stone-600 font-light leading-relaxed text-sm md:text-lg">
-              <p>Generous Helping Hands Foundation began as a quiet promise to the women and girls of Nigeria — that no barrier should be too tall, no circumstance too fixed. We recognised that the absence of opportunity isn't a lack of character. It's a lack of access.</p>
-              <p>Every girl kept out of school, every woman blocked from economic independence, every young person denied their rights — these are not inevitable realities. They are problems we can solve together.</p>
+              <p>Generous Helping Hands Foundation began as a quiet promise to the women and girls of Nigeria — that no barrier should be too tall, no circumstance too fixed.</p>
               <p>Our work strengthens families, uplifts communities, and creates the kind of lasting change that passes from one generation to the next.</p>
             </motion.div>
 
@@ -197,7 +196,7 @@ const About: React.FC = () => {
                 ))}
             </div>
             
-            <motion.button variants={fadeUp} className="flex items-center gap-2 text-amber-600 font-bold text-[0.65rem] md:text-xs uppercase tracking-[0.2em] pt-4 hover:translate-x-2 transition-transform">
+            <motion.button variants={fadeUp} className="flex items-center gap-2 text-[#D4AF37] font-bold text-[0.65rem] md:text-xs uppercase tracking-[0.2em] pt-4 hover:translate-x-2 transition-transform">
               Download Impact Report <Download size={14} />
             </motion.button>
           </motion.div>
@@ -221,33 +220,18 @@ const About: React.FC = () => {
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-20 items-start">
             <motion.div variants={fadeUp} className="space-y-4 md:space-y-6 text-stone-300 font-light leading-relaxed text-sm md:text-xl">
               <p>At Generous Helping Hands Foundation, we believe every woman, every girl, and every young person deserves the opportunity to live with <span className="text-white font-medium">dignity, hope, and purpose.</span></p>
-              <p>We exist to empower those most often left behind — removing barriers to education, economic opportunity, and essential human rights. Through compassionate community engagement, youth empowerment, and advocacy, we support women and young people in building the skills, confidence, and resources needed to transform their lives.</p>
-              <p>Our work strengthens families, uplifts communities, and creates lasting change — empowering individuals to shape brighter futures for themselves and generations to come.</p>
-              <div className="pt-4 border-t border-white/10 italic text-amber-500 font-medium">
+              <div className="pt-4 border-t border-white/10 italic text-[#D4AF37] font-medium">
                 Empowering women and youth. Advancing equity. Creating sustainable impact.
               </div>
             </motion.div>
 
             <div className="space-y-4 md:space-y-6">
                <div className="bg-white/5 p-6 md:p-10 rounded-2xl md:rounded-3xl border border-white/10 backdrop-blur-sm">
-                  <Quote className="text-amber-500 mb-4 md:mb-6" size={24} />
+                  <Quote className="text-[#D4AF37] mb-4 md:mb-6" size={24} />
                   <p className="text-base md:text-2xl italic leading-relaxed text-white mb-4">
-                    "Every woman, every girl, and every young person deserves the opportunity to live with dignity, hope, and purpose — not as a privilege, but as a right."
+                    "Every woman, every girl, and every young person deserves the opportunity to live with dignity, hope, and purpose."
                   </p>
                   <span className="text-[0.55rem] md:text-[0.7rem] font-bold uppercase tracking-[0.2em] text-stone-500">— GHHF Founding Principle</span>
-               </div>
-               
-               <div className="grid grid-cols-1 gap-3">
-                  {[
-                    { l: "Lives directly impacted", v: "500+" },
-                    { l: "Funds to field operations", v: "100%" },
-                    { l: "Core empowerment programs", v: "3" }
-                  ].map((stat, i) => (
-                    <div key={i} className="flex justify-between items-center p-4 bg-white/5 rounded-xl border border-white/5">
-                        <span className="text-[0.6rem] uppercase tracking-widest text-stone-400">{stat.l}</span>
-                        <span className="text-amber-500 font-bold font-['Playfair_Display'] text-lg md:text-xl">{stat.v}</span>
-                    </div>
-                  ))}
                </div>
             </div>
           </div>
@@ -261,19 +245,19 @@ const About: React.FC = () => {
               <div className="max-w-2xl">
                 <PremiumEyebrow icon={Sparkles}>Our Vision</PremiumEyebrow>
                 <h2 className="font-['Playfair_Display'] text-3xl md:text-6xl lg:text-7xl font-bold text-stone-900 leading-tight">
-                  A world where <br /><em className="text-amber-500 italic font-normal">women and girls lead.</em>
+                  A world where <br /><em className="text-[#D4AF37] italic font-normal">women and girls lead.</em>
                 </h2>
               </div>
               <p className="text-stone-500 font-light lg:max-w-md text-sm md:text-lg leading-relaxed">
-                Our vision is a world where women and girls are empowered to overcome economic and social barriers, fully access their rights — particularly in sexual and reproductive health — and where communities are strengthened so that every child can live a healthy and enriched life.
+                Our vision is a world where women and girls are empowered to overcome economic and social barriers and fully access their rights.
               </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-4 lg:gap-6">
               {[
-                { n: "01", t: "Economic Empowerment", d: "Removing barriers to economic opportunity so women and girls can build sustainable, independent futures." },
-                { n: "02", t: "Rights & Health", d: "Ensuring full access to essential rights — including sexual and reproductive health — as a foundation for dignity." },
-                { n: "03", t: "Stronger Communities", d: "Strengthening communities so every child can live a healthy, enriched, and purposeful life." }
+                { n: "01", t: "Economic Empowerment", d: "Removing barriers to economic opportunity for sustainable, independent futures." },
+                { n: "02", t: "Rights & Health", d: "Ensuring full access to essential rights as a foundation for dignity." },
+                { n: "03", t: "Stronger Communities", d: "Strengthening communities so every child can live a healthy, enriched life." }
               ].map((v, i) => (
                 <motion.div key={i} variants={fadeUp} className="p-6 md:p-10 rounded-[1.5rem] md:rounded-[2rem] bg-white border border-stone-100 shadow-sm relative overflow-hidden group hover:border-amber-100 transition-colors">
                   <span className="absolute top-4 right-6 text-3xl md:text-5xl font-black text-stone-50 group-hover:text-amber-50 transition-colors">{v.n}</span>
@@ -285,13 +269,12 @@ const About: React.FC = () => {
         </div>
       </section>
 
-      {/* ─── SECTION 5: TEAM (THE STEWARDS) ─── */}
+      {/* ─── SECTION 5: TEAM ─── */}
       <section id="meettheteam" className="py-16 lg:py-40 px-5 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-10 lg:mb-24">
             <PremiumEyebrow icon={Users}>The Stewards</PremiumEyebrow>
             <h2 className="font-['Playfair_Display'] text-3xl md:text-6xl font-bold text-stone-900 leading-tight">People behind the mission.</h2>
-            <p className="text-stone-400 mt-4 font-light text-base md:text-lg">Leading with integrity, purpose, and compassion.</p>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-8">
@@ -299,19 +282,19 @@ const About: React.FC = () => {
               role="Vision & Strategy" 
               initial="L" 
               title="Leadership" 
-              desc="Providing strategic direction and inspiring leadership to drive our mission forward with clarity and purpose." 
+              desc="Providing strategic direction and inspiring leadership to drive our mission forward." 
             />
             <InteractiveTeamCard 
               role="Community Programs" 
               initial="P" 
               title="Program Coordinators" 
-              desc="Planning and delivering outreach initiatives that meet real community needs and create lasting impact." 
+              desc="Planning and delivering outreach initiatives that meet real community needs." 
             />
             <InteractiveTeamCard 
               role="Learning & Support" 
               initial="E" 
               title="Education & Welfare" 
-              desc="Supporting access to quality education, skills development, and welfare resources across Nigeria." 
+              desc="Supporting access to quality education and skills development across Nigeria." 
             />
           </div>
         </div>
@@ -322,7 +305,7 @@ const About: React.FC = () => {
          <motion.button 
             whileHover={{ scale: 1.05 }} 
             whileTap={{ scale: 0.95 }}
-            className="group w-full md:w-auto px-8 py-4 md:px-10 md:py-5 bg-amber-500 text-white rounded-full font-bold text-[0.65rem] md:text-[0.7rem] tracking-[0.2em] uppercase shadow-2xl shadow-amber-500/30 flex items-center justify-center gap-4 mx-auto transition-all"
+            className="group w-full md:w-auto px-8 py-4 md:px-10 md:py-5 bg-[#D4AF37] text-white rounded-full font-bold text-[0.65rem] md:text-[0.7rem] tracking-[0.2em] uppercase shadow-2xl shadow-amber-500/30 flex items-center justify-center gap-4 mx-auto transition-all"
          >
             Join Our Mission <ArrowUpRight size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
          </motion.button>

@@ -27,17 +27,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ─── 3. THE "GRAIN" TEXTURE (CREATIVE OVERLAY) ──────────────── */
-/* This adds a subtle film-grain texture to the entire site for a premium, tactile feel */
+/* ─── 3. THE "GRAIN" TEXTURE (FIXED SVG) ─────────────────────── */
+/* Adds a subtle film-grain texture to the entire site for a premium feel */
 body::before {
   content: "";
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  opacity: 0.03;
+  opacity: 0.04;
   pointer-events: none;
   z-index: 9999;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3仿真%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  /* Corrected the data-uri SVG syntax */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
 /* ─── 4. HERITAGE TYPOGRAPHY ─────────────────────────────────── */
@@ -105,16 +106,16 @@ p, span, button, a, .font-sans {
 
 /* Kerning reveal effect for headers on hover */
 .reveal-text {
-  letter-spacing: 0.02em;
   transition: letter-spacing 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.reveal-text:hover {
-  letter-spacing: 0.15em;
+@media (min-width: 1024px) {
+  .reveal-text:hover {
+    letter-spacing: 0.15em;
+  }
 }
 
 /* ─── 8. MOUSE POINTER ELEGANCE ──────────────────────────────── */
-/* Optional: Adding a custom cursor dot via CSS only (requires JS for position, but CSS for style) */
 .custom-cursor-dot {
   width: 8px;
   height: 8px;
