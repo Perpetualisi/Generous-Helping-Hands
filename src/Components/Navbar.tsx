@@ -74,7 +74,7 @@ const ResponsiveLogo: React.FC<{ onClick: () => void }> = ({ onClick }) => (
   >
     <div className="w-[42px] h-[42px] sm:w-[48px] sm:h-[48px] rounded-xl overflow-hidden shadow-lg shadow-amber-200/50 transition-transform group-hover:scale-105 duration-300">
       <img 
-        src="/logo_dark.jpg" 
+        src="/logo_light.jpg" 
         alt="GHHF Logo"
         className="w-full h-full object-cover"
       />

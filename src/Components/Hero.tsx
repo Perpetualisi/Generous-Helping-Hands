@@ -288,7 +288,7 @@ const Hero: React.FC = () => {
         }
 
         @media (max-width: 1024px) {
-          .h-grid { flex-direction: column !important; padding: 4rem 1.5rem 5rem !important; gap: 4rem !important; }
+          .h-grid { flex-direction: column !important; padding: 2rem 1.5rem 5rem !important; gap: 3rem !important; }
           .h-text { align-items: center !important; text-align: center !important; }
           .h-eyebrow, .h-ctas { justify-content: center !important; }
           .h-divider { display: none !important; }
@@ -332,6 +332,9 @@ const Hero: React.FC = () => {
           fontFamily: "'DM Sans', sans-serif",
           display: "flex",
           flexDirection: "column",
+          // Increased padding to push content further down
+          paddingTop: isMobile ? "120px" : "160px", 
+          marginTop: "0"
         }}
       >
         {/* Subtle Noise Texture */}
@@ -344,12 +347,12 @@ const Hero: React.FC = () => {
           <motion.div style={{
             position: "absolute", width: "800px", height: "800px", borderRadius: "50%",
             background: "radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%)",
-            top: "-10%", right: "-10%", filter: "blur(80px)", pointerEvents: "none", zIndex: 0,
+            top: "5%", right: "-10%", filter: "blur(80px)", pointerEvents: "none", zIndex: 0,
             x: orbX, y: orbY,
           }} />
         )}
 
-        <div style={{ position: "relative", zIndex: 5, paddingTop: "100px" }}>
+        <div style={{ position: "relative", zIndex: 5 }}>
           <MarqueeStrip />
         </div>
 
