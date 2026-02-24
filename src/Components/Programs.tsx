@@ -1,11 +1,37 @@
 import React, { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, type Variants } from "framer-motion";
 import {
   Briefcase, BookOpen, HeartPulse, Star,
-  Image as ImageIcon, Sparkles, ArrowUpRight,
+  Image as ImageIcon, Sparkles, ArrowUpRight, ArrowRight
 } from "lucide-react";
 
-// ─── TYPES ────────────────────────────────────────────────────────────────────
+// ─── PREMIUM DESIGN SYSTEM ──────────────────────────────────────────────────
+const THEME = {
+  gold: "linear-gradient(135deg, #D4AF37 0%, #F59E0B 50%, #B8860B 100%)",
+  goldSolid: "#D4AF37",
+  bgWarm: "#FFFDF9",
+  textMain: "#2D241E",
+  glassBorder: "rgba(212, 175, 55, 0.15)",
+  cardWhite: "rgba(255, 255, 255, 0.7)",
+};
+
+// ─── ANIMATIONS ──────────────────────────────────────────────────────────────
+const revealVariants: Variants = {
+  hidden: { opacity: 0, y: 30, filter: "blur(8px)" },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    filter: "blur(0px)",
+    transition: { duration: 1, ease: [0.23, 1, 0.32, 1] } 
+  }
+};
+
+const staggerContainer: Variants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.12 } }
+};
+
+// ─── TYPES & DATA ──────────────────────────────────────────────────────────
 interface Program {
   icon: React.ElementType;
   title: string;
@@ -14,7 +40,6 @@ interface Program {
   tag: string;
 }
 
-// ─── DATA ─────────────────────────────────────────────────────────────────────
 const PROGRAMS: Program[] = [
   {
     icon: Briefcase,
@@ -28,152 +53,102 @@ const PROGRAMS: Program[] = [
     title: "Educational Initiatives",
     tag: "Future Leaders",
     description: "Providing scholarships, mentorship, and workshops that unlock learning and open doors for women, girls, and young people.",
-    detail: "Every scholarship covers tuition, books, and uniforms. We also run after-school STEM clubs in Lagos secondary schools to bridge the opportunity gap for girls in tech.",
+    detail: "Every scholarship covers tuition, books, and uniforms. We also run after-school STEM clubs in secondary schools to bridge the opportunity gap for girls in tech.",
   },
   {
     icon: HeartPulse,
     title: "Health & Wellbeing",
     tag: "Community Care",
     description: "Ensuring access to vital sexual and reproductive health information and services so individuals can live healthy, confident lives.",
-    detail: "Our mobile clinics offer free antenatal checks and reproductive health services. Last year, we trained 50 community health ambassadors to serve over 1,200 mothers across Lagos.",
+    detail: "Our mobile clinics offer free health checks. Last year, we trained 50 community health ambassadors to serve over 1,200 mothers across Lagos.",
   },
   {
     icon: Star,
     title: "Youth Empowerment",
     tag: "Next Generation",
     description: "Equipping young people with leadership skills, life skills, and opportunities to realize their potential and become agents of change.",
-    detail: "Our youth programmes run leadership academies, mentorship circles, and community action projects — giving young people the confidence and skills to drive change in their own communities.",
+    detail: "Our youth programmes run leadership academies, mentorship circles, and community action projects — giving young people the confidence to drive change.",
   },
 ];
 
 const EVENT_PHOTOS = [
-  { src: "/event11.jpeg", alt: "Community outreach",  gridArea: "large" },
-  { src: "/event22.jpeg", alt: "Skills training",     gridArea: "top-right" },
-  { src: "/events3.jpg",  alt: "Youth mentorship",    gridArea: "mid-right" },
-  { src: "/events4.jpg",  alt: "Medical outreach",    gridArea: "bottom-left" },
-  { src: "/events5.jpg",  alt: "Empowerment summit",  gridArea: "bottom-mid" },
-  { src: "/events6.jpg",  alt: "Advocacy walk",       gridArea: "bottom-right" },
+  { src: "/event11.jpeg", alt: "Community outreach", gridArea: "large" },
+  { src: "/event22.jpeg", alt: "Skills training",    gridArea: "top-right" },
+  { src: "/events3.jpg",  alt: "Youth mentorship",   gridArea: "mid-right" },
+  { src: "/events4.jpg",  alt: "Medical outreach",   gridArea: "bottom-left" },
+  { src: "/events5.jpg",  alt: "Empowerment summit", gridArea: "bottom-mid" },
+  { src: "/events6.jpg",  alt: "Advocacy walk",      gridArea: "bottom-right" },
 ];
 
-// ─── 3D PROGRAM CARD ─────────────────────────────────────────────────────────
+// ─── SUB-COMPONENTS ──────────────────────────────────────────────────────────
+const PremiumEyebrow: React.FC<{ icon: React.ElementType; children: React.ReactNode }> = ({ icon: Icon, children }) => (
+  <motion.div 
+    variants={revealVariants}
+    className="inline-flex items-center gap-3 px-5 py-2 rounded-full mb-8"
+    style={{ background: "rgba(212, 175, 55, 0.05)", border: `1px solid ${THEME.glassBorder}` }}
+  >
+    <Icon size={14} style={{ color: THEME.goldSolid }} />
+    <span className="font-['DM_Sans'] text-[0.65rem] font-black tracking-[0.3em] uppercase text-amber-800">
+      {children}
+    </span>
+  </motion.div>
+);
+
 const ProgramCard: React.FC<{ program: Program; index: number; isMobile: boolean }> = ({ program, index, isMobile }) => {
   const [open, setOpen] = useState(false);
-  const [hovered, setHovered] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
-
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const mouseXSpring = useSpring(x, { stiffness: 150, damping: 20 });
   const mouseYSpring = useSpring(y, { stiffness: 150, damping: 20 });
-  
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["10deg", "-10deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-10deg", "10deg"]);
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!cardRef.current || isMobile) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    x.set(mouseX / width - 0.5);
-    y.set(mouseY / height - 0.5);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0); 
-    y.set(0);
-    setHovered(false);
-  };
-
-  const Icon = program.icon;
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7deg", "-7deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7deg", "7deg"]);
 
   return (
     <motion.div
       ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        rotateX: isMobile ? 0 : rotateX,
-        rotateY: isMobile ? 0 : rotateY,
-        transformStyle: "preserve-3d",
+      onMouseMove={(e) => {
+        const rect = cardRef.current?.getBoundingClientRect();
+        if (rect && !isMobile) {
+          x.set((e.clientX - rect.left) / rect.width - 0.5);
+          y.set((e.clientY - rect.top) / rect.height - 0.5);
+        }
       }}
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
+      onMouseLeave={() => { x.set(0); y.set(0); }}
+      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+      variants={revealVariants}
+      className="group"
     >
-      <div style={{
-        position: "relative",
-        background: "linear-gradient(145deg, #141412 0%, #0d0d0c 100%)",
-        borderRadius: isMobile ? "1.25rem" : "1.75rem",
-        padding: isMobile ? "1.5rem" : "2rem",
-        border: "1px solid",
-        borderColor: hovered ? "rgba(201,169,110,0.4)" : "rgba(255,255,255,0.06)",
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-        transition: "border-color 0.3s ease, box-shadow 0.3s ease",
-        boxShadow: hovered ? "0 25px 50px -12px rgba(0, 0, 0, 0.5)" : "0 10px 30px -10px rgba(0, 0, 0, 0.3)",
-      }}>
-        {/* Glow Effect */}
-        <div style={{
-          position: "absolute", inset: 0,
-          background: `radial-gradient(circle at 50% 0%, rgba(201,169,110,0.08), transparent 70%)`,
-          opacity: hovered ? 1 : 0.5,
-          transition: "opacity 0.4s ease",
-          pointerEvents: "none"
-        }} />
-
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem", position: "relative" }}>
-          <div style={{
-            width: "44px", height: "44px", borderRadius: "10px",
-            background: "rgba(201,169,110,0.1)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            color: "#C9A96E", border: "1px solid rgba(201,169,110,0.2)",
-          }}>
-            <Icon size={20} />
+      <div className="relative overflow-hidden p-8 md:p-10 rounded-[2.5rem] h-full flex flex-col transition-all duration-700 border border-stone-100 backdrop-blur-md"
+           style={{ background: THEME.cardWhite, boxShadow: "0 20px 50px rgba(0,0,0,0.03)" }}>
+        
+        <div className="flex justify-between items-start mb-10">
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-500 group-hover:bg-amber-500 group-hover:text-white"
+               style={{ background: "rgba(212,175,55,0.1)", color: THEME.goldSolid, border: `1px solid ${THEME.glassBorder}` }}>
+            <program.icon size={20} />
           </div>
-          <span style={{
-            fontSize: "0.5rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.2em",
-            color: "#C9A96E", padding: "0.4rem 0.7rem", borderRadius: "20px",
-            background: "rgba(201,169,110,0.05)", border: "1px solid rgba(201,169,110,0.1)",
-          }}>
+          <span className="text-[0.55rem] font-black tracking-[0.2em] uppercase px-4 py-1.5 rounded-full border border-amber-100 text-amber-700 bg-white/50">
             {program.tag}
           </span>
         </div>
 
-        <div style={{ position: "relative" }}>
-          <h3 style={{
-            fontFamily: "'Playfair Display', serif",
-            fontSize: "1.25rem",
-            fontWeight: 700, color: "#fff", marginBottom: "0.75rem",
-            lineHeight: 1.3
-          }}>
-            {program.title}
-          </h3>
-          <p style={{
-            color: "rgba(255,255,255,0.5)", fontFamily: "'DM Sans', sans-serif",
-            fontSize: "0.85rem", lineHeight: 1.6, marginBottom: "1.5rem",
-          }}>
-            {program.description}
-          </p>
-        </div>
+        <h3 className="font-['Playfair_Display'] text-2xl font-bold text-stone-800 mb-6 leading-tight">
+          {program.title}
+        </h3>
+        
+        <p className="text-stone-500 text-sm font-light leading-relaxed mb-8 flex-grow">
+          {program.description}
+        </p>
 
-        <AnimatePresence initial={false}>
+        <AnimatePresence>
           {open && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              style={{ overflow: "hidden" }}
+              className="overflow-hidden border-t border-amber-100 pt-6 mb-6"
             >
-              <p style={{
-                fontSize: "0.85rem", color: "#C9A96E", fontStyle: "italic",
-                lineHeight: 1.6, paddingBottom: "1.5rem", fontFamily: "'Playfair Display', serif",
-                borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "1rem"
-              }}>
+              <p className="font-['Playfair_Display'] text-amber-700 italic text-md leading-relaxed">
                 {program.detail}
               </p>
             </motion.div>
@@ -182,17 +157,11 @@ const ProgramCard: React.FC<{ program: Program; index: number; isMobile: boolean
 
         <button
           onClick={() => setOpen(!open)}
-          style={{
-            display: "flex", alignItems: "center", gap: "0.5rem",
-            fontSize: "0.6rem", fontWeight: 800, textTransform: "uppercase",
-            letterSpacing: "0.15em", color: "#C9A96E", background: "none",
-            border: "none", cursor: "pointer", padding: "0.5rem 0",
-            position: "relative", width: "fit-content", marginTop: "auto"
-          }}
+          className="flex items-center gap-3 text-stone-900 text-[0.6rem] font-black tracking-[0.3em] uppercase group/btn mt-auto"
         >
-          {open ? "Show Less" : "Discover Impact"}
-          <motion.div animate={{ rotate: open ? 45 : 0 }}>
-            <ArrowUpRight size={14} />
+          <span className="group-hover/btn:text-amber-600 transition-colors">{open ? "Show Less" : "Discover Impact"}</span>
+          <motion.div animate={{ rotate: open ? 45 : 0 }} className="text-amber-500">
+            <ArrowUpRight size={16} />
           </motion.div>
         </button>
       </div>
@@ -205,34 +174,18 @@ const Programs: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 1024px)");
-    setIsMobile(mediaQuery.matches);
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mediaQuery.addEventListener("change", handler);
-    return () => mediaQuery.removeEventListener("change", handler);
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   return (
-    <>
+    <div className="relative w-full overflow-hidden" style={{ background: THEME.bgWarm, color: THEME.textMain }}>
       <style>{`
-        /* Desktop: Forces 4 columns on one line */
-        .prog-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 1.5rem;
-          margin-top: 4rem;
-          align-items: flex-start; /* Prevents cards from stretching when one expands */
-        }
-
-        /* Responsive Grid Adjustments */
-        @media (max-width: 1100px) {
-          .prog-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-        @media (max-width: 640px) {
-          .prog-grid { grid-template-columns: 1fr; }
-        }
-
-        .event-grid {
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@300;400;500;700;900&display=swap');
+        .gold-text { background: ${THEME.gold}; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .event-grid-premium {
           display: grid;
           gap: 1.5rem;
           grid-template-areas: 
@@ -242,114 +195,104 @@ const Programs: React.FC = () => {
           grid-template-columns: repeat(3, 1fr);
           grid-auto-rows: 240px;
         }
-
         @media (max-width: 1024px) {
-          .event-grid {
+          .event-grid-premium {
             grid-template-areas: none;
             grid-template-columns: repeat(2, 1fr);
             grid-auto-rows: 200px;
           }
-          .event-photo-wrap { grid-area: auto !important; }
         }
-
         @media (max-width: 640px) {
-          .event-grid {
+          .event-grid-premium {
             grid-template-columns: 1fr;
-            grid-auto-rows: 250px;
-            gap: 1rem;
+            grid-auto-rows: 300px;
           }
         }
-
-        .img-zoom {
-          width: 100%; height: 100%; object-fit: cover;
-          transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .event-photo-wrap:hover .img-zoom { transform: scale(1.1); }
       `}</style>
 
-      <section id="ourprograms" style={{ background: "#0A0908", padding: isMobile ? "4rem 0" : "8rem 0", color: "#fff", overflow: "hidden" }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1.5rem" }}>
-          
-          {/* Header */}
-          <div style={{ maxWidth: "700px", marginBottom: "4rem" }}>
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "#C9A96E", marginBottom: "1rem" }}
-            >
-              <Sparkles size={16} />
-              <span style={{ fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.3em" }}>Our Programs</span>
-            </motion.div>
-            
-            <motion.h2 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              style={{ fontFamily: "'Playfair Display', serif", fontSize: isMobile ? "2.5rem" : "4rem", lineHeight: 1.1, marginBottom: "1.5rem" }}
-            >
-              Creating <span style={{ fontStyle: "italic", color: "#C9A96E" }}>Real Impact.</span>
+      <section id="ourprograms" className="py-24 md:py-48 px-6 max-w-7xl mx-auto">
+        {/* Header */}
+        <motion.div 
+          initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}
+          className="mb-20 md:mb-32"
+        >
+          <PremiumEyebrow icon={Sparkles}>Our Programs</PremiumEyebrow>
+          <div className="grid lg:grid-cols-2 gap-12 items-end">
+            <motion.h2 variants={revealVariants} className="font-['Playfair_Display'] text-4xl md:text-[5.5rem] font-bold leading-[0.95] tracking-tighter">
+              Creating <br /><em className="gold-text italic font-normal">Real Impact.</em>
             </motion.h2>
-
-            <motion.p 
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              style={{ color: "rgba(255,255,255,0.4)", fontSize: "1.05rem", lineHeight: 1.7, borderLeft: "2px solid #C9A96E", paddingLeft: "1.5rem" }}
-            >
+            <motion.p variants={revealVariants} className="text-stone-500 text-lg md:text-xl font-light leading-relaxed border-l-2 border-amber-500/20 pl-8">
               We empower women, girls, and youth to thrive through programs that create real, lasting change — from financial independence and education to health and leadership.
             </motion.p>
           </div>
+        </motion.div>
 
-          {/* Cards Grid - Now strictly 4 columns on desktop */}
-          <div className="prog-grid">
-            {PROGRAMS.map((p, i) => (
-              <ProgramCard key={i} program={p} index={i} isMobile={isMobile} />
+        {/* Programs Grid */}
+        <motion.div 
+          initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}
+          className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-40 md:mb-64"
+        >
+          {PROGRAMS.map((p, i) => (
+            <ProgramCard key={i} program={p} index={i} isMobile={isMobile} />
+          ))}
+        </motion.div>
+
+        {/* Gallery */}
+        <div id="events" className="relative">
+          <motion.div 
+            initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}
+            className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8 border-b border-stone-200 pb-12"
+          >
+            <div>
+              <PremiumEyebrow icon={ImageIcon}>Field Operations</PremiumEyebrow>
+              <h3 className="font-['Playfair_Display'] text-3xl md:text-5xl font-bold">In the Field</h3>
+            </div>
+            <div className="text-right">
+               <p className="text-stone-400 text-[0.65rem] font-black tracking-[0.4em] uppercase">Real Moments, Real Change</p>
+            </div>
+          </motion.div>
+
+          <div className="event-grid-premium">
+            {EVENT_PHOTOS.map((photo, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="relative group overflow-hidden rounded-[2.5rem] bg-stone-100 shadow-xl shadow-stone-900/5"
+                style={{ gridArea: isMobile ? "auto" : photo.gridArea }}
+              >
+                <img 
+                  src={photo.src} 
+                  alt={photo.alt} 
+                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-stone-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 p-8 flex flex-col justify-end">
+                   <div className="flex items-center gap-3 text-white">
+                      <ImageIcon size={14} className="text-amber-500" />
+                      <span className="text-[0.6rem] font-black uppercase tracking-widest">{photo.alt}</span>
+                   </div>
+                </div>
+              </motion.div>
             ))}
           </div>
 
-          {/* Gallery Section */}
-          <div id="events" style={{ marginTop: isMobile ? "6rem" : "10rem" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "3rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "1.5rem" }}>
-              <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: isMobile ? "2rem" : "2.5rem" }}>In the Field</h2>
-              {!isMobile && <span style={{ color: "#C9A96E", fontSize: "0.6rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.2em" }}>Real Moments, Real Change</span>}
-            </div>
-
-            <div className="event-grid">
-              {EVENT_PHOTOS.map((photo, i) => (
-                <motion.div
-                  key={i}
-                  className="event-photo-wrap"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.05 }}
-                  style={{ 
-                    gridArea: photo.gridArea, 
-                    position: "relative", 
-                    overflow: "hidden", 
-                    borderRadius: "1rem",
-                    background: "#141412"
-                  }}
-                >
-                  <img src={photo.src} alt={photo.alt} className="img-zoom" />
-                  <div style={{
-                    position: "absolute", inset: 0, 
-                    background: "linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%)",
-                    display: "flex", alignItems: "flex-end", padding: "1.25rem"
-                  }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "#fff" }}>
-                      <ImageIcon size={14} color="#C9A96E" />
-                      <span style={{ fontSize: "0.65rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em" }}>{photo.alt}</span>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
+          <motion.div 
+            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
+            className="mt-20 flex justify-center"
+          >
+            <button className="flex items-center gap-6 text-stone-900 font-black text-[0.6rem] tracking-[0.5em] uppercase px-12 py-6 rounded-full border border-stone-200 hover:border-amber-500/50 hover:bg-white transition-all shadow-lg shadow-amber-900/5">
+              View Full Gallery <ArrowRight size={16} className="text-amber-500" />
+            </button>
+          </motion.div>
         </div>
       </section>
-    </>
+
+      {/* Background Accents */}
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-amber-200/10 blur-[150px] -z-10 rounded-full" />
+      <div className="absolute bottom-[20%] left-[-10%] w-[500px] h-[500px] bg-orange-200/10 blur-[150px] -z-10 rounded-full" />
+    </div>
   );
 };
 

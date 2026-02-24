@@ -2,6 +2,17 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Phone, Share2, MapPin, Heart, ArrowRight, Sparkles } from "lucide-react";
 
+// ─── PREMIUM DESIGN SYSTEM (LIGHT) ────────────────────────────────────────────
+const THEME = {
+  gold: "linear-gradient(135deg, #D4AF37 0%, #F59E0B 50%, #B8860B 100%)",
+  goldSolid: "#D4AF37",
+  bgWarm: "#FFFDF9",
+  textMain: "#2D241E",
+  glassBorder: "rgba(212, 175, 55, 0.15)",
+  cardWhite: "rgba(255, 255, 255, 0.7)",
+  accentCream: "rgba(212, 175, 55, 0.05)",
+};
+
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 interface ContactInfo {
   icon: React.ElementType;
@@ -10,7 +21,7 @@ interface ContactInfo {
   link?: string;
 }
 
-// ─── DATA ─────────────────────────────────────────────────────────────────────
+// ─── DATA (RETAINED) ──────────────────────────────────────────────────────────
 const CONTACT_INFO: ContactInfo[] = [
   { icon: Phone, title: "Phone", content: "+234 903 685 4354", link: "tel:+2349036854354" },
   { icon: Mail, title: "Email", content: "Giversgenerous@gmail.com", link: "mailto:Giversgenerous@gmail.com" },
@@ -27,33 +38,20 @@ const ContactRow: React.FC<{ info: ContactInfo }> = ({ info }) => {
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "1rem",
-        padding: "0.75rem",
-        borderRadius: "1rem",
-        background: hovered ? "rgba(255,255,255,0.04)" : "transparent",
-        transition: "all 0.3s ease",
-      }}
+      className="flex items-center gap-4 p-3 rounded-2xl transition-all duration-300"
+      style={{ background: hovered ? "rgba(212, 175, 55, 0.08)" : "transparent" }}
     >
-      <div style={{
-        width: "44px", height: "44px", flexShrink: 0,
-        borderRadius: "0.75rem",
-        background: hovered ? "#C9A96E" : "rgba(201,169,110,0.1)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        transition: "all 0.4s ease",
-      }}>
-        <Icon size={18} color={hovered ? "#0A0908" : "#C9A96E"} style={{ transition: "color 0.4s ease" }} />
+      <div 
+        className="w-11 h-11 flex-shrink-0 rounded-xl flex items-center justify-center transition-all duration-400"
+        style={{ 
+          background: hovered ? THEME.goldSolid : "rgba(212, 175, 55, 0.1)",
+        }}
+      >
+        <Icon size={18} color={hovered ? "#fff" : THEME.goldSolid} style={{ transition: "color 0.4s ease" }} />
       </div>
 
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{
-          fontSize: "0.65rem", fontWeight: 800,
-          textTransform: "uppercase", letterSpacing: "0.15em",
-          color: "rgba(255,255,255,0.4)",
-          marginBottom: "0.15rem",
-        }}>
+      <div className="flex-1 min-w-0">
+        <p className="text-[0.6rem] font-black uppercase tracking-[0.15em] text-stone-400 mb-1 font-['DM_Sans']">
           {info.title}
         </p>
         {info.link ? (
@@ -61,25 +59,16 @@ const ContactRow: React.FC<{ info: ContactInfo }> = ({ info }) => {
             href={info.link}
             target={info.link.startsWith("http") ? "_blank" : undefined}
             rel="noreferrer"
-            style={{
-              color: hovered ? "#C9A96E" : "#fff",
-              fontWeight: 500,
+            className="font-medium text-stone-800 transition-colors duration-300 block overflow-wrap-anywhere leading-snug"
+            style={{ 
               fontSize: "clamp(0.85rem, 3vw, 0.95rem)",
-              textDecoration: "none",
-              transition: "color 0.3s ease",
-              display: "block",
-              overflowWrap: "anywhere", // Prevents breaking unless necessary
-              lineHeight: 1.4,
+              color: hovered ? THEME.goldSolid : "#2D241E" 
             }}
           >
             {info.content}
           </a>
         ) : (
-          <p style={{
-            color: "#fff", fontWeight: 500,
-            fontSize: "clamp(0.85rem, 3vw, 0.95rem)",
-            overflowWrap: "anywhere",
-          }}>
+          <p className="font-medium text-stone-800 overflow-wrap-anywhere" style={{ fontSize: "clamp(0.85rem, 3vw, 0.95rem)" }}>
             {info.content}
           </p>
         )}
@@ -93,205 +82,118 @@ const Contact: React.FC = () => {
   const [ctaHovered, setCtaHovered] = useState(false);
 
   return (
-    <>
+    <section id="contact" className="relative py-24 md:py-32 overflow-hidden font-['DM_Sans']" style={{ background: THEME.bgWarm }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;700&display=swap');
-
-        .ct-cards {
-          display: grid;
-          grid-template-columns: 1.1fr 0.9fr;
-          gap: 2rem;
-        }
-
-        .ct-cta-btns {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 0.875rem;
-        }
-
-        @media (max-width: 991px) {
-          .ct-cards { grid-template-columns: 1fr; }
-        }
-
-        @media (max-width: 500px) {
-          .ct-cta-btns { grid-template-columns: 1fr; }
-          .ct-section { padding: 5rem 0 6rem !important; }
-          .ct-header { margin-bottom: 3rem !important; }
-          .ct-card-inner { padding: 1.5rem !important; }
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;700;900&display=swap');
+        .ct-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 2.5rem; }
+        .gold-text { background: ${THEME.gold}; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        @media (max-width: 991px) { .ct-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 500px) { .ct-cta-btns { grid-template-columns: 1fr !important; } }
       `}</style>
 
-      <section
-        id="contact"
-        className="ct-section"
-        style={{
-          position: "relative",
-          background: "#0A0908",
-          padding: "8rem 0",
-          overflow: "hidden",
-          color: "#fff",
-          fontFamily: "'DM Sans', sans-serif",
-        }}
-      >
-        {/* BG Orbs */}
-        <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-          <div style={{
-            position: "absolute", top: "-10%", left: "-10%",
-            width: "60%", height: "60%",
-            background: "radial-gradient(circle, rgba(201,169,110,0.08) 0%, transparent 70%)",
-            filter: "blur(80px)",
-          }} />
-        </div>
+      {/* Background Decor */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-5%] w-[60%] h-[60%] blur-[120px] rounded-full opacity-30"
+             style={{ background: "radial-gradient(circle, #D4AF37 0%, transparent 70%)" }} />
+      </div>
 
-        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 1.25rem", position: "relative", zIndex: 2 }}>
+      <div className="max-w-6xl mx-auto px-6 relative z-10">
+        
+        {/* Header */}
+        <div className="text-center mb-16 md:mb-24">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
+            style={{ background: THEME.accentCream, border: `1px solid ${THEME.glassBorder}` }}
+          >
+            <Heart size={12} style={{ color: THEME.goldSolid }} />
+            <span className="text-[0.65rem] font-black uppercase tracking-[0.2em] text-amber-800">
+              Connect With Us
+            </span>
+          </motion.div>
+
+          <motion.h2
+            initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            className="font-['Playfair_Display'] text-4xl md:text-6xl text-stone-800 font-bold leading-tight"
+          >
+            Get in <span className="gold-text italic font-normal">Touch.</span>
+          </motion.h2>
           
-          {/* Header */}
-          <div className="ct-header" style={{ textAlign: "center", marginBottom: "4.5rem" }}>
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              style={{
-                display: "inline-flex", alignItems: "center", gap: "0.5rem",
-                padding: "0.5rem 1rem",
-                background: "rgba(201,169,110,0.1)",
-                border: "1px solid rgba(201,169,110,0.2)",
-                borderRadius: "100px",
-                marginBottom: "1.5rem",
-              }}
-            >
-              <Heart size={12} color="#C9A96E" />
-              <span style={{ fontSize: "0.65rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.2em", color: "#C9A96E" }}>
-                Connect With Us
-              </span>
-            </motion.div>
-
-            <motion.h2
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              style={{
-                fontFamily: "'Playfair Display', serif",
-                fontSize: "clamp(2.2rem, 8vw, 3.8rem)",
-                lineHeight: 1.1,
-                fontWeight: 400,
-              }}
-            >
-              Get in <span style={{ fontStyle: "italic", color: "#C9A96E" }}>Touch.</span>
-            </motion.h2>
-            
-            <motion.p
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              style={{
-                color: "rgba(255,255,255,0.4)",
-                fontSize: "1rem",
-                maxWidth: "480px",
-                margin: "1.5rem auto 0",
-                lineHeight: 1.6,
-              }}
-            >
-              Together, we can create a brighter future for women and girls everywhere.
-            </motion.p>
-          </div>
-
-          <div className="ct-cards">
-            {/* Card 1: Contact */}
-            <motion.div
-              className="ct-card-inner"
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              style={{
-                background: "#111110",
-                borderRadius: "2rem",
-                border: "1px solid rgba(255,255,255,0.06)",
-                padding: "2.5rem",
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "2rem" }}>
-                <Mail size={18} color="#C9A96E" />
-                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.35rem", fontWeight: 600 }}>
-                  Inquiries
-                </h3>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                {CONTACT_INFO.map((info, i) => (
-                  <ContactRow key={i} info={info} />
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Card 2: CTA */}
-            <motion.div
-              className="ct-card-inner"
-              onMouseEnter={() => setCtaHovered(true)}
-              onMouseLeave={() => setCtaHovered(false)}
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              style={{
-                position: "relative",
-                overflow: "hidden",
-                background: "linear-gradient(145deg, #C9A96E 0%, #a07840 100%)",
-                borderRadius: "2rem",
-                padding: "2.5rem",
-                color: "#0A0908",
-              }}
-            >
-              <div style={{ position: "absolute", top: "-10%", right: "-10%", opacity: 0.1, transform: ctaHovered ? "scale(1.1) rotate(15deg)" : "scale(1) rotate(0deg)", transition: "0.6s ease" }}>
-                <Sparkles size={180} />
-              </div>
-
-              <div style={{ position: "relative", zIndex: 1 }}>
-                <p style={{ fontSize: "0.6rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.2em", color: "rgba(10,9,8,0.5)", marginBottom: "1rem" }}>
-                  Support Our Mission
-                </p>
-                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(1.5rem, 4vw, 1.85rem)", fontWeight: 700, fontStyle: "italic", marginBottom: "1rem" }}>
-                  Ready to Make a Difference?
-                </h3>
-                <p style={{ fontSize: "0.95rem", lineHeight: 1.6, color: "rgba(10,9,8,0.7)", marginBottom: "2rem" }}>
-                  Join us in empowering women and girls through direct action.
-                </p>
-
-                <div className="ct-cta-btns">
-                  <motion.a
-                    href="#donation"
-                    whileHover={{ y: -2 }}
-                    whileTap={{ scale: 0.98 }}
-                    style={{
-                      background: "#0A0908", color: "#fff",
-                      padding: "1rem", borderRadius: "100px",
-                      textAlign: "center", fontSize: "0.7rem", fontWeight: 700,
-                      textTransform: "uppercase", letterSpacing: "0.1em",
-                      textDecoration: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem"
-                    }}
-                  >
-                    Donate <ArrowRight size={14} />
-                  </motion.a>
-                  <motion.a
-                    href="#volunteer"
-                    whileHover={{ y: -2 }}
-                    whileTap={{ scale: 0.98 }}
-                    style={{
-                      background: "rgba(10,9,8,0.1)", color: "#0A0908",
-                      padding: "1rem", borderRadius: "100px",
-                      textAlign: "center", fontSize: "0.7rem", fontWeight: 700,
-                      textTransform: "uppercase", letterSpacing: "0.1em",
-                      textDecoration: "none", border: "1px solid rgba(10,9,8,0.1)"
-                    }}
-                  >
-                    Volunteer
-                  </motion.a>
-                </div>
-              </div>
-            </motion.div>
-          </div>
+          <motion.p
+            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
+            className="max-w-lg mx-auto text-stone-500 text-lg mt-6 font-light leading-relaxed"
+          >
+            Together, we can create a brighter future for women and girls everywhere.
+          </motion.p>
         </div>
-      </section>
-    </>
+
+        <div className="ct-grid">
+          {/* Card 1: Contact Info */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
+            className="bg-white/70 backdrop-blur-md rounded-[2.5rem] p-8 md:p-12 border border-stone-100 shadow-xl shadow-stone-200/50"
+          >
+            <div className="flex items-center gap-3 mb-8">
+              <Mail size={18} style={{ color: THEME.goldSolid }} />
+              <h3 className="font-['Playfair_Display'] text-2xl font-bold text-stone-800">Inquiries</h3>
+            </div>
+            <div className="flex flex-col gap-2">
+              {CONTACT_INFO.map((info, i) => (
+                <ContactRow key={i} info={info} />
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Card 2: CTA Callout */}
+          <motion.div
+            onMouseEnter={() => setCtaHovered(true)}
+            onMouseLeave={() => setCtaHovered(false)}
+            initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
+            className="relative overflow-hidden rounded-[2.5rem] p-8 md:p-12 flex flex-col justify-center"
+            style={{ background: THEME.gold, color: "#fff" }}
+          >
+            {/* Animated Decor */}
+            <div 
+              className="absolute -top-10 -right-10 opacity-10 transition-transform duration-700"
+              style={{ transform: ctaHovered ? "scale(1.1) rotate(15deg)" : "scale(1) rotate(0deg)" }}
+            >
+              <Sparkles size={220} />
+            </div>
+
+            <div className="relative z-10">
+              <p className="text-[0.6rem] font-black uppercase tracking-[0.2em] text-white/60 mb-4">
+                Support Our Mission
+              </p>
+              <h3 className="font-['Playfair_Display'] text-3xl md:text-4xl font-bold italic mb-6 leading-tight">
+                Ready to Make a Difference?
+              </h3>
+              <p className="text-white/80 text-lg font-light mb-10 leading-relaxed">
+                Join us in empowering women and girls through direct action.
+              </p>
+
+              <div className="ct-cta-btns grid grid-cols-2 gap-4">
+                <motion.a
+                  href="#donation"
+                  whileHover={{ y: -3, boxShadow: "0 10px 20px rgba(0,0,0,0.15)" }}
+                  whileTap={{ scale: 0.98 }}
+                  className="bg-stone-900 text-white py-4 rounded-full text-center text-[0.7rem] font-bold uppercase tracking-widest flex items-center justify-center gap-2 no-underline shadow-lg transition-all"
+                >
+                  Donate <ArrowRight size={14} />
+                </motion.a>
+                <motion.a
+                  href="#volunteer"
+                  whileHover={{ y: -3, backgroundColor: "rgba(255,255,255,0.2)" }}
+                  whileTap={{ scale: 0.98 }}
+                  className="bg-white/10 backdrop-blur-sm text-white py-4 rounded-full text-center text-[0.7rem] font-bold uppercase tracking-widest no-underline border border-white/20 transition-all"
+                >
+                  Volunteer
+                </motion.a>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
   );
 };
 

@@ -1,75 +1,134 @@
-/* 1. Global Resets & Smoothing */
-html {
-  scroll-behavior: smooth;
-  /* Dark mode default background to prevent white flash */
-  background-color: #0A0908; 
-}
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;700;900&display=swap');
 
-html, body {
-  overflow-x: hidden;
-  /* Luxury font smoothing for high-end typography */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  transition: background-color 0.5s ease, color 0.5s ease;
-}
-
-/* 2. Heritage Palette Selection */
-::selection {
-  background-color: #C9A96E;
-  color: #0A0908;
-}
-
-/* 3. Global Perspective for 3D Cards */
+/* ─── 1. DYNAMIC THEME VARIABLES ──────────────────────────────── */
 :root {
+  --cream-bg: #FFFDF9;
+  --gold-primary: #D4AF37;
+  --gold-gradient: linear-gradient(135deg, #D4AF37 0%, #F59E0B 50%, #B8860B 100%);
+  --text-main: #2D241E;
+  --text-muted: rgba(45, 36, 30, 0.6);
+  --glass-border: rgba(212, 175, 55, 0.15);
   --perspective: 2000px;
 }
 
-.perspective-2000 {
-  perspective: var(--perspective);
+/* ─── 2. GLOBAL RESETS & SMOOTHING ────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+  background-color: var(--cream-bg);
+  cursor: auto;
 }
 
-/* 4. Scrollbar Customization */
+body {
+  margin: 0;
+  color: var(--text-main);
+  background-color: var(--cream-bg);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── 3. THE "GRAIN" TEXTURE (CREATIVE OVERLAY) ──────────────── */
+/* This adds a subtle film-grain texture to the entire site for a premium, tactile feel */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3仿真%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* ─── 4. HERITAGE TYPOGRAPHY ─────────────────────────────────── */
+h1, h2, h3, h4, .font-serif {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+p, span, button, a, .font-sans {
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: 0.01em;
+}
+
+/* ─── 5. UNIQUE SCROLLBAR (MINIMALIST GOLD) ──────────────────── */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0A0908;
+  background: var(--cream-bg);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #C9A96E;
-  border: 3px solid #0A0908;
-  border-radius: 10px;
+  background: var(--gold-primary);
+  border-radius: 100px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #A68A56;
+/* ─── 6. PREMIUM SELECTION ───────────────────────────────────── */
+::selection {
+  background-color: var(--gold-primary);
+  color: white;
 }
 
-/* 5. Smooth Transition for Theme Switches */
-div, section, article, nav, footer, button {
-  transition: background-color 0.5s ease, border-color 0.5s ease, color 0.5s ease;
+/* ─── 7. CREATIVE UTILITIES ──────────────────────────────────── */
+
+/* Gold Gradient Text */
+.gold-text {
+  background: var(--gold-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
 }
 
-/* 6. Typography Refinements */
-h1, h2, h3, h4, .font-serif {
-  font-family: 'Playfair Display', serif;
-  letter-spacing: -0.02em;
+/* Soft Floating Animation */
+@keyframes softFloat {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
 }
 
-p, span, button, .font-sans {
-  font-family: 'DM Sans', sans-serif;
+.animate-float {
+  animation: softFloat 5s ease-in-out infinite;
 }
 
-/* 7. Utilities for Premium Animations */
-.glass-effect {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+/* Glass Card with Gold Inner Glow */
+.glass-gold {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--glass-border);
+  box-shadow: inset 0 0 20px rgba(212, 175, 55, 0.03), 
+              0 15px 35px rgba(45, 36, 30, 0.05);
 }
 
-.gold-glow {
-  box-shadow: 0 0 30px rgba(201, 169, 110, 0.15);
+/* Kerning reveal effect for headers on hover */
+.reveal-text {
+  letter-spacing: 0.02em;
+  transition: letter-spacing 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal-text:hover {
+  letter-spacing: 0.15em;
+}
+
+/* ─── 8. MOUSE POINTER ELEGANCE ──────────────────────────────── */
+/* Optional: Adding a custom cursor dot via CSS only (requires JS for position, but CSS for style) */
+.custom-cursor-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--gold-primary);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 10000;
+  transition: transform 0.15s ease-out;
+}
+
+/* ─── 9. RESPONSIVE REFINEMENTS ─────────────────────────────── */
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
 }

@@ -39,13 +39,13 @@ const StatItem: React.FC<StatItemProps> = ({ icon: Icon, value, label }) => (
   >
     <Icon 
       size={15} 
-      color="#C9A96E" 
+      color="#D97706" 
       style={{ marginBottom: "0.6rem", display: "block" }} 
     />
-    <div className="h-stat-value" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 500, color: "#fff", lineHeight: 1 }}>
+    <div className="h-stat-value" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, color: "#2D241E", lineHeight: 1 }}>
       {value}
     </div>
-    <div className="h-stat-label" style={{ letterSpacing: "0.13em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginTop: "0.3rem" }}>
+    <div className="h-stat-label" style={{ letterSpacing: "0.13em", textTransform: "uppercase", color: "rgba(45,36,30,0.6)", marginTop: "0.3rem" }}>
       {label}
     </div>
   </div>
@@ -61,10 +61,10 @@ const MarqueeStrip: React.FC = () => {
   return (
     <div style={{
       overflow: "hidden",
-      borderTop: "1px solid rgba(201,169,110,0.15)",
-      borderBottom: "1px solid rgba(201,169,110,0.15)",
+      borderTop: "1px solid rgba(245,158,11,0.15)",
+      borderBottom: "1px solid rgba(245,158,11,0.15)",
       padding: "14px 0",
-      background: "rgba(201,169,110,0.02)",
+      background: "rgba(245,158,11,0.03)",
     }}>
       <motion.div
         style={{ display: "flex", gap: "3.5rem", whiteSpace: "nowrap" }}
@@ -77,7 +77,7 @@ const MarqueeStrip: React.FC = () => {
             fontSize: "0.7rem",
             letterSpacing: "0.35em",
             textTransform: "uppercase",
-            color: i % 2 === 0 ? "#C9A96E" : "rgba(255,255,255,0.2)",
+            color: i % 2 === 0 ? "#D97706" : "rgba(45,36,30,0.3)",
             fontStyle: i % 2 === 0 ? "italic" : "normal",
           }}>
             {w}&nbsp;{i % 2 === 0 ? "✦" : "·"}
@@ -118,7 +118,7 @@ const CinematicImage: React.FC<CinematicImageProps> = ({ isMobile }) => {
       <motion.div
         style={{
           position: "absolute", inset: "-20px",
-          background: "radial-gradient(circle at 50% 50%, rgba(201,169,110,0.12) 0%, transparent 75%)",
+          background: "radial-gradient(circle at 50% 50%, rgba(245,158,11,0.15) 0%, transparent 75%)",
           filter: "blur(40px)", zIndex: 0, borderRadius: "40px", pointerEvents: "none",
         }}
         animate={{ opacity: [0.3, 0.5, 0.3], scale: [1, 1.05, 1] }}
@@ -131,8 +131,8 @@ const CinematicImage: React.FC<CinematicImageProps> = ({ isMobile }) => {
         transformStyle: "preserve-3d",
         position: "relative", zIndex: 1,
         borderRadius: "24px", overflow: "hidden",
-        boxShadow: "0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(201,169,110,0.1)",
-        background: "#0a0a0a",
+        boxShadow: "0 40px 80px rgba(45,36,30,0.15), 0 0 0 1px rgba(245,158,11,0.1)",
+        background: "#fff",
         willChange: "transform"
       }}>
         <img
@@ -147,7 +147,7 @@ const CinematicImage: React.FC<CinematicImageProps> = ({ isMobile }) => {
 
         <div style={{
           position: "absolute", bottom: 0, left: 0, right: 0,
-          background: "linear-gradient(to top, rgba(0,0,0,0.95) 15%, transparent 100%)",
+          background: "linear-gradient(to top, rgba(45,36,30,0.9) 15%, transparent 100%)",
           padding: isMobile ? "2rem 1.25rem" : "4rem 2.5rem 2.5rem",
         }}>
           <p style={{
@@ -158,8 +158,8 @@ const CinematicImage: React.FC<CinematicImageProps> = ({ isMobile }) => {
             "Every woman deserves<br />a chance to rise."
           </p>
           <div style={{ display: "flex", alignItems: "center", gap: "0.8rem", marginTop: "1rem" }}>
-            <div style={{ width: "30px", height: "1px", background: "#C9A96E" }} />
-            <span style={{ fontSize: "0.65rem", letterSpacing: "0.25em", color: "#C9A96E", textTransform: "uppercase", fontWeight: 600 }}>
+            <div style={{ width: "30px", height: "1px", background: "#F59E0B" }} />
+            <span style={{ fontSize: "0.65rem", letterSpacing: "0.25em", color: "#F59E0B", textTransform: "uppercase", fontWeight: 600 }}>
               GHHF Mission
             </span>
           </div>
@@ -167,12 +167,12 @@ const CinematicImage: React.FC<CinematicImageProps> = ({ isMobile }) => {
 
         <div style={{
           position: "absolute", top: "1rem", right: "1rem",
-          border: "1px solid rgba(201,169,110,0.3)", borderRadius: "50%",
+          border: "1px solid rgba(245,158,11,0.3)", borderRadius: "50%",
           width: "44px", height: "44px",
           display: "flex", alignItems: "center", justifyContent: "center",
-          backdropFilter: "blur(15px)", background: "rgba(0,0,0,0.4)",
+          backdropFilter: "blur(15px)", background: "rgba(255,255,255,0.2)",
         }}>
-          <Heart size={16} fill="#C9A96E" color="#C9A96E" />
+          <Heart size={16} fill="#F59E0B" color="#F59E0B" />
         </div>
       </motion.div>
 
@@ -188,7 +188,7 @@ const CinematicImage: React.FC<CinematicImageProps> = ({ isMobile }) => {
         </div>
         <div style={{ whiteSpace: "nowrap" }}>
           <div style={{ fontSize: "1rem", fontWeight: 700, color: "#fff", lineHeight: 1 }}>500+</div>
-          <div style={{ fontSize: "0.55rem", color: "rgba(255,255,255,0.4)", letterSpacing: "0.1em", textTransform: "uppercase", marginTop: "2px" }}>
+          <div style={{ fontSize: "0.55rem", color: "rgba(255,255,255,0.7)", letterSpacing: "0.1em", textTransform: "uppercase", marginTop: "2px" }}>
             Lives Changed
           </div>
         </div>
@@ -233,27 +233,32 @@ const Hero: React.FC = () => {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap');
         
-        :root { --gold: #C9A96E; --dark: #060608; }
+        :root { 
+          --accent: #F59E0B; 
+          --accent-deep: #D97706;
+          --text-main: #2D241E;
+          --bg-warm: #FFFDF9; 
+        }
 
         .h-cta-primary {
-          background: linear-gradient(135deg, var(--gold), #a07840);
-          color: #080808; border: none;
+          background: linear-gradient(135deg, var(--accent), #EA580C);
+          color: #fff; border: none;
           padding: 0.9rem 2rem; border-radius: 100px;
           font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 700;
           letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
           display: inline-flex; align-items: center; gap: 0.7rem;
           transition: all 0.4s cubic-bezier(0.2, 1, 0.3, 1);
-          box-shadow: 0 10px 30px rgba(201,169,110,0.2);
+          box-shadow: 0 10px 30px rgba(245,158,11,0.3);
           text-decoration: none;
         }
 
-        .h-cta-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(201,169,110,0.3); }
+        .h-cta-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(245,158,11,0.4); }
 
         .h-cta-secondary {
-          background: transparent; color: rgba(255,255,255,0.8);
-          border: 1px solid rgba(255,255,255,0.15);
+          background: transparent; color: var(--text-main);
+          border: 1px solid rgba(45,36,30,0.15);
           padding: 0.9rem 2rem; border-radius: 100px;
           font-family: 'DM Sans', sans-serif; font-size: 0.8rem;
           letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
@@ -261,24 +266,24 @@ const Hero: React.FC = () => {
           transition: all 0.3s ease; text-decoration: none;
         }
 
-        .h-cta-secondary:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,169,110,0.03); }
+        .h-cta-secondary:hover { border-color: var(--accent-deep); color: var(--accent-deep); background: rgba(245,158,11,0.05); }
 
-        .h-stat { border-left: 1px solid rgba(255,255,255,0.07); padding: 0 2rem; }
+        .h-stat { border-left: 1px solid rgba(45,36,30,0.08); padding: 0 2rem; }
         .h-stat:first-child { border-left: none; padding-left: 0; }
         .h-stat-value { font-size: 2rem; }
         .h-stat-label { font-size: 0.65rem; }
 
         .h-floating-pill {
           position: absolute; bottom: 3rem; left: -2rem;
-          background: rgba(10,10,12,0.98); border: 1px solid rgba(201,169,110,0.3);
+          background: #2D241E; border: 1px solid rgba(245,158,11,0.3);
           border-radius: 100px; padding: 0.7rem 1.2rem; backdrop-filter: blur(20px);
           display: flex; align-items: center; gap: 0.8rem; z-index: 10;
-          box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+          box-shadow: 0 20px 50px rgba(45,36,30,0.25);
         }
 
         .h-pill-icon {
           width: 32px; height: 32px; border-radius: 50%;
-          background: linear-gradient(135deg, #C9A96E, #a07840);
+          background: linear-gradient(135deg, #F59E0B, #EA580C);
           flex-shrink: 0;
         }
 
@@ -291,19 +296,17 @@ const Hero: React.FC = () => {
           .h-body { text-align: center; margin: 0 auto !important; }
           .h-imgcol { width: 100% !important; flex: none !important; max-width: 550px; }
           
-          /* Forced single line stats on mobile */
           .h-stats { 
              display: flex !important; 
              flex-direction: row !important; 
              flex-wrap: nowrap !important; 
              justify-content: space-between !important; 
              gap: 0.5rem !important; 
-             border-top: 1px solid rgba(255,255,255,0.08); 
+             border-top: 1px solid rgba(45,36,30,0.08); 
              padding-top: 2rem !important; 
              width: 100% !important;
           }
           .h-stat { border-left: none; padding: 0; flex: 1 !important; text-align: center; }
-          .h-stat-icon { margin: 0 auto 0.6rem !important; }
           .h-stat-value { font-size: 1.4rem !important; }
           .h-stat-label { font-size: 0.55rem !important; white-space: nowrap; }
 
@@ -321,25 +324,26 @@ const Hero: React.FC = () => {
       <div
         id="hero"
         style={{
-          background: "var(--dark)",
+          background: "var(--bg-warm)",
           minHeight: "100vh",
           position: "relative",
           overflow: "hidden",
-          color: "#fff",
+          color: "var(--text-main)",
           fontFamily: "'DM Sans', sans-serif",
           display: "flex",
           flexDirection: "column",
         }}
       >
+        {/* Subtle Noise Texture */}
         <div style={{
-          position: "absolute", inset: 0, opacity: 0.03, pointerEvents: "none", zIndex: 1,
+          position: "absolute", inset: 0, opacity: 0.02, pointerEvents: "none", zIndex: 1,
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
         }} />
 
         {!isMobile && (
           <motion.div style={{
             position: "absolute", width: "800px", height: "800px", borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(201,169,110,0.07) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%)",
             top: "-10%", right: "-10%", filter: "blur(80px)", pointerEvents: "none", zIndex: 0,
             x: orbX, y: orbY,
           }} />
@@ -367,8 +371,8 @@ const Hero: React.FC = () => {
             transition={{ duration: 0.8 }}
           >
             <div className="h-eyebrow" style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "2rem" }}>
-              <div style={{ width: "30px", height: "1px", background: "#C9A96E" }} />
-              <span style={{ fontSize: "0.65rem", letterSpacing: "0.4em", textTransform: "uppercase", color: "#C9A96E", fontWeight: 600 }}>
+              <div style={{ width: "30px", height: "2px", background: "#D97706" }} />
+              <span style={{ fontSize: "0.65rem", letterSpacing: "0.4em", textTransform: "uppercase", color: "#D97706", fontWeight: 700 }}>
                 Women Empowerment Initiative
               </span>
             </div>
@@ -378,23 +382,24 @@ const Hero: React.FC = () => {
               style={{
                 fontFamily: "'Playfair Display', serif",
                 fontSize: "clamp(2.5rem, 4.5vw, 4.8rem)",
-                lineHeight: 1.1, fontWeight: 400,
+                lineHeight: 1.1, fontWeight: 700,
                 marginBottom: "2rem",
+                color: "#2D241E"
               }}
             >
               Generous{" "}
-              <span style={{ fontStyle: "italic", color: "#C9A96E" }}>Helping</span>
+              <span style={{ fontStyle: "italic", color: "#D97706" }}>Helping</span>
               <br />Hands Foundation
             </h1>
 
             <div style={{ display: "flex", gap: "1.5rem", alignItems: "flex-start", marginBottom: "2.5rem" }}>
               <div
                 className="h-divider"
-                style={{ width: "1px", background: "rgba(201,169,110,0.2)", flexShrink: 0, alignSelf: "stretch", marginTop: "8px" }}
+                style={{ width: "2px", background: "rgba(217,119,6,0.2)", flexShrink: 0, alignSelf: "stretch", marginTop: "8px" }}
               />
               <p
                 className="h-body"
-                style={{ color: "rgba(255,255,255,0.55)", fontSize: "1.05rem", lineHeight: 1.7, fontWeight: 300, maxWidth: "480px", margin: 0 }}
+                style={{ color: "rgba(45,36,30,0.7)", fontSize: "1.05rem", lineHeight: 1.7, fontWeight: 400, maxWidth: "480px", margin: 0 }}
               >
                 We provide women and girls with the essential resources, mentorship, and community support needed to break barriers and build thriving futures.
               </p>
@@ -414,7 +419,7 @@ const Hero: React.FC = () => {
               style={{
                 display: "flex", width: "100%",
                 marginTop: "4rem", paddingTop: "2.5rem",
-                borderTop: "1px solid rgba(255,255,255,0.08)",
+                borderTop: "1px solid rgba(45,36,30,0.1)",
               }}
             >
               {STATS.map((stat, i) => (
@@ -439,21 +444,21 @@ const Hero: React.FC = () => {
           style={{
             display: "flex", justifyContent: "space-between", alignItems: "center",
             padding: "1.5rem 6%",
-            borderTop: "1px solid rgba(255,255,255,0.05)",
-            background: "rgba(5,5,7,0.8)",
+            borderTop: "1px solid rgba(45,36,30,0.05)",
+            background: "rgba(255,253,249,0.8)",
             backdropFilter: "blur(10px)",
             position: "relative", zIndex: 10,
           }}
         >
-          <span style={{ fontSize: "0.6rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
-            © 2024 Generous Helping Hands Foundation · All Rights Reserved
+          <span style={{ fontSize: "0.6rem", color: "rgba(45,36,30,0.4)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+            © 2026 Generous Helping Hands Foundation · All Rights Reserved
           </span>
           <button
             onClick={scrollDown}
             style={{
-              background: "none", border: "1px solid rgba(255,255,255,0.12)",
+              background: "none", border: "1px solid rgba(45,36,30,0.15)",
               borderRadius: "100px", padding: "0.6rem 1.4rem",
-              color: "rgba(255,255,255,0.5)", fontSize: "0.65rem",
+              color: "rgba(45,36,30,0.6)", fontSize: "0.65rem",
               letterSpacing: "0.15em", textTransform: "uppercase",
               cursor: "pointer", display: "flex", alignItems: "center", gap: "0.5rem",
               transition: "all 0.3s ease",
