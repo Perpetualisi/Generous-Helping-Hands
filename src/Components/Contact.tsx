@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Mail, Phone, Share2, MapPin, Heart, ArrowRight,
-  Sparkles, Send, User, MessageSquare, CheckCircle2,
-  Instagram, Facebook, Twitter, Clock, Globe
+  Sparkles, Globe, Clock
 } from "lucide-react";
 
 // ─── THEME ────────────────────────────────────────────────────────────────────
@@ -33,23 +32,23 @@ const CONTACT_INFO: ContactInfo[] = [
 ];
 
 const SOCIALS = [
-  { icon: Instagram, label: "Instagram", href: "https://instagram.com/generoushelpinghands", color: "#E1306C" },
-  { icon: Facebook,  label: "Facebook",  href: "#",                                          color: "#1877F2" },
-  { icon: Twitter,   label: "Twitter",   href: "#",                                          color: "#1DA1F2" },
+  { icon: Mail,   label: "Instagram", href: "https://instagram.com/generoushelpinghands" },
+  { icon: Share2, label: "Facebook",  href: "#" },
+  { icon: Globe,  label: "Twitter",   href: "#" },
 ];
 
 const QUICK_LINKS = [
-  { label: "Our Programs",  href: "#ourprograms"     },
-  { label: "Volunteer",     href: "#volunteer"       },
-  { label: "Donate",        href: "#donation"        },
-  { label: "Impact Report", href: "#"                },
+  { label: "Our Programs",  href: "#ourprograms" },
+  { label: "Volunteer",     href: "#volunteer"   },
+  { label: "Donate",        href: "#donation"    },
+  { label: "Impact Report", href: "#"            },
 ];
 
 const STATS = [
-  { v: "500+", l: "Lives touched" },
+  { v: "500+", l: "Lives touched"   },
   { v: "10+",  l: "Active programs" },
-  { v: "8+",   l: "Communities" },
-  { v: "2014", l: "Founded" },
+  { v: "8+",   l: "Communities"     },
+  { v: "2014", l: "Founded"         },
 ];
 
 // ─── CONTACT ROW ─────────────────────────────────────────────────────────────
@@ -110,175 +109,6 @@ const ContactRow: React.FC<{ info: ContactInfo }> = ({ info }) => {
   );
 };
 
-// ─── CONTACT FORM ─────────────────────────────────────────────────────────────
-const ContactForm: React.FC = () => {
-  const [form, setForm]       = useState({ name: "", email: "", subject: "", message: "" });
-  const [focused, setFocused] = useState<string | null>(null);
-  const [sent, setSent]       = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setTimeout(() => { setLoading(false); setSent(true); }, 1800);
-  };
-
-  const inputStyle = (field: string): React.CSSProperties => ({
-    width: "100%",
-    background: focused === field ? "rgba(245,158,11,0.06)" : "rgba(255,255,255,0.03)",
-    border: `1px solid ${focused === field ? C.borderHov : C.border}`,
-    borderRadius: 12, padding: "0.85rem 1rem",
-    fontFamily: "'DM Sans', sans-serif", fontSize: "0.9rem", fontWeight: 400,
-    color: C.text, outline: "none",
-    transition: "all 0.25s ease",
-    boxShadow: focused === field ? `0 0 0 3px rgba(245,158,11,0.08)` : "none",
-  });
-
-  const labelStyle: React.CSSProperties = {
-    fontFamily: "'DM Sans', sans-serif",
-    fontSize: "0.58rem", fontWeight: 700,
-    textTransform: "uppercase", letterSpacing: "0.2em",
-    color: C.textFaint, display: "block", marginBottom: "0.5rem",
-  };
-
-  return (
-    <AnimatePresence mode="wait">
-      {sent ? (
-        <motion.div
-          key="success"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          style={{
-            display: "flex", flexDirection: "column",
-            alignItems: "center", justifyContent: "center",
-            gap: "1.25rem", padding: "3rem 2rem", textAlign: "center", height: "100%",
-          }}
-        >
-          <motion.div
-            initial={{ scale: 0 }} animate={{ scale: 1 }}
-            transition={{ type: "spring", stiffness: 200, damping: 14, delay: 0.1 }}
-            style={{
-              width: 72, height: 72, borderRadius: "50%",
-              background: "rgba(245,158,11,0.12)",
-              border: `2px solid ${C.gold}`,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              boxShadow: "0 0 40px rgba(245,158,11,0.25)",
-            }}
-          >
-            <CheckCircle2 size={32} color={C.gold} />
-          </motion.div>
-          <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.8rem", fontWeight: 700, color: C.text }}>
-            Message Sent!
-          </h4>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.9rem", color: C.textMuted, lineHeight: 1.6, maxWidth: 280 }}>
-            Thank you for reaching out. We'll get back to you within 24 hours.
-          </p>
-          <button
-            onClick={() => { setSent(false); setForm({ name: "", email: "", subject: "", message: "" }); }}
-            style={{
-              background: "none", border: `1px solid ${C.border}`, borderRadius: 100,
-              padding: "0.6rem 1.5rem", color: C.gold, cursor: "pointer",
-              fontFamily: "'DM Sans', sans-serif", fontSize: "0.7rem",
-              fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase",
-              transition: "border-color 0.2s",
-            }}
-          >
-            Send Another
-          </button>
-        </motion.div>
-      ) : (
-        <motion.form
-          key="form"
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          onSubmit={handleSubmit}
-          style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}
-        >
-          {/* Name + Email row */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }} className="form-row">
-            <div>
-              <label style={labelStyle}><User size={9} style={{ display: "inline", marginRight: 4 }} />Name</label>
-              <input
-                type="text" required placeholder="Your name"
-                value={form.name}
-                onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                onFocus={() => setFocused("name")}
-                onBlur={() => setFocused(null)}
-                style={inputStyle("name")}
-              />
-            </div>
-            <div>
-              <label style={labelStyle}><Mail size={9} style={{ display: "inline", marginRight: 4 }} />Email</label>
-              <input
-                type="email" required placeholder="Your email"
-                value={form.email}
-                onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                onFocus={() => setFocused("email")}
-                onBlur={() => setFocused(null)}
-                style={inputStyle("email")}
-              />
-            </div>
-          </div>
-
-          {/* Subject */}
-          <div>
-            <label style={labelStyle}><Sparkles size={9} style={{ display: "inline", marginRight: 4 }} />Subject</label>
-            <input
-              type="text" placeholder="How can we help?"
-              value={form.subject}
-              onChange={e => setForm(f => ({ ...f, subject: e.target.value }))}
-              onFocus={() => setFocused("subject")}
-              onBlur={() => setFocused(null)}
-              style={inputStyle("subject")}
-            />
-          </div>
-
-          {/* Message */}
-          <div>
-            <label style={labelStyle}><MessageSquare size={9} style={{ display: "inline", marginRight: 4 }} />Message</label>
-            <textarea
-              required rows={4} placeholder="Tell us about yourself or your inquiry..."
-              value={form.message}
-              onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
-              onFocus={() => setFocused("message")}
-              onBlur={() => setFocused(null)}
-              style={{ ...inputStyle("message"), resize: "none", lineHeight: 1.6 }}
-            />
-          </div>
-
-          {/* Submit */}
-          <motion.button
-            type="submit"
-            whileHover={{ scale: 1.02, boxShadow: "0 12px 35px rgba(245,158,11,0.45)" }}
-            whileTap={{ scale: 0.98 }}
-            style={{
-              display: "flex", alignItems: "center", justifyContent: "center", gap: "0.6rem",
-              padding: "1rem 2rem", borderRadius: 100, border: "none", cursor: "pointer",
-              background: loading ? "rgba(245,158,11,0.4)" : C.gradient,
-              color: "#fff", fontFamily: "'DM Sans', sans-serif",
-              fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase",
-              boxShadow: "0 8px 25px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.15)",
-              transition: "background 0.3s ease",
-            }}
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <motion.div
-                  animate={{ rotate: 360 }} transition={{ duration: 0.9, repeat: Infinity, ease: "linear" }}
-                  style={{ width: 14, height: 14, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%" }}
-                />
-                Sending…
-              </>
-            ) : (
-              <>Send Message <Send size={14} /></>
-            )}
-          </motion.button>
-        </motion.form>
-      )}
-    </AnimatePresence>
-  );
-};
-
 // ─── CONTACT SECTION ─────────────────────────────────────────────────────────
 const Contact: React.FC = () => {
   const [ctaHov, setCtaHov] = useState(false);
@@ -292,22 +122,18 @@ const Contact: React.FC = () => {
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap');
         * { box-sizing: border-box; }
         ::selection { background: rgba(245,158,11,0.25); color: #fff; }
-        input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.2); }
-        input, textarea { color-scheme: dark; }
 
-        .ct-main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .ct-main-grid   { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
         .ct-bottom-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem; }
-        .ct-cta-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-        .form-row { grid-template-columns: 1fr 1fr; }
+        .ct-cta-btns    { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
 
         @media (max-width: 1024px) {
-          .ct-main-grid { grid-template-columns: 1fr; }
+          .ct-main-grid   { grid-template-columns: 1fr; }
           .ct-bottom-grid { grid-template-columns: 1fr 1fr; }
         }
         @media (max-width: 640px) {
           .ct-bottom-grid { grid-template-columns: 1fr; }
-          .ct-cta-btns { grid-template-columns: 1fr !important; }
-          .form-row { grid-template-columns: 1fr !important; }
+          .ct-cta-btns    { grid-template-columns: 1fr !important; }
         }
       `}</style>
 
@@ -408,108 +234,77 @@ const Contact: React.FC = () => {
           ))}
         </motion.div>
 
-        {/* ── MAIN 2-COL GRID ── */}
-        <div className="ct-main-grid">
+        {/* ── CONTACT INFO CARD (full width now) ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          style={{
+            background: C.bgCard, border: `1px solid ${C.border}`,
+            borderRadius: 24, padding: "2.5rem",
+            boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
+            position: "relative", overflow: "hidden",
+            marginBottom: "1.5rem",
+          }}
+        >
+          {/* Top gold line */}
+          <div style={{
+            position: "absolute", top: 0, left: 0, right: 0, height: 2,
+            background: `linear-gradient(90deg, ${C.gold}, transparent)`,
+          }} />
 
-          {/* LEFT: Contact info card */}
-          <motion.div
-            initial={{ opacity: 0, x: -24 }} whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            style={{
-              background: C.bgCard, border: `1px solid ${C.border}`,
-              borderRadius: 24, padding: "2.5rem",
-              boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
-              position: "relative", overflow: "hidden",
-            }}
-          >
-            {/* Top gold line */}
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "2rem" }}>
             <div style={{
-              position: "absolute", top: 0, left: 0, right: 0, height: 2,
-              background: `linear-gradient(90deg, ${C.gold}, transparent)`,
-            }} />
-
-            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "2rem" }}>
-              <div style={{
-                width: 38, height: 38, borderRadius: 11,
-                background: "rgba(245,158,11,0.1)", border: `1px solid ${C.border}`,
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}>
-                <Mail size={16} color={C.gold} />
-              </div>
-              <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.4rem", fontWeight: 700, color: C.text }}>
-                Inquiries
-              </h3>
+              width: 38, height: 38, borderRadius: 11,
+              background: "rgba(245,158,11,0.1)", border: `1px solid ${C.border}`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <Mail size={16} color={C.gold} />
             </div>
+            <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.4rem", fontWeight: 700, color: C.text }}>
+              Inquiries
+            </h3>
+          </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-              {CONTACT_INFO.map((info, i) => <ContactRow key={i} info={info} />)}
+          {/* Contact rows in a 2-col grid on wider screens */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+            gap: "0.25rem",
+          }}>
+            {CONTACT_INFO.map((info, i) => <ContactRow key={i} info={info} />)}
+          </div>
+
+          {/* Social links */}
+          <div style={{ marginTop: "2rem", paddingTop: "1.5rem", borderTop: `1px solid ${C.border}` }}>
+            <p style={{
+              fontFamily: "'DM Sans', sans-serif", fontSize: "0.56rem",
+              fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.25em",
+              color: C.textFaint, marginBottom: "0.9rem",
+            }}>Follow Our Journey</p>
+            <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap" }}>
+              {SOCIALS.map(({ icon: Icon, label, href }) => (
+                <motion.a
+                  key={label} href={href} target="_blank" rel="noreferrer"
+                  whileHover={{ y: -3, borderColor: C.borderHov }}
+                  style={{
+                    display: "flex", alignItems: "center", gap: "0.5rem",
+                    padding: "0.5rem 0.9rem", borderRadius: 100,
+                    background: "rgba(255,255,255,0.03)",
+                    border: `1px solid ${C.border}`,
+                    textDecoration: "none", color: C.textMuted,
+                    fontFamily: "'DM Sans', sans-serif", fontSize: "0.62rem",
+                    fontWeight: 600, letterSpacing: "0.05em",
+                    transition: "all 0.25s ease",
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
+                  onMouseLeave={e => (e.currentTarget.style.color = C.textMuted)}
+                >
+                  <Icon size={13} color={C.gold} />{label}
+                </motion.a>
+              ))}
             </div>
-
-            {/* Social links */}
-            <div style={{ marginTop: "2rem", paddingTop: "1.5rem", borderTop: `1px solid ${C.border}` }}>
-              <p style={{
-                fontFamily: "'DM Sans', sans-serif", fontSize: "0.56rem",
-                fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.25em",
-                color: C.textFaint, marginBottom: "0.9rem",
-              }}>Follow Our Journey</p>
-              <div style={{ display: "flex", gap: "0.6rem" }}>
-                {SOCIALS.map(({ icon: Icon, label, href }) => (
-                  <motion.a
-                    key={label} href={href} target="_blank" rel="noreferrer"
-                    whileHover={{ y: -3, borderColor: C.borderHov }}
-                    style={{
-                      display: "flex", alignItems: "center", gap: "0.5rem",
-                      padding: "0.5rem 0.9rem", borderRadius: 100,
-                      background: "rgba(255,255,255,0.03)",
-                      border: `1px solid ${C.border}`,
-                      textDecoration: "none", color: C.textMuted,
-                      fontFamily: "'DM Sans', sans-serif", fontSize: "0.62rem",
-                      fontWeight: 600, letterSpacing: "0.05em",
-                      transition: "all 0.25s ease",
-                    }}
-                    onMouseEnter={e => e.currentTarget.style.color = "#fff"}
-                    onMouseLeave={e => e.currentTarget.style.color = C.textMuted}
-                  >
-                    <Icon size={13} color={C.gold} />{label}
-                  </motion.a>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-
-          {/* RIGHT: Contact form card */}
-          <motion.div
-            initial={{ opacity: 0, x: 24 }} whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            style={{
-              background: C.bgCard, border: `1px solid ${C.border}`,
-              borderRadius: 24, padding: "2.5rem",
-              boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
-              position: "relative", overflow: "hidden",
-            }}
-          >
-            {/* Top gold line */}
-            <div style={{
-              position: "absolute", top: 0, left: 0, right: 0, height: 2,
-              background: `linear-gradient(90deg, transparent, ${C.gold})`,
-            }} />
-
-            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "2rem" }}>
-              <div style={{
-                width: 38, height: 38, borderRadius: 11,
-                background: "rgba(245,158,11,0.1)", border: `1px solid ${C.border}`,
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}>
-                <MessageSquare size={16} color={C.gold} />
-              </div>
-              <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.4rem", fontWeight: 700, color: C.text }}>
-                Send a Message
-              </h3>
-            </div>
-
-            <ContactForm />
-          </motion.div>
-        </div>
+          </div>
+        </motion.div>
 
         {/* ── BOTTOM 3-COL GRID ── */}
         <div className="ct-bottom-grid">
@@ -528,7 +323,6 @@ const Contact: React.FC = () => {
               transition: "box-shadow 0.4s ease",
             }}
           >
-            {/* Sparkle watermark */}
             <div style={{
               position: "absolute", top: -20, right: -20, opacity: 0.1,
               transform: ctaHov ? "scale(1.15) rotate(15deg)" : "scale(1) rotate(0deg)",
@@ -537,7 +331,6 @@ const Contact: React.FC = () => {
             }}>
               <Sparkles size={180} />
             </div>
-
             <div style={{ position: "relative", zIndex: 1 }}>
               <p style={{
                 fontFamily: "'DM Sans', sans-serif", fontSize: "0.58rem",
@@ -554,7 +347,6 @@ const Contact: React.FC = () => {
                 color: "rgba(255,255,255,0.75)", fontWeight: 300,
                 lineHeight: 1.6, marginBottom: "1.75rem",
               }}>Join us in empowering women and girls through direct action.</p>
-
               <div className="ct-cta-btns">
                 <motion.a
                   href="#donation" whileHover={{ y: -3 }} whileTap={{ scale: 0.97 }}
@@ -564,8 +356,7 @@ const Contact: React.FC = () => {
                     fontFamily: "'DM Sans', sans-serif", fontSize: "0.68rem",
                     fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase",
                     display: "flex", alignItems: "center", justifyContent: "center", gap: "0.4rem",
-                    textDecoration: "none",
-                    boxShadow: "0 8px 20px rgba(0,0,0,0.3)",
+                    textDecoration: "none", boxShadow: "0 8px 20px rgba(0,0,0,0.3)",
                   }}
                 >Donate <ArrowRight size={13} /></motion.a>
                 <motion.a
@@ -641,7 +432,6 @@ const Contact: React.FC = () => {
               position: "relative", minHeight: 220,
             }}
           >
-            {/* Stylised map placeholder */}
             <div style={{
               position: "absolute", inset: 0,
               background: `repeating-linear-gradient(
@@ -656,8 +446,6 @@ const Contact: React.FC = () => {
               position: "absolute", inset: 0,
               background: "radial-gradient(circle at 50% 50%, rgba(245,158,11,0.08) 0%, transparent 60%)",
             }} />
-
-            {/* Pin */}
             <div style={{
               position: "absolute", top: "50%", left: "50%",
               transform: "translate(-50%, -60%)",
@@ -675,7 +463,6 @@ const Contact: React.FC = () => {
               >
                 <MapPin size={20} color="#fff" fill="#fff" />
               </motion.div>
-              {/* Ping ring */}
               <motion.div
                 animate={{ scale: [1, 2], opacity: [0.4, 0] }}
                 transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
@@ -686,8 +473,6 @@ const Contact: React.FC = () => {
                 }}
               />
             </div>
-
-            {/* Label */}
             <div style={{
               position: "absolute", bottom: 0, left: 0, right: 0,
               background: "linear-gradient(to top, rgba(20,17,14,0.96) 0%, transparent 100%)",
