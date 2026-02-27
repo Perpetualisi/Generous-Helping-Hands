@@ -26,14 +26,19 @@ interface MobileMenuItemProps {
   onNavigate: (id: string) => void;
 }
 
-// ─── THEME CONSTANTS (Matching Hero.tsx) ──────────────────────────────────────
+// ─── THEME CONSTANTS ──────────────────────────────────────────────────────────
 const COLORS = {
-  accent: "#F59E0B", // Warm Amber
-  accentDeep: "#D97706",
-  textMain: "#2D241E", // Deep Brown
-  bgWarm: "#FFFDF9",
-  border: "rgba(45,36,30,0.08)",
-  gradient: "linear-gradient(135deg, #F59E0B, #EA580C)",
+  gold:       "#F59E0B",
+  goldDeep:   "#D97706",
+  orange:     "#EA580C",
+  bg:         "#1a1714",
+  bgCard:     "#211e1a",
+  surface:    "rgba(255,255,255,0.04)",
+  border:     "rgba(245,158,11,0.12)",
+  borderHov:  "rgba(245,158,11,0.3)",
+  text:       "#ffffff",
+  textMuted:  "rgba(255,255,255,0.5)",
+  gradient:   "linear-gradient(135deg, #F59E0B, #EA580C)",
 };
 
 const MENU_ITEMS: MenuItem[] = [
@@ -41,57 +46,67 @@ const MENU_ITEMS: MenuItem[] = [
   {
     name: "About",
     subLinks: [
-      { name: "Why Our Work Matters", href: "whyitmatters" },
-      { name: "Our Story",           href: "ourstory" },
-      { name: "Our Mission",         href: "missionstatement" },
-      { name: "Our Vision",          href: "visionstatement" },
-      { name: "Meet the Team",       href: "meettheteam" },
+      { name: "Why Our Work Matters", href: "whyitmatters"    },
+      { name: "Our Story",            href: "ourstory"        },
+      { name: "Our Mission",          href: "missionstatement"},
+      { name: "Our Vision",           href: "visionstatement" },
+      { name: "Meet the Team",        href: "meettheteam"     },
     ],
   },
   {
     name: "Programs",
     subLinks: [
       { name: "Our Programs", href: "ourprograms" },
-      { name: "Events",       href: "events" },
+      { name: "Events",       href: "events"      },
     ],
   },
   {
     name: "Get Involved",
     subLinks: [
       { name: "Volunteer", href: "volunteer" },
-      { name: "Donate",    href: "donation" },
+      { name: "Donate",    href: "donation"  },
     ],
   },
   { name: "Testimonials", href: "testimonials" },
-  { name: "Contact",      href: "contact" },
+  { name: "Contact",      href: "contact"      },
 ];
 
 // ─── LOGO ─────────────────────────────────────────────────────────────────────
 const ResponsiveLogo: React.FC<{ onClick: () => void }> = ({ onClick }) => (
   <button
     onClick={onClick}
-    className="flex items-center gap-3 bg-transparent border-none cursor-pointer p-0 group"
+    style={{
+      display: "flex", alignItems: "center", gap: "0.75rem",
+      background: "transparent", border: "none", cursor: "pointer", padding: 0,
+    }}
   >
-    <div className="w-[42px] h-[42px] sm:w-[48px] sm:h-[48px] rounded-xl overflow-hidden shadow-lg shadow-amber-200/50 transition-transform group-hover:scale-105 duration-300">
-      <img 
-        src="/logo_light.jpg" 
-        alt="GHHF Logo"
-        className="w-full h-full object-cover"
-      />
+    <div style={{
+      width: 42, height: 42, borderRadius: 12, overflow: "hidden",
+      boxShadow: "0 4px 20px rgba(245,158,11,0.25), 0 0 0 1px rgba(245,158,11,0.2)",
+      transition: "transform 0.3s ease, box-shadow 0.3s ease",
+      flexShrink: 0,
+    }}
+      onMouseEnter={e => {
+        (e.currentTarget as HTMLDivElement).style.transform = "scale(1.06)";
+        (e.currentTarget as HTMLDivElement).style.boxShadow = "0 6px 28px rgba(245,158,11,0.4), 0 0 0 1px rgba(245,158,11,0.35)";
+      }}
+      onMouseLeave={e => {
+        (e.currentTarget as HTMLDivElement).style.transform = "scale(1)";
+        (e.currentTarget as HTMLDivElement).style.boxShadow = "0 4px 20px rgba(245,158,11,0.25), 0 0 0 1px rgba(245,158,11,0.2)";
+      }}
+    >
+      <img src="/logo_light.jpg" alt="GHHF Logo" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
     </div>
-    <div className="text-left hidden sm:block">
-      <div 
-        className="font-['Playfair_Display'] font-bold leading-none text-[1.1rem]"
-        style={{ color: COLORS.textMain }}
-      >
-        GHHF
-      </div>
-      <div 
-        className="font-['DM_Sans'] text-[0.6rem] uppercase tracking-widest font-bold opacity-60"
-        style={{ color: COLORS.textMain }}
-      >
-        Helping Hands
-      </div>
+    <div style={{ textAlign: "left" }} className="hidden-sm">
+      <div style={{
+        fontFamily: "'Cormorant Garamond', serif", fontWeight: 700,
+        fontSize: "1.15rem", color: "#fff", lineHeight: 1, letterSpacing: "-0.01em",
+      }}>GHHF</div>
+      <div style={{
+        fontFamily: "'DM Sans', sans-serif", fontSize: "0.55rem",
+        textTransform: "uppercase", letterSpacing: "0.3em",
+        color: "rgba(245,158,11,0.7)", marginTop: 3, fontWeight: 600,
+      }}>Helping Hands</div>
     </div>
   </button>
 );
@@ -104,13 +119,29 @@ const DesktopDropdown: React.FC<DesktopDropdownProps> = ({ item, onNavigate }) =
   const show = () => { if (timer.current) clearTimeout(timer.current); setOpen(true); };
   const hide = () => { timer.current = setTimeout(() => setOpen(false), 150); };
 
-  const linkStyle = "px-3 py-2 font-['DM_Sans'] text-[0.75rem] tracking-widest uppercase font-bold transition-all duration-300 flex items-center gap-1 cursor-pointer border-none bg-transparent whitespace-nowrap";
+  const navLinkStyle: React.CSSProperties = {
+    padding: "0.55rem 0.9rem",
+    fontFamily: "'DM Sans', sans-serif",
+    fontSize: "0.72rem",
+    letterSpacing: "0.12em",
+    textTransform: "uppercase",
+    fontWeight: 700,
+    color: open ? COLORS.gold : COLORS.textMuted,
+    background: "transparent",
+    border: "none",
+    cursor: "pointer",
+    display: "flex", alignItems: "center", gap: "0.3rem",
+    whiteSpace: "nowrap",
+    transition: "color 0.25s ease",
+    borderRadius: 8,
+  };
 
   if (!item.subLinks) {
     return (
-      <button 
-        className={linkStyle} 
-        style={{ color: COLORS.textMain }}
+      <button
+        style={navLinkStyle}
+        onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
+        onMouseLeave={e => (e.currentTarget.style.color = COLORS.textMuted)}
         onClick={() => onNavigate(item.href || "hero")}
       >
         {item.name}
@@ -119,30 +150,63 @@ const DesktopDropdown: React.FC<DesktopDropdownProps> = ({ item, onNavigate }) =
   }
 
   return (
-    <div className="relative" onMouseEnter={show} onMouseLeave={hide}>
-      <button 
-        className={linkStyle}
-        style={{ color: open ? COLORS.accentDeep : COLORS.textMain }}
-      >
+    <div style={{ position: "relative" }} onMouseEnter={show} onMouseLeave={hide}>
+      <button style={navLinkStyle}>
         {item.name}
         <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
-          <ChevronDown size={14} />
+          <ChevronDown size={13} />
         </motion.span>
       </button>
 
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            initial={{ opacity: 0, y: 8, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.95 }}
-            className="absolute top-full left-0 min-w-[230px] bg-white border border-amber-100 rounded-2xl p-2 shadow-2xl z-[200] mt-2 backdrop-blur-xl"
+            exit={{ opacity: 0, y: 6, scale: 0.96 }}
+            transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              position: "absolute", top: "calc(100% + 10px)", left: 0,
+              minWidth: 230,
+              background: "rgba(26,23,20,0.96)",
+              backdropFilter: "blur(30px)",
+              border: "1px solid rgba(245,158,11,0.15)",
+              borderRadius: 16, padding: "0.5rem",
+              boxShadow: "0 24px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(245,158,11,0.05)",
+              zIndex: 200,
+            }}
           >
+            {/* Top accent line */}
+            <div style={{
+              height: 1, margin: "0 0.5rem 0.5rem",
+              background: "linear-gradient(90deg, #F59E0B, transparent)",
+              borderRadius: 1,
+            }} />
             {item.subLinks.map((sub) => (
               <button
                 key={sub.href}
                 onClick={() => { onNavigate(sub.href); setOpen(false); }}
-                className="w-full text-left px-4 py-3 font-['DM_Sans'] text-[0.85rem] text-stone-600 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all duration-200 border-none bg-transparent cursor-pointer"
+                style={{
+                  width: "100%", textAlign: "left",
+                  padding: "0.7rem 1rem",
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.8rem",
+                  color: "rgba(255,255,255,0.6)",
+                  background: "transparent", border: "none",
+                  borderRadius: 10, cursor: "pointer",
+                  transition: "all 0.2s ease",
+                  letterSpacing: "0.02em",
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.color = "#F59E0B";
+                  e.currentTarget.style.background = "rgba(245,158,11,0.07)";
+                  e.currentTarget.style.paddingLeft = "1.3rem";
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.color = "rgba(255,255,255,0.6)";
+                  e.currentTarget.style.background = "transparent";
+                  e.currentTarget.style.paddingLeft = "1rem";
+                }}
               >
                 {sub.name}
               </button>
@@ -159,16 +223,28 @@ const MobileMenuItem: React.FC<MobileMenuItemProps> = ({ item, openDropdown, onT
   const isOpen = openDropdown === item.name;
 
   return (
-    <div className="w-full">
+    <div style={{ width: "100%" }}>
       <button
         onClick={() => item.subLinks ? onToggle(item.name) : onNavigate(item.href || "hero")}
-        className="flex items-center justify-between w-full py-5 border-b border-stone-100 bg-transparent font-['DM_Sans'] text-[0.9rem] tracking-widest uppercase transition-colors"
-        style={{ color: isOpen ? COLORS.accentDeep : COLORS.textMain, fontWeight: isOpen ? 800 : 600 }}
+        style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          width: "100%", padding: "1.1rem 0",
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          background: "transparent", border: "none",
+          borderBottomWidth: 1, borderBottomStyle: "solid",
+          borderBottomColor: "rgba(255,255,255,0.06)",
+          fontFamily: "'DM Sans', sans-serif",
+          fontSize: "0.85rem", letterSpacing: "0.15em",
+          textTransform: "uppercase",
+          color: isOpen ? COLORS.gold : "rgba(255,255,255,0.75)",
+          fontWeight: isOpen ? 700 : 500,
+          cursor: "pointer", transition: "color 0.2s",
+        }}
       >
         <span>{item.name}</span>
         {item.subLinks && (
-          <motion.div animate={{ rotate: isOpen ? 180 : 0 }}>
-            <ChevronDown size={18} className={isOpen ? "text-amber-600" : "text-stone-300"} />
+          <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
+            <ChevronDown size={16} color={isOpen ? COLORS.gold : "rgba(255,255,255,0.3)"} />
           </motion.div>
         )}
       </button>
@@ -179,13 +255,29 @@ const MobileMenuItem: React.FC<MobileMenuItemProps> = ({ item, openDropdown, onT
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden bg-amber-50/30 rounded-2xl mb-2"
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            style={{
+              overflow: "hidden",
+              background: "rgba(245,158,11,0.04)",
+              borderRadius: 12, marginBottom: 4,
+              borderLeft: "2px solid rgba(245,158,11,0.2)",
+            }}
           >
             {item.subLinks.map((sub) => (
               <button
                 key={sub.href}
                 onClick={() => onNavigate(sub.href)}
-                className="w-full text-left py-4 px-6 font-['DM_Sans'] text-[0.9rem] text-stone-500 bg-transparent border-none border-l-4 border-amber-200"
+                style={{
+                  display: "block", width: "100%", textAlign: "left",
+                  padding: "0.85rem 1.2rem",
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.85rem",
+                  color: "rgba(255,255,255,0.5)",
+                  background: "transparent", border: "none",
+                  cursor: "pointer", transition: "color 0.2s",
+                }}
+                onMouseEnter={e => (e.currentTarget.style.color = COLORS.gold)}
+                onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.5)")}
               >
                 {sub.name}
               </button>
@@ -201,9 +293,9 @@ const MobileMenuItem: React.FC<MobileMenuItemProps> = ({ item, openDropdown, onT
 export const NAVBAR_HEIGHT = 80;
 
 const Navbar: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen]           = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [scrolled, setScrolled] = useState(false);
+  const [scrolled, setScrolled]       = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -229,58 +321,118 @@ const Navbar: React.FC = () => {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+        .hidden-sm { display: block; }
+        @media (max-width: 480px) { .hidden-sm { display: none !important; } }
       `}</style>
 
       {/* Announcement Bar */}
-      <div 
-        className="fixed top-0 left-0 right-0 h-[36px] flex items-center justify-center z-[1100] text-[0.7rem] font-bold tracking-widest text-white px-4"
-        style={{ background: COLORS.gradient, fontFamily: "'DM Sans', sans-serif" }}
-      >
-        <Heart size={12} fill="white" className="mr-2" />
-        EMPOWERING WOMEN & GIRLS ACROSS NIGERIA
+      <div style={{
+        position: "fixed", top: 0, left: 0, right: 0,
+        height: 34, display: "flex", alignItems: "center", justifyContent: "center",
+        zIndex: 1100,
+        background: "linear-gradient(135deg, #D97706, #EA580C)",
+        fontFamily: "'DM Sans', sans-serif",
+        fontSize: "0.62rem", fontWeight: 700,
+        letterSpacing: "0.25em", textTransform: "uppercase",
+        color: "#fff",
+        gap: "0.5rem",
+        boxShadow: "0 2px 20px rgba(234,88,12,0.4)",
+      }}>
+        <Heart size={11} fill="white" color="white" />
+        Empowering Women &amp; Girls Across Nigeria
       </div>
 
+      {/* Navbar */}
       <motion.nav
-        initial={{ y: -NAVBAR_HEIGHT }}
+        initial={{ y: -(NAVBAR_HEIGHT + 34) }}
         animate={{ y: 0 }}
-        className="fixed left-0 right-0 z-[1000] transition-all duration-500"
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         style={{
-          top: "36px",
-          height: `${NAVBAR_HEIGHT}px`,
-          background: scrolled ? "rgba(255, 253, 249, 0.9)" : "rgba(255, 253, 249, 1)",
-          backdropFilter: scrolled ? "blur(20px)" : "none",
-          borderBottom: scrolled ? `1px solid ${COLORS.border}` : "1px solid transparent",
-          boxShadow: scrolled ? "0 10px 30px -10px rgba(45,36,30,0.08)" : "none",
+          position: "fixed", left: 0, right: 0,
+          top: 34, height: NAVBAR_HEIGHT,
+          zIndex: 1000,
+          transition: "background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease",
+          background: scrolled
+            ? "rgba(22,19,16,0.92)"
+            : "rgba(26,23,20,0.6)",
+          backdropFilter: "blur(24px)",
+          borderBottom: scrolled
+            ? "1px solid rgba(245,158,11,0.12)"
+            : "1px solid rgba(255,255,255,0.04)",
+          boxShadow: scrolled
+            ? "0 8px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03)"
+            : "none",
         }}
       >
-        <div className="max-w-[1400px] mx-auto px-6 h-full flex items-center justify-between">
+        <div style={{
+          maxWidth: 1440, margin: "0 auto",
+          padding: "0 5%", height: "100%",
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+        }}>
           <ResponsiveLogo onClick={() => handleNavigate("hero")} />
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-2">
+          <div style={{ display: "none" }} className="desktop-nav">
             {MENU_ITEMS.map((item) => (
               <DesktopDropdown key={item.name} item={item} onNavigate={handleNavigate} />
             ))}
-            <div className="w-[1px] h-6 bg-stone-200 mx-4" />
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => handleNavigate("donation")}
-              className="flex items-center gap-2 px-7 py-3 text-white font-['DM_Sans'] text-[0.75rem] font-bold rounded-full transition-all shadow-xl shadow-amber-200/50 border-none cursor-pointer"
-              style={{ background: COLORS.gradient }}
-            >
-              <Heart size={14} fill="white" /> DONATE NOW
-            </motion.button>
           </div>
 
-          {/* Mobile Toggle */}
-          <button
-            className="lg:hidden p-2.5 bg-amber-50 border border-amber-100 rounded-xl text-stone-700 cursor-pointer"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          {/* Inline desktop nav (CSS trick for lg) */}
+          <style>{`
+            @media (min-width: 1024px) {
+              .desktop-nav { display: flex !important; align-items: center; gap: 0.25rem; }
+              .mobile-toggle { display: none !important; }
+            }
+          `}</style>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            {/* Desktop CTA */}
+            <motion.button
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => handleNavigate("donation")}
+              className="desktop-nav"
+              style={{
+                display: "none",
+                alignItems: "center", gap: "0.5rem",
+                padding: "0.65rem 1.6rem",
+                background: "linear-gradient(135deg, #F59E0B, #EA580C)",
+                color: "#fff", border: "none", borderRadius: 100,
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: "0.7rem", fontWeight: 700,
+                letterSpacing: "0.12em", textTransform: "uppercase",
+                cursor: "pointer",
+                boxShadow: "0 6px 25px rgba(245,158,11,0.35), inset 0 1px 0 rgba(255,255,255,0.15)",
+              }}
+            >
+              <Heart size={13} fill="white" color="white" />
+              Donate Now
+            </motion.button>
+
+            {/* Separator (desktop) */}
+            <div className="desktop-nav" style={{ display: "none", width: 1, height: 22, background: "rgba(255,255,255,0.08)", margin: "0 0.5rem" }} />
+
+            {/* Mobile toggle */}
+            <button
+              className="mobile-toggle"
+              onClick={() => setIsOpen(!isOpen)}
+              style={{
+                padding: "0.55rem",
+                background: "rgba(255,255,255,0.05)",
+                border: "1px solid rgba(245,158,11,0.2)",
+                borderRadius: 10,
+                color: "#fff", cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                transition: "all 0.2s ease",
+              }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(245,158,11,0.5)")}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(245,158,11,0.2)")}
+            >
+              {isOpen ? <X size={22} /> : <Menu size={22} />}
+            </button>
+          </div>
         </div>
       </motion.nav>
 
@@ -291,22 +443,52 @@ const Navbar: React.FC = () => {
             initial={{ opacity: 0, x: "100%" }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-0 z-[1200] bg-[#FFFDF9] p-6 pt-10 flex flex-col"
+            transition={{ type: "spring", damping: 28, stiffness: 220 }}
+            style={{
+              position: "fixed", inset: 0,
+              zIndex: 1200,
+              background: "#1a1714",
+              display: "flex", flexDirection: "column",
+              padding: "0 1.5rem 2rem",
+            }}
           >
-            <div className="flex items-center justify-between mb-8">
-               <ResponsiveLogo onClick={() => handleNavigate("hero")} />
-               <button onClick={() => setIsOpen(false)} className="p-2 text-stone-400"><X size={32} /></button>
+            {/* Mobile header */}
+            <div style={{
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              paddingTop: 34 + NAVBAR_HEIGHT + 16, paddingBottom: "1.5rem",
+              borderBottom: "1px solid rgba(255,255,255,0.06)",
+            }}>
+              <ResponsiveLogo onClick={() => handleNavigate("hero")} />
+              <button
+                onClick={() => setIsOpen(false)}
+                style={{
+                  background: "rgba(255,255,255,0.05)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  borderRadius: 10, padding: "0.5rem",
+                  color: "rgba(255,255,255,0.6)", cursor: "pointer",
+                  display: "flex",
+                }}
+              >
+                <X size={22} />
+              </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto">
-              <p className="text-[0.65rem] font-bold tracking-[0.2em] text-amber-600 mb-4 uppercase">Main Menu</p>
+            {/* Nav items */}
+            <div style={{ flex: 1, overflowY: "auto", paddingTop: "1.5rem" }}>
+              <p style={{
+                fontSize: "0.55rem", fontWeight: 700,
+                letterSpacing: "0.3em", textTransform: "uppercase",
+                color: "#F59E0B", marginBottom: "1rem",
+                fontFamily: "'DM Sans', sans-serif",
+              }}>
+                Main Menu
+              </p>
               {MENU_ITEMS.map((item, i) => (
                 <motion.div
                   key={item.name}
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 }}
+                  transition={{ delay: i * 0.06, ease: [0.16, 1, 0.3, 1] }}
                 >
                   <MobileMenuItem
                     item={item}
@@ -318,15 +500,32 @@ const Navbar: React.FC = () => {
               ))}
             </div>
 
-            <div className="pt-6 border-t border-stone-100">
+            {/* Mobile CTA */}
+            <div style={{ paddingTop: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
               <button
                 onClick={() => handleNavigate("donation")}
-                className="w-full py-5 text-white rounded-2xl font-['DM_Sans'] font-bold text-[1rem] shadow-2xl shadow-amber-200 border-none flex items-center justify-center gap-3"
-                style={{ background: COLORS.gradient }}
+                style={{
+                  width: "100%", padding: "1.1rem",
+                  background: "linear-gradient(135deg, #F59E0B, #EA580C)",
+                  color: "#fff", border: "none", borderRadius: 16,
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontWeight: 700, fontSize: "0.9rem",
+                  letterSpacing: "0.1em", textTransform: "uppercase",
+                  cursor: "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: "0.7rem",
+                  boxShadow: "0 12px 40px rgba(245,158,11,0.35)",
+                }}
               >
-                <Heart size={20} fill="white" /> Support Our Mission
+                <Heart size={18} fill="white" color="white" />
+                Support Our Mission
               </button>
-              <p className="text-center text-[0.6rem] text-stone-400 mt-6 tracking-widest uppercase">
+              <p style={{
+                textAlign: "center", marginTop: "1.2rem",
+                fontSize: "0.55rem", letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: "rgba(255,255,255,0.2)",
+                fontFamily: "'DM Sans', sans-serif",
+              }}>
                 © 2026 Generous Helping Hands Foundation
               </p>
             </div>

@@ -6,198 +6,257 @@ import {
   ExternalLink, ArrowRight, ShieldCheck,
 } from "lucide-react";
 
-// ─── PREMIUM DESIGN SYSTEM (LIGHT) ────────────────────────────────────────────
-const THEME = {
-  gold: "linear-gradient(135deg, #D4AF37 0%, #F59E0B 50%, #B8860B 100%)",
-  goldSolid: "#D4AF37",
-  bgWarm: "#FFFDF9",
-  textMain: "#2D241E",
-  glassBorder: "rgba(212, 175, 55, 0.15)",
-  cardWhite: "rgba(255, 255, 255, 0.7)",
-  accentCream: "rgba(212, 175, 55, 0.05)",
+// ─── THEME ────────────────────────────────────────────────────────────────────
+const C = {
+  bg:        "#1a1714",
+  bgCard:    "#211e1a",
+  bgDeep:    "#131110",
+  gold:      "#F59E0B",
+  goldDeep:  "#D97706",
+  orange:    "#EA580C",
+  text:      "#ffffff",
+  textMuted: "rgba(255,255,255,0.5)",
+  textFaint: "rgba(255,255,255,0.22)",
+  border:    "rgba(245,158,11,0.12)",
+  borderHov: "rgba(245,158,11,0.32)",
+  gradient:  "linear-gradient(135deg, #F59E0B, #EA580C)",
 };
 
-// ─── TYPES & UNCHANGED DATA ──────────────────────────────────────────────────
-interface ContactMethod {
-  icon: React.ElementType;
-  label: string;
-  href: string;
-  display: string;
-}
-
-interface DonationMethod {
-  icon: React.ElementType;
-  title: string;
-  description: string;
-}
-
-interface FAQItem {
-  question: string;
-  answer: string;
-}
+// ─── DATA ─────────────────────────────────────────────────────────────────────
+interface ContactMethod { icon: React.ElementType; label: string; href: string; display: string; }
+interface DonationMethod { icon: React.ElementType; title: string; description: string; }
+interface FAQItem { question: string; answer: string; }
 
 const CONTACT_METHODS: ContactMethod[] = [
-  {
-    icon: Mail,
-    label: "Email",
-    href: "mailto:Giversgenerous@gmail.com",
-    display: "Giversgenerous@gmail.com",
-  },
-  {
-    icon: Instagram,
-    label: "Instagram",
-    href: "https://instagram.com/GenerousHands",
-    display: "@GenerousHands",
-  },
+  { icon: Mail,      label: "Email",     href: "mailto:Giversgenerous@gmail.com",       display: "Giversgenerous@gmail.com" },
+  { icon: Instagram, label: "Instagram", href: "https://instagram.com/GenerousHands",   display: "@GenerousHands"           },
 ];
 
 const DONATION_METHODS: DonationMethod[] = [
-  {
-    icon: Heart,
-    title: "Direct Support",
-    description: "Secure bank details for direct transfers. 100% of funds go to field operations.",
-  },
-  {
-    icon: Gift,
-    title: "In-Kind Giving",
-    description: "Books, clothing, or professional skills that empower our communities.",
-  },
+  { icon: Heart, title: "Direct Support",  description: "Secure bank details for direct transfers. 100% of funds go to field operations."         },
+  { icon: Gift,  title: "In-Kind Giving",  description: "Books, clothing, or professional skills that empower our communities."                   },
 ];
 
 const FAQS: FAQItem[] = [
-  {
-    question: "How are donations used?",
-    answer: "100% of public donations go directly toward our core programs — school fees for girls, start-up support for women-led businesses, and community health outreach.",
-  },
-  {
-    question: "Can I donate from outside Nigeria?",
-    answer: "Yes. We accept international transfers via SWIFT/IBAN. Contact us for specific routing details.",
-  },
+  { question: "How are donations used?",           answer: "100% of public donations go directly toward our core programs — school fees for girls, start-up support for women-led businesses, and community health outreach." },
+  { question: "Can I donate from outside Nigeria?", answer: "Yes. We accept international transfers via SWIFT/IBAN. Contact us for specific routing details." },
 ];
 
-// ─── SUB-COMPONENTS ──────────────────────────────────────────────────────────
+// ─── EYEBROW ──────────────────────────────────────────────────────────────────
 const Eyebrow: React.FC<{ icon: React.ElementType; children: React.ReactNode }> = ({ icon: Icon, children }) => (
   <motion.div
     initial={{ opacity: 0, y: 10 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
-    className="inline-flex items-center gap-3 px-5 py-2 rounded-full mb-8"
-    style={{ background: THEME.accentCream, border: `1px solid ${THEME.glassBorder}` }}
+    style={{
+      display: "inline-flex", alignItems: "center", gap: "0.5rem",
+      padding: "0.4rem 1rem", borderRadius: 100,
+      border: `1px solid ${C.border}`,
+      background: "rgba(245,158,11,0.06)",
+      marginBottom: "1.5rem",
+    }}
   >
-    <Icon size={14} style={{ color: THEME.goldSolid }} />
-    <span className="font-['DM_Sans'] text-[0.65rem] font-black tracking-[0.3em] uppercase text-amber-800">
-      {children}
-    </span>
+    <Icon size={11} color={C.gold} />
+    <span style={{
+      fontFamily: "'DM Sans', sans-serif", fontSize: "0.58rem",
+      fontWeight: 700, letterSpacing: "0.35em", textTransform: "uppercase",
+      color: C.gold, whiteSpace: "nowrap",
+    }}>{children}</span>
   </motion.div>
 );
 
+// ─── 3D PHOTO ─────────────────────────────────────────────────────────────────
 const PremiumPhoto: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
-  const cardRef = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState(false);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const xs = useSpring(x, { stiffness: 120, damping: 20 });
-  const ys = useSpring(y, { stiffness: 120, damping: 20 });
-  const rotateX = useTransform(ys, [-0.5, 0.5], ["5deg", "-5deg"]);
-  const rotateY = useTransform(xs, [-0.5, 0.5], ["-5deg", "5deg"]);
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const xs = useSpring(mx, { stiffness: 120, damping: 20 });
+  const ys = useSpring(my, { stiffness: 120, damping: 20 });
+  const rotX = useTransform(ys, [-0.5, 0.5], ["5deg", "-5deg"]);
+  const rotY = useTransform(xs, [-0.5, 0.5], ["-5deg", "5deg"]);
 
   return (
     <motion.div
-      ref={cardRef}
+      ref={ref}
       onMouseMove={(e) => {
-        const rect = cardRef.current?.getBoundingClientRect();
-        if (rect) {
-          x.set((e.clientX - rect.left) / rect.width - 0.5);
-          y.set((e.clientY - rect.top) / rect.height - 0.5);
-        }
+        const r = ref.current?.getBoundingClientRect();
+        if (r) { mx.set((e.clientX - r.left) / r.width - 0.5); my.set((e.clientY - r.top) / r.height - 0.5); }
       }}
       onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => { x.set(0); y.set(0); setHovered(false); }}
-      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      className="relative w-full max-w-[420px] mx-auto"
+      onMouseLeave={() => { mx.set(0); my.set(0); setHovered(false); }}
+      style={{ rotateX: rotX, rotateY: rotY, transformStyle: "preserve-3d", position: "relative", maxWidth: 420, margin: "0 auto", width: "100%" }}
     >
-      <div className="absolute inset-0 bg-amber-200/20 blur-3xl opacity-0 transition-opacity duration-700 pointer-events-none" 
-           style={{ opacity: hovered ? 1 : 0 }} />
-      <div className="relative p-1.5 rounded-[2.5rem] overflow-hidden border border-amber-100 bg-white shadow-2xl shadow-stone-200">
+      {/* Halo */}
+      <div style={{
+        position: "absolute", inset: -24,
+        background: "radial-gradient(circle, rgba(245,158,11,0.12) 0%, transparent 70%)",
+        filter: "blur(40px)", borderRadius: 60, opacity: hovered ? 1 : 0.4,
+        transition: "opacity 0.6s ease", pointerEvents: "none", zIndex: 0,
+      }} />
+      {/* Rotated bg frame */}
+      <div style={{
+        position: "absolute", inset: -6,
+        background: "rgba(245,158,11,0.05)",
+        border: `1px solid ${C.border}`,
+        borderRadius: 36, transform: "rotate(2deg)",
+        zIndex: 0,
+      }} />
+      {/* Card */}
+      <div style={{
+        position: "relative", zIndex: 1,
+        padding: 6, borderRadius: 32,
+        overflow: "hidden",
+        border: `1px solid ${C.border}`,
+        background: C.bgCard,
+        boxShadow: "0 40px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)",
+      }}>
         <img
-          src={src}
-          alt={alt}
-          className="w-full aspect-square object-cover rounded-[2.2rem] transition-all duration-700"
-          style={{ transform: hovered ? "scale(1.05)" : "scale(1)" }}
+          src={src} alt={alt}
+          style={{
+            width: "100%", aspectRatio: "1/1",
+            objectFit: "cover", display: "block",
+            borderRadius: 28,
+            transform: hovered ? "scale(1.06)" : "scale(1)",
+            transition: "transform 0.7s ease",
+            filter: "saturate(0.85) contrast(1.05)",
+          }}
         />
+        {/* Cinematic overlay */}
+        <div style={{
+          position: "absolute", inset: 0, borderRadius: 28,
+          background: "linear-gradient(160deg, rgba(245,158,11,0.06) 0%, transparent 50%, rgba(0,0,0,0.2) 100%)",
+          pointerEvents: "none",
+        }} />
       </div>
     </motion.div>
   );
 };
 
-const ContactCard: React.FC<{ method: ContactMethod }> = ({ method }) => {
-  const [hovered, setHovered] = useState(false);
-  const Icon = method.icon;
-
+// ─── CONTACT CARD ─────────────────────────────────────────────────────────────
+const ContactCard: React.FC<{ method: ContactMethod }> = ({ method: m }) => {
+  const [hov, setHov] = useState(false);
   return (
     <a
-      href={method.href}
-      target={method.href.startsWith("http") ? "_blank" : undefined}
+      href={m.href}
+      target={m.href.startsWith("http") ? "_blank" : undefined}
       rel="noreferrer"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className="flex items-center justify-between p-5 rounded-2xl transition-all duration-300 border bg-white"
-      style={{ borderColor: hovered ? THEME.goldSolid : "rgba(0,0,0,0.05)" }}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      style={{
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "1.1rem 1.25rem", borderRadius: 16,
+        background: C.bgCard,
+        border: `1px solid ${hov ? C.borderHov : C.border}`,
+        transition: "border-color 0.25s ease, background 0.25s ease",
+        textDecoration: "none",
+        ...(hov ? { background: "rgba(245,158,11,0.05)" } : {}),
+      }}
     >
-      <div className="flex items-center gap-4">
-        <div className="w-11 h-11 rounded-xl flex items-center justify-center transition-colors"
-             style={{ background: THEME.accentCream, color: THEME.goldSolid }}>
-          <Icon size={18} />
+      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+        <div style={{
+          width: 42, height: 42, borderRadius: 12, flexShrink: 0,
+          background: "rgba(245,158,11,0.08)",
+          border: `1px solid ${C.border}`,
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          <m.icon size={17} color={C.gold} />
         </div>
         <div>
-          <p className="text-[0.55rem] font-black uppercase tracking-widest text-stone-400 mb-0.5">
-            {method.label}
-          </p>
-          <p className="text-stone-800 font-medium text-sm">
-            {method.display}
-          </p>
+          <p style={{
+            fontFamily: "'DM Sans', sans-serif", fontSize: "0.52rem",
+            fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.2em",
+            color: C.textFaint, marginBottom: 3,
+          }}>{m.label}</p>
+          <p style={{
+            fontFamily: "'DM Sans', sans-serif", fontSize: "0.85rem",
+            color: hov ? "#fff" : C.textMuted, fontWeight: 500,
+            transition: "color 0.2s",
+          }}>{m.display}</p>
         </div>
       </div>
-      <ExternalLink size={15} className="transition-colors" 
-                    style={{ color: hovered ? THEME.goldSolid : "rgba(0,0,0,0.1)" }} />
+      <ExternalLink size={14} color={hov ? C.gold : C.textFaint} style={{ transition: "color 0.2s", flexShrink: 0 }} />
     </a>
   );
 };
 
-const FAQAccordion: React.FC<{
-  faq: FAQItem;
-  open: boolean;
-  onToggle: () => void;
-}> = ({ faq, open, onToggle }) => {
-  const [hovered, setHovered] = useState(false);
+// ─── DONATION METHOD ROW ──────────────────────────────────────────────────────
+const DonationRow: React.FC<{ m: DonationMethod }> = ({ m }) => (
+  <div style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
+    <div style={{
+      flexShrink: 0, width: 40, height: 40, borderRadius: 12,
+      background: "rgba(245,158,11,0.08)",
+      border: `1px solid ${C.border}`,
+      display: "flex", alignItems: "center", justifyContent: "center",
+    }}>
+      <m.icon size={16} color={C.gold} />
+    </div>
+    <div>
+      <h4 style={{
+        fontFamily: "'DM Sans', sans-serif", fontSize: "0.6rem",
+        fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.2em",
+        color: "rgba(255,255,255,0.7)", marginBottom: "0.35rem",
+      }}>{m.title}</h4>
+      <p style={{
+        fontFamily: "'DM Sans', sans-serif", fontSize: "0.85rem",
+        color: C.textMuted, lineHeight: 1.7, fontWeight: 300,
+      }}>{m.description}</p>
+    </div>
+  </div>
+);
 
+// ─── FAQ ACCORDION ────────────────────────────────────────────────────────────
+const FAQAccordion: React.FC<{ faq: FAQItem; open: boolean; onToggle: () => void }> = ({ faq, open, onToggle }) => {
+  const [hov, setHov] = useState(false);
   return (
-    <div className="bg-white rounded-3xl border border-stone-100 overflow-hidden shadow-sm">
+    <div style={{
+      background: C.bgCard,
+      border: `1px solid ${open || hov ? C.borderHov : C.border}`,
+      borderRadius: 18, overflow: "hidden",
+      transition: "border-color 0.25s ease",
+    }}>
       <button
         onClick={onToggle}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        className="w-full px-8 py-6 flex items-center justify-between text-left gap-4"
+        onMouseEnter={() => setHov(true)}
+        onMouseLeave={() => setHov(false)}
+        style={{
+          width: "100%", padding: "1.4rem 1.75rem",
+          display: "flex", alignItems: "center",
+          justifyContent: "space-between", gap: "1rem", textAlign: "left",
+          background: "transparent", border: "none", cursor: "pointer",
+        }}
       >
-        <span className={`text-base font-medium transition-colors duration-300 ${open || hovered ? 'text-amber-700' : 'text-stone-800'}`}>
-          {faq.question}
-        </span>
-        <motion.div animate={{ rotate: open ? 180 : 0 }} className="flex-shrink-0 text-amber-500">
-          <ChevronDown size={18} />
+        <span style={{
+          fontFamily: "'DM Sans', sans-serif", fontSize: "0.95rem",
+          fontWeight: 500,
+          color: open || hov ? C.gold : "rgba(255,255,255,0.75)",
+          transition: "color 0.2s",
+        }}>{faq.question}</span>
+        <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.25 }} style={{ flexShrink: 0 }}>
+          <ChevronDown size={17} color={open ? C.gold : C.textFaint} />
         </motion.div>
       </button>
-
       <AnimatePresence>
         {open && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden"
+            transition={{ duration: 0.28, ease: "easeInOut" }}
+            style={{ overflow: "hidden" }}
           >
-            <p className="px-8 pb-8 text-stone-500 font-light leading-relaxed text-sm">
-              {faq.answer}
-            </p>
+            <div style={{
+              padding: "0 1.75rem 1.5rem",
+              borderTop: `1px solid ${C.border}`,
+              paddingTop: "1.25rem",
+            }}>
+              {/* Gold accent */}
+              <div style={{ width: 24, height: 2, background: C.gradient, borderRadius: 2, marginBottom: "0.85rem" }} />
+              <p style={{
+                fontFamily: "'DM Sans', sans-serif", fontSize: "0.9rem",
+                color: C.textMuted, lineHeight: 1.75, fontWeight: 300,
+              }}>{faq.answer}</p>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -205,133 +264,283 @@ const FAQAccordion: React.FC<{
   );
 };
 
-// ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
+// ─── DIVIDER ──────────────────────────────────────────────────────────────────
+const Divider = () => (
+  <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+    <div style={{ flex: 1, height: 1, background: `linear-gradient(90deg, transparent, ${C.border})` }} />
+    <div style={{ width: 5, height: 5, borderRadius: "50%", background: C.gold, opacity: 0.35 }} />
+    <div style={{ flex: 1, height: 1, background: `linear-gradient(90deg, ${C.border}, transparent)` }} />
+  </div>
+);
+
+// ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
 const GetInvolved: React.FC = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   return (
-    <div className="relative overflow-hidden py-32 md:py-48" style={{ background: THEME.bgWarm, color: THEME.textMain }}>
+    <div style={{ background: C.bg, color: C.text, position: "relative", overflow: "hidden" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500;700;900&display=swap');
-        .gold-text { background: ${THEME.gold}; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .gi-section { margin-bottom: 12rem; }
-        .gi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
-        .gi-grid-flipped { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; grid-template-areas: "img txt"; }
-        .gi-grid-flipped .gi-text-col { grid-area: txt; }
-        .gi-grid-flipped .gi-img-col { grid-area: img; }
-        
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+        * { box-sizing: border-box; }
+        ::selection { background: rgba(245,158,11,0.25); color: #fff; }
+
+        .gi-grid         { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+        .gi-grid-flipped { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center;
+                           grid-template-areas: "img txt"; }
+        .gi-grid-flipped .gi-text { grid-area: txt; }
+        .gi-grid-flipped .gi-img  { grid-area: img; }
+
         @media (max-width: 1024px) {
-          .gi-grid, .gi-grid-flipped { grid-template-columns: 1fr; grid-template-areas: none; gap: 4rem; }
-          .gi-grid-flipped .gi-text-col, .gi-grid-flipped .gi-img-col { grid-area: auto; }
-          .gi-img-col { order: 2; }
-          .gi-text-col { order: 1; }
+          .gi-grid, .gi-grid-flipped {
+            grid-template-columns: 1fr;
+            grid-template-areas: none;
+            gap: 3.5rem;
+          }
+          .gi-grid-flipped .gi-text,
+          .gi-grid-flipped .gi-img { grid-area: auto; }
+          .gi-headline { font-size: clamp(2.4rem, 8vw, 4rem) !important; }
+        }
+        @media (max-width: 640px) {
+          .gi-headline { font-size: clamp(2rem, 10vw, 2.8rem) !important; }
+          .gi-cta-row  { flex-direction: column !important; align-items: flex-start !important; }
         }
       `}</style>
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        
-        {/* 01. VOLUNTEER SECTION */}
-        <div id="volunteer" className="gi-section scroll-mt-20">
+      {/* Ambient glows */}
+      <div style={{
+        position: "fixed", top: "-10%", right: "-5%",
+        width: 700, height: 700, borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(245,158,11,0.05) 0%, transparent 65%)",
+        filter: "blur(80px)", pointerEvents: "none", zIndex: 0,
+      }} />
+      <div style={{
+        position: "fixed", bottom: "10%", left: "-8%",
+        width: 550, height: 550, borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(234,88,12,0.05) 0%, transparent 65%)",
+        filter: "blur(80px)", pointerEvents: "none", zIndex: 0,
+      }} />
+
+      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "7rem 6%", position: "relative", zIndex: 1 }}>
+
+        {/* ── 01. VOLUNTEER ─────────────────────────────────────────────────── */}
+        <section id="volunteer" style={{ marginBottom: "8rem", scrollMarginTop: 100 }}>
           <div className="gi-grid">
-            <motion.div 
-              className="gi-text-col"
-              initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
+            {/* Text */}
+            <motion.div
+              className="gi-text"
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}
             >
               <Eyebrow icon={Users}>Collaboration</Eyebrow>
-              <h2 className="font-['Playfair_Display'] text-4xl md:text-6xl font-bold leading-tight mb-8">
+              <h2
+                className="gi-headline"
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "clamp(2.8rem, 4.5vw, 5rem)",
+                  fontWeight: 700, lineHeight: 1.05,
+                  color: C.text, letterSpacing: "-0.01em",
+                }}
+              >
                 Your hands can<br />
-                <em className="gold-text italic font-normal">build the future.</em>
+                <em style={{
+                  fontStyle: "italic", fontWeight: 400,
+                  background: `linear-gradient(135deg, ${C.gold}, ${C.orange})`,
+                  WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+                }}>build the future.</em>
               </h2>
-              <p className="text-stone-500 text-lg font-light leading-relaxed mb-10 pl-6 border-l-2 border-amber-500/20">
+
+              <p style={{
+                color: C.textMuted, fontFamily: "'DM Sans', sans-serif",
+                fontSize: "1rem", lineHeight: 1.8, fontWeight: 300,
+                paddingLeft: "1.5rem",
+                borderLeft: `2px solid rgba(245,158,11,0.2)`,
+                maxWidth: 460,
+              }}>
                 Whether you have professional skills to share or time to give, your presence strengthens our mission.
               </p>
-              <div className="flex flex-col gap-3">
-                {CONTACT_METHODS.map((m) => <ContactCard key={m.label} method={m} />)}
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                {CONTACT_METHODS.map(m => <ContactCard key={m.label} method={m} />)}
               </div>
             </motion.div>
 
-            <motion.div 
-              className="gi-img-col"
-              initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}
+            {/* Image */}
+            <motion.div
+              className="gi-img"
+              initial={{ opacity: 0, scale: 0.94 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
             >
               <PremiumPhoto src="/volut.jpg" alt="Volunteers" />
             </motion.div>
           </div>
-        </div>
+        </section>
 
-        {/* 02. DONATION SECTION */}
-        <div id="donation" className="gi-section scroll-mt-20">
+        <Divider />
+
+        {/* ── 02. DONATION ──────────────────────────────────────────────────── */}
+        <section id="donation" style={{ margin: "8rem 0", scrollMarginTop: 100 }}>
           <div className="gi-grid-flipped">
-            <motion.div 
-              className="gi-text-col"
-              initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
+            {/* Text */}
+            <motion.div
+              className="gi-text"
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}
             >
               <Eyebrow icon={Heart}>Impact</Eyebrow>
-              <h2 className="font-['Playfair_Display'] text-4xl md:text-6xl font-bold leading-tight mb-8">
+              <h2
+                className="gi-headline"
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "clamp(2.8rem, 4.5vw, 5rem)",
+                  fontWeight: 700, lineHeight: 1.05,
+                  color: C.text, letterSpacing: "-0.01em",
+                }}
+              >
                 Transparency<br />
-                <em className="gold-text italic font-normal">in every gift.</em>
+                <em style={{
+                  fontStyle: "italic", fontWeight: 400,
+                  background: `linear-gradient(135deg, ${C.gold}, ${C.orange})`,
+                  WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+                }}>in every gift.</em>
               </h2>
-              <p className="text-stone-500 text-lg font-light leading-relaxed mb-12 pl-6 border-l-2 border-amber-500/20">
+
+              <p style={{
+                color: C.textMuted, fontFamily: "'DM Sans', sans-serif",
+                fontSize: "1rem", lineHeight: 1.8, fontWeight: 300,
+                paddingLeft: "1.5rem",
+                borderLeft: `2px solid rgba(245,158,11,0.2)`,
+                maxWidth: 460,
+              }}>
                 No overhead cuts. Your contributions fund education, livelihoods, and medical outreach directly.
               </p>
 
-              <div className="space-y-8 mb-12">
-                {DONATION_METHODS.map((m) => (
-                  <div key={m.title} className="flex gap-4">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center bg-amber-50 text-amber-600">
-                      <m.icon size={18} />
-                    </div>
-                    <div>
-                      <h4 className="text-[0.65rem] font-black uppercase tracking-widest text-stone-800 mb-1">{m.title}</h4>
-                      <p className="text-stone-500 text-sm font-light leading-relaxed">{m.description}</p>
-                    </div>
-                  </div>
-                ))}
+              {/* Donation methods */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+                {DONATION_METHODS.map(m => <DonationRow key={m.title} m={m} />)}
               </div>
 
-              <div className="flex flex-wrap items-center gap-6">
-                <a href="mailto:Giversgenerous@gmail.com" 
-                   className="inline-flex items-center gap-3 px-10 py-5 bg-amber-500 text-white rounded-full text-[0.65rem] font-black uppercase tracking-widest shadow-xl shadow-amber-500/20 hover:bg-amber-600 transition-all hover:scale-105">
+              {/* CTA row */}
+              <div
+                className="gi-cta-row"
+                style={{ display: "flex", alignItems: "center", gap: "1.5rem", flexWrap: "wrap", marginTop: "0.5rem" }}
+              >
+                <motion.a
+                  href="mailto:Giversgenerous@gmail.com"
+                  whileHover={{ scale: 1.04, boxShadow: "0 16px 50px rgba(245,158,11,0.45)" }}
+                  whileTap={{ scale: 0.97 }}
+                  style={{
+                    display: "inline-flex", alignItems: "center", gap: "0.6rem",
+                    padding: "0.9rem 2.2rem", borderRadius: 100,
+                    background: C.gradient,
+                    color: "#fff", textDecoration: "none",
+                    fontFamily: "'DM Sans', sans-serif",
+                    fontSize: "0.7rem", fontWeight: 700,
+                    letterSpacing: "0.12em", textTransform: "uppercase",
+                    boxShadow: "0 8px 30px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.15)",
+                  }}
+                >
                   Request Details <ArrowRight size={14} />
-                </a>
-                <div className="flex items-center gap-2 text-[0.6rem] font-black uppercase tracking-widest text-stone-400">
-                  <ShieldCheck size={16} className="text-amber-500" /> Guaranteed Secure
+                </motion.a>
+                <div style={{
+                  display: "flex", alignItems: "center", gap: "0.5rem",
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.6rem", fontWeight: 700,
+                  letterSpacing: "0.15em", textTransform: "uppercase",
+                  color: C.textFaint,
+                }}>
+                  <ShieldCheck size={15} color={C.gold} /> Guaranteed Secure
                 </div>
               </div>
             </motion.div>
 
-            <motion.div 
-              className="gi-img-col"
-              initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}
+            {/* Image */}
+            <motion.div
+              className="gi-img"
+              initial={{ opacity: 0, scale: 0.94 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
             >
               <PremiumPhoto src="/donations.jpg" alt="Donations" />
             </motion.div>
           </div>
-        </div>
+        </section>
 
-        {/* 03. FAQ SECTION */}
-        <div id="faq" className="max-w-3xl mx-auto pt-24 border-t border-stone-100 scroll-mt-20">
-          <div className="text-center mb-16">
+        <Divider />
+
+        {/* ── 03. FAQ ───────────────────────────────────────────────────────── */}
+        <section id="faq" style={{ maxWidth: 760, margin: "8rem auto 0", scrollMarginTop: 100 }}>
+          {/* Header */}
+          <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
             <Eyebrow icon={Sparkles}>Clarity</Eyebrow>
-            <h2 className="font-['Playfair_Display'] text-4xl md:text-5xl font-bold text-stone-800">Common Questions</h2>
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: "clamp(2.2rem, 4vw, 3.5rem)",
+                fontWeight: 700, color: C.text, lineHeight: 1.1,
+              }}
+            >
+              Common Questions
+            </motion.h2>
           </div>
-          <div className="space-y-4">
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
             {FAQS.map((faq, i) => (
-              <FAQAccordion 
-                key={i} 
-                faq={faq} 
-                open={openFaq === i} 
-                onToggle={() => setOpenFaq(openFaq === i ? null : i)} 
-              />
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.6 }}
+              >
+                <FAQAccordion
+                  faq={faq}
+                  open={openFaq === i}
+                  onToggle={() => setOpenFaq(openFaq === i ? null : i)}
+                />
+              </motion.div>
             ))}
           </div>
-        </div>
+
+          {/* Bottom CTA glow */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
+            style={{ textAlign: "center", marginTop: "4rem" }}
+          >
+            <div style={{
+              width: 300, height: 80, borderRadius: "50%",
+              background: "radial-gradient(ellipse, rgba(245,158,11,0.1) 0%, transparent 70%)",
+              filter: "blur(20px)", margin: "0 auto 1.5rem",
+            }} />
+            <p style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: "1.1rem", fontStyle: "italic",
+              color: C.textMuted, lineHeight: 1.6,
+            }}>
+              Still have questions?{" "}
+              <a href="mailto:Giversgenerous@gmail.com" style={{ color: C.gold, textDecoration: "none" }}>
+                Reach out directly.
+              </a>
+            </p>
+          </motion.div>
+        </section>
 
       </div>
-
-      {/* Background Decor */}
-      <div className="absolute top-[10%] right-[-5%] w-[600px] h-[600px] bg-amber-200/10 blur-[120px] rounded-full -z-10" />
-      <div className="absolute bottom-[10%] left-[-5%] w-[600px] h-[600px] bg-orange-200/10 blur-[120px] rounded-full -z-10" />
     </div>
   );
 };

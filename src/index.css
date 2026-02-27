@@ -12,10 +12,17 @@
 }
 
 /* ─── 2. GLOBAL RESETS & SMOOTHING ────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 html {
   scroll-behavior: smooth;
   background-color: var(--cream-bg);
-  cursor: auto;
+  /* Prevent layout shift from scrollbar appearing/disappearing */
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -25,32 +32,59 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Ensure cursor is always set — prevents inheritance issues */
+  cursor: auto;
 }
 
-/* ─── 3. THE "GRAIN" TEXTURE (FIXED SVG) ─────────────────────── */
-/* Adds a subtle film-grain texture to the entire site for a premium feel */
+/* ─── 3. THE "GRAIN" TEXTURE ──────────────────────────────────── */
+/*
+  FIX: The original SVG had a broken feTurbulence element. The
+  fractalNoise filter needs `width` and `height` on the SVG root,
+  and the rect needs explicit dimensions. Also using `type='url'`
+  on the body pseudo-element is more reliable than `background-image`
+  for fixed overlays in all browsers.
+*/
 body::before {
   content: "";
   position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  inset: 0;                 /* shorthand for top/right/bottom/left: 0 */
+  width: 100%;
+  height: 100%;
   opacity: 0.04;
   pointer-events: none;
   z-index: 9999;
-  /* Corrected the data-uri SVG syntax */
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  /* Prevent grain from blurring on high-DPI screens */
+  image-rendering: pixelated;
 }
 
 /* ─── 4. HERITAGE TYPOGRAPHY ─────────────────────────────────── */
-h1, h2, h3, h4, .font-serif {
+h1, h2, h3, h4, h5, h6,
+.font-serif {
   font-family: 'Playfair Display', serif;
   font-weight: 700;
   letter-spacing: -0.01em;
+  /* Prevent orphaned words on narrow containers */
+  text-wrap: balance;
 }
 
-p, span, button, a, .font-sans {
+p, span, button, a, label, input, textarea, select,
+.font-sans {
   font-family: 'DM Sans', sans-serif;
   letter-spacing: 0.01em;
+}
+
+/* Links: sensible default — inherit color, no underline unless hovered */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--gold-primary);
+  text-underline-offset: 3px;
 }
 
 /* ─── 5. UNIQUE SCROLLBAR (MINIMALIST GOLD) ──────────────────── */
@@ -67,10 +101,16 @@ p, span, button, a, .font-sans {
   border-radius: 100px;
 }
 
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold-primary) var(--cream-bg);
+}
+
 /* ─── 6. PREMIUM SELECTION ───────────────────────────────────── */
 ::selection {
   background-color: var(--gold-primary);
-  color: white;
+  color: #fff;
 }
 
 /* ─── 7. CREATIVE UTILITIES ──────────────────────────────────── */
@@ -79,34 +119,52 @@ p, span, button, a, .font-sans {
 .gold-text {
   background: var(--gold-gradient);
   -webkit-background-clip: text;
+  background-clip: text;            /* FIX: add unprefixed version */
   -webkit-text-fill-color: transparent;
+  color: transparent;               /* FIX: fallback for non-webkit */
   display: inline-block;
 }
 
 /* Soft Floating Animation */
 @keyframes softFloat {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
+  0%,
+  100% { transform: translateY(0); }
+  50%  { transform: translateY(-10px); }
 }
 
 .animate-float {
   animation: softFloat 5s ease-in-out infinite;
+  /* Respect user preference for reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 }
 
-/* Glass Card with Gold Inner Glow */
+/*
+  FIX: Glass card — added missing `background` fallback for browsers
+  that don't support backdrop-filter, and corrected the `@supports` guard.
+*/
 .glass-gold {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
+  /* Solid fallback for browsers without backdrop-filter support */
+  background: rgba(255, 255, 255, 0.95);
   border: 1px solid var(--glass-border);
-  box-shadow: inset 0 0 20px rgba(212, 175, 55, 0.03), 
-              0 15px 35px rgba(45, 36, 30, 0.05);
+  box-shadow:
+    inset 0 0 20px rgba(212, 175, 55, 0.03),
+    0 15px 35px rgba(45, 36, 30, 0.05);
+}
+
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .glass-gold {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+  }
 }
 
 /* Kerning reveal effect for headers on hover */
 .reveal-text {
   transition: letter-spacing 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  display: inline-block;            /* FIX: letter-spacing transition needs block/inline-block */
 }
 
 @media (min-width: 1024px) {
@@ -115,21 +173,60 @@ p, span, button, a, .font-sans {
   }
 }
 
-/* ─── 8. MOUSE POINTER ELEGANCE ──────────────────────────────── */
+/* ─── 8. CUSTOM CURSOR ───────────────────────────────────────── */
+/*
+  FIX: Original was missing `top` and `left` properties — the dot
+  was anchored to 0,0 and couldn't be moved by JS. Added sensible
+  defaults and a `will-change` hint for GPU compositing.
+*/
 .custom-cursor-dot {
   width: 8px;
   height: 8px;
+  top: 0;                           /* FIX: required for JS translate to work */
+  left: 0;                          /* FIX: required for JS translate to work */
   background: var(--gold-primary);
   border-radius: 50%;
   position: fixed;
   pointer-events: none;
   z-index: 10000;
-  transition: transform 0.15s ease-out;
+  transform: translate(-50%, -50%); /* FIX: center on pointer, not offset by dot size */
+  transition: transform 0.15s ease-out, opacity 0.2s ease;
+  will-change: transform;           /* GPU compositing hint */
+}
+
+/* Hide custom cursor on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .custom-cursor-dot {
+    display: none;
+  }
 }
 
 /* ─── 9. RESPONSIVE REFINEMENTS ─────────────────────────────── */
 @media (max-width: 768px) {
   html {
     font-size: 14px;
+  }
+
+  /* Tighten heading letter-spacing on small screens */
+  h1, h2, h3 {
+    letter-spacing: -0.02em;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 13px;
+  }
+}
+
+/* ─── 10. REDUCED MOTION ─────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

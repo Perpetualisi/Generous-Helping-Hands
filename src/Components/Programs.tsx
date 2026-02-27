@@ -5,40 +5,34 @@ import {
   Image as ImageIcon, Sparkles, ArrowUpRight, ArrowRight
 } from "lucide-react";
 
-// ─── PREMIUM DESIGN SYSTEM ──────────────────────────────────────────────────
-const THEME = {
-  gold: "linear-gradient(135deg, #D4AF37 0%, #F59E0B 50%, #B8860B 100%)",
-  goldSolid: "#D4AF37",
-  bgWarm: "#FFFDF9",
-  textMain: "#2D241E",
-  glassBorder: "rgba(212, 175, 55, 0.15)",
-  cardWhite: "rgba(255, 255, 255, 0.7)",
+// ─── THEME ────────────────────────────────────────────────────────────────────
+const C = {
+  bg:        "#1a1714",
+  bgCard:    "#211e1a",
+  bgDeep:    "#131110",
+  gold:      "#F59E0B",
+  goldDeep:  "#D97706",
+  orange:    "#EA580C",
+  text:      "#ffffff",
+  textMuted: "rgba(255,255,255,0.5)",
+  textFaint: "rgba(255,255,255,0.22)",
+  border:    "rgba(245,158,11,0.12)",
+  borderHov: "rgba(245,158,11,0.32)",
+  gradient:  "linear-gradient(135deg, #F59E0B, #EA580C)",
 };
 
-// ─── ANIMATIONS ──────────────────────────────────────────────────────────────
-const revealVariants: Variants = {
-  hidden: { opacity: 0, y: 30, filter: "blur(8px)" },
-  visible: { 
-    opacity: 1, 
-    y: 0, 
-    filter: "blur(0px)",
-    transition: { duration: 1, ease: [0.23, 1, 0.32, 1] } 
-  }
+// ─── ANIMATIONS ───────────────────────────────────────────────────────────────
+const fadeUp: Variants = {
+  hidden:  { opacity: 0, y: 28, filter: "blur(6px)" },
+  visible: { opacity: 1, y: 0,  filter: "blur(0px)", transition: { duration: 0.75, ease: [0.16, 1, 0.3, 1] } },
+};
+const stagger: Variants = {
+  hidden:  { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.11 } },
 };
 
-const staggerContainer: Variants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.12 } }
-};
-
-// ─── TYPES & DATA ──────────────────────────────────────────────────────────
-interface Program {
-  icon: React.ElementType;
-  title: string;
-  description: string;
-  detail: string;
-  tag: string;
-}
+// ─── DATA ─────────────────────────────────────────────────────────────────────
+interface Program { icon: React.ElementType; title: string; description: string; detail: string; tag: string; }
 
 const PROGRAMS: Program[] = [
   {
@@ -72,74 +66,113 @@ const PROGRAMS: Program[] = [
 ];
 
 const EVENT_PHOTOS = [
-  { src: "/event11.jpeg", alt: "Community outreach", gridArea: "large" },
-  { src: "/event22.jpeg", alt: "Skills training",     gridArea: "top-right" },
-  { src: "/events3.jpg",  alt: "Youth mentorship",    gridArea: "mid-right" },
-  { src: "/events4.jpg",  alt: "Medical outreach",    gridArea: "bottom-left" },
-  { src: "/events5.jpg",  alt: "Empowerment summit", gridArea: "bottom-mid" },
-  { src: "/events6.jpg",  alt: "Advocacy walk",       gridArea: "bottom-right" },
+  { src: "/event11.jpeg", alt: "Community outreach", gridArea: "large"        },
+  { src: "/event22.jpeg", alt: "Skills training",    gridArea: "top-right"    },
+  { src: "/events3.jpg",  alt: "Youth mentorship",   gridArea: "mid-right"    },
+  { src: "/events4.jpg",  alt: "Medical outreach",   gridArea: "bottom-left"  },
+  { src: "/events5.jpg",  alt: "Empowerment summit", gridArea: "bottom-mid"   },
+  { src: "/events6.jpg",  alt: "Advocacy walk",      gridArea: "bottom-right" },
 ];
 
-// ─── SUB-COMPONENTS ──────────────────────────────────────────────────────────
-const PremiumEyebrow: React.FC<{ icon: React.ElementType; children: React.ReactNode }> = ({ icon: Icon, children }) => (
-  <motion.div 
-    variants={revealVariants}
-    className="inline-flex items-center gap-3 px-5 py-2 rounded-full mb-8"
-    style={{ background: "rgba(212, 175, 55, 0.05)", border: `1px solid ${THEME.glassBorder}` }}
+// ─── EYEBROW ──────────────────────────────────────────────────────────────────
+const Eyebrow: React.FC<{ icon: React.ElementType; children: React.ReactNode }> = ({ icon: Icon, children }) => (
+  <motion.div
+    variants={fadeUp}
+    style={{
+      display: "inline-flex", alignItems: "center", gap: "0.5rem",
+      padding: "0.4rem 1rem", borderRadius: 100,
+      border: `1px solid ${C.border}`,
+      background: "rgba(245,158,11,0.06)",
+      marginBottom: "1.5rem",
+    }}
   >
-    <Icon size={14} style={{ color: THEME.goldSolid }} />
-    <span className="font-['DM_Sans'] text-[0.65rem] font-black tracking-[0.3em] uppercase text-amber-800">
-      {children}
-    </span>
+    <Icon size={11} color={C.gold} />
+    <span style={{
+      fontFamily: "'DM Sans', sans-serif", fontSize: "0.58rem",
+      fontWeight: 700, letterSpacing: "0.35em", textTransform: "uppercase",
+      color: C.gold, whiteSpace: "nowrap",
+    }}>{children}</span>
   </motion.div>
 );
 
-// Removed unused 'index' prop to pass build checks
+// ─── PROGRAM CARD ─────────────────────────────────────────────────────────────
 const ProgramCard: React.FC<{ program: Program; isMobile: boolean }> = ({ program, isMobile }) => {
   const [open, setOpen] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const mouseXSpring = useSpring(x, { stiffness: 150, damping: 20 });
-  const mouseYSpring = useSpring(y, { stiffness: 150, damping: 20 });
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7deg", "-7deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7deg", "7deg"]);
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const rotX = useSpring(useTransform(my, [-0.5, 0.5], ["7deg", "-7deg"]), { stiffness: 120, damping: 20 });
+  const rotY = useSpring(useTransform(mx, [-0.5, 0.5], ["-7deg", "7deg"]), { stiffness: 120, damping: 20 });
+
+  const move = (e: React.MouseEvent) => {
+    if (isMobile) return;
+    const r = cardRef.current?.getBoundingClientRect();
+    if (r) { mx.set((e.clientX - r.left) / r.width - 0.5); my.set((e.clientY - r.top) / r.height - 0.5); }
+  };
 
   return (
     <motion.div
       ref={cardRef}
-      onMouseMove={(e) => {
-        const rect = cardRef.current?.getBoundingClientRect();
-        if (rect && !isMobile) {
-          x.set((e.clientX - rect.left) / rect.width - 0.5);
-          y.set((e.clientY - rect.top) / rect.height - 0.5);
-        }
-      }}
-      onMouseLeave={() => { x.set(0); y.set(0); }}
-      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      variants={revealVariants}
-      className="group"
+      variants={fadeUp}
+      onMouseMove={move}
+      onMouseLeave={() => { mx.set(0); my.set(0); }}
+      style={{ rotateX: rotX, rotateY: rotY, transformStyle: "preserve-3d", height: "100%" }}
     >
-      <div className="relative overflow-hidden p-8 md:p-10 rounded-[2.5rem] h-full flex flex-col transition-all duration-700 border border-stone-100 backdrop-blur-md"
-           style={{ background: THEME.cardWhite, boxShadow: "0 20px 50px rgba(0,0,0,0.03)" }}>
-        
-        <div className="flex justify-between items-start mb-10">
-          <div className="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-500 group-hover:bg-amber-500 group-hover:text-white"
-               style={{ background: "rgba(212,175,55,0.1)", color: THEME.goldSolid, border: `1px solid ${THEME.glassBorder}` }}>
-            <program.icon size={20} />
-          </div>
-          <span className="text-[0.55rem] font-black tracking-[0.2em] uppercase px-4 py-1.5 rounded-full border border-amber-100 text-amber-700 bg-white/50">
-            {program.tag}
-          </span>
+      <motion.div
+        whileHover={{ borderColor: C.borderHov }}
+        style={{
+          position: "relative", overflow: "hidden",
+          padding: "2rem", borderRadius: 24, height: "100%",
+          display: "flex", flexDirection: "column",
+          background: C.bgCard,
+          border: `1px solid ${C.border}`,
+          boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
+          transition: "border-color 0.3s ease",
+        }}
+      >
+        {/* Hover glow */}
+        <div style={{
+          position: "absolute", inset: 0, opacity: 0,
+          background: "radial-gradient(circle at 50% 0%, rgba(245,158,11,0.06) 0%, transparent 70%)",
+          transition: "opacity 0.4s ease", pointerEvents: "none",
+        }} className="card-glow" />
+
+        {/* Top row */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.75rem" }}>
+          <motion.div
+            whileHover={{ background: C.gradient }}
+            style={{
+              width: 46, height: 46, borderRadius: 13,
+              background: "rgba(245,158,11,0.1)",
+              border: `1px solid ${C.border}`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              transition: "background 0.3s ease", flexShrink: 0,
+            }}
+          >
+            <program.icon size={18} color={C.gold} />
+          </motion.div>
+          <span style={{
+            fontSize: "0.52rem", fontWeight: 800,
+            letterSpacing: "0.2em", textTransform: "uppercase",
+            padding: "0.35rem 0.85rem", borderRadius: 100,
+            border: `1px solid ${C.border}`,
+            background: "rgba(245,158,11,0.05)",
+            color: C.gold,
+            fontFamily: "'DM Sans', sans-serif",
+          }}>{program.tag}</span>
         </div>
 
-        <h3 className="font-['Playfair_Display'] text-2xl font-bold text-stone-800 mb-6 leading-tight">
-          {program.title}
-        </h3>
-        
-        <p className="text-stone-500 text-sm font-light leading-relaxed mb-8 flex-grow">
-          {program.description}
-        </p>
+        <h3 style={{
+          fontFamily: "'Cormorant Garamond', serif",
+          fontSize: "1.4rem", fontWeight: 700,
+          color: C.text, marginBottom: "0.9rem", lineHeight: 1.2,
+        }}>{program.title}</h3>
+
+        <p style={{
+          color: C.textMuted, fontFamily: "'DM Sans', sans-serif",
+          fontSize: "0.85rem", lineHeight: 1.75, fontWeight: 300,
+          marginBottom: "1.5rem", flex: 1,
+        }}>{program.description}</p>
 
         <AnimatePresence>
           {open && (
@@ -147,49 +180,81 @@ const ProgramCard: React.FC<{ program: Program; isMobile: boolean }> = ({ progra
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden border-t border-amber-100 pt-6 mb-6"
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              style={{ overflow: "hidden" }}
             >
-              <p className="font-['Playfair_Display'] text-amber-700 italic text-md leading-relaxed">
-                {program.detail}
-              </p>
+              <div style={{
+                borderTop: `1px solid ${C.border}`,
+                paddingTop: "1.25rem", marginBottom: "1.25rem",
+              }}>
+                {/* Gold accent line */}
+                <div style={{ width: 24, height: 2, background: C.gradient, borderRadius: 2, marginBottom: "0.85rem" }} />
+                <p style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "1rem", fontStyle: "italic",
+                  color: C.gold, lineHeight: 1.7,
+                }}>{program.detail}</p>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
 
         <button
           onClick={() => setOpen(!open)}
-          className="flex items-center gap-3 text-stone-900 text-[0.6rem] font-black tracking-[0.3em] uppercase group/btn mt-auto"
+          style={{
+            display: "flex", alignItems: "center", gap: "0.5rem",
+            background: "none", border: "none", cursor: "pointer", padding: 0,
+            color: "rgba(255,255,255,0.6)",
+            fontFamily: "'DM Sans', sans-serif",
+            fontSize: "0.6rem", fontWeight: 800,
+            letterSpacing: "0.25em", textTransform: "uppercase",
+            transition: "color 0.2s ease",
+            marginTop: "auto",
+          }}
+          onMouseEnter={e => (e.currentTarget.style.color = C.gold)}
+          onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.6)")}
         >
-          <span className="group-hover/btn:text-amber-600 transition-colors">{open ? "Show Less" : "Discover Impact"}</span>
-          <motion.div animate={{ rotate: open ? 45 : 0 }} className="text-amber-500">
-            <ArrowUpRight size={16} />
+          <span>{open ? "Show Less" : "Discover Impact"}</span>
+          <motion.div animate={{ rotate: open ? 45 : 0 }} transition={{ duration: 0.25 }}>
+            <ArrowUpRight size={14} color={C.gold} />
           </motion.div>
         </button>
-      </div>
+      </motion.div>
     </motion.div>
   );
 };
 
-// ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
+// ─── DIVIDER ──────────────────────────────────────────────────────────────────
+const Divider = () => (
+  <div style={{ display: "flex", alignItems: "center", gap: "1rem", margin: "0 auto", maxWidth: 1280, padding: "0 6%" }}>
+    <div style={{ flex: 1, height: 1, background: `linear-gradient(90deg, transparent, ${C.border})` }} />
+    <div style={{ width: 5, height: 5, borderRadius: "50%", background: C.gold, opacity: 0.35 }} />
+    <div style={{ flex: 1, height: 1, background: `linear-gradient(90deg, ${C.border}, transparent)` }} />
+  </div>
+);
+
+// ─── PROGRAMS PAGE ────────────────────────────────────────────────────────────
 const Programs: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    const check = () => setIsMobile(window.innerWidth < 1024);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
   }, []);
 
   return (
-    <div className="relative w-full overflow-hidden" style={{ background: THEME.bgWarm, color: THEME.textMain }}>
+    <div style={{ background: C.bg, color: C.text, position: "relative", overflow: "hidden" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@300;400;500;700;900&display=swap');
-        .gold-text { background: ${THEME.gold}; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .event-grid-premium {
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+        * { box-sizing: border-box; }
+        ::selection { background: rgba(245,158,11,0.25); color: #fff; }
+
+        .event-grid {
           display: grid;
-          gap: 1.5rem;
-          grid-template-areas: 
+          gap: 1rem;
+          grid-template-areas:
             "large large top-right"
             "large large mid-right"
             "bottom-left bottom-mid bottom-right";
@@ -197,102 +262,243 @@ const Programs: React.FC = () => {
           grid-auto-rows: 240px;
         }
         @media (max-width: 1024px) {
-          .event-grid-premium {
-            grid-template-areas: none;
-            grid-template-columns: repeat(2, 1fr);
-            grid-auto-rows: 200px;
-          }
+          .event-grid { grid-template-areas: none; grid-template-columns: repeat(2, 1fr); grid-auto-rows: 200px; }
+          .prog-header-grid { flex-direction: column !important; gap: 1.5rem !important; }
+          .prog-headline { font-size: clamp(2.8rem, 9vw, 4.5rem) !important; }
+          .prog-cards-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .gallery-header { flex-direction: column !important; align-items: flex-start !important; }
         }
         @media (max-width: 640px) {
-          .event-grid-premium {
-            grid-template-columns: 1fr;
-            grid-auto-rows: 300px;
-          }
+          .event-grid { grid-template-columns: 1fr; grid-auto-rows: 280px; }
+          .prog-cards-grid { grid-template-columns: 1fr !important; }
+          .prog-headline { font-size: clamp(2.2rem, 10vw, 3rem) !important; }
         }
       `}</style>
 
-      <section id="ourprograms" className="py-24 md:py-48 px-6 max-w-7xl mx-auto">
-        {/* Header */}
-        <motion.div 
-          initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}
-          className="mb-20 md:mb-32"
+      {/* Ambient BG glows */}
+      <div style={{
+        position: "fixed", top: "-10%", right: "-5%",
+        width: 700, height: 700, borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(245,158,11,0.05) 0%, transparent 65%)",
+        filter: "blur(80px)", pointerEvents: "none", zIndex: 0,
+      }} />
+      <div style={{
+        position: "fixed", bottom: "20%", left: "-10%",
+        width: 500, height: 500, borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(234,88,12,0.05) 0%, transparent 65%)",
+        filter: "blur(80px)", pointerEvents: "none", zIndex: 0,
+      }} />
+
+      <section
+        id="ourprograms"
+        style={{ padding: "7rem 6% 5rem", maxWidth: 1280, margin: "0 auto", position: "relative", zIndex: 1 }}
+      >
+        {/* ── HEADER ── */}
+        <motion.div
+          initial="hidden" whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+          variants={stagger}
+          style={{ marginBottom: "5rem" }}
         >
-          <PremiumEyebrow icon={Sparkles}>Our Programs</PremiumEyebrow>
-          <div className="grid lg:grid-cols-2 gap-12 items-end">
-            <motion.h2 variants={revealVariants} className="font-['Playfair_Display'] text-4xl md:text-[5.5rem] font-bold leading-[0.95] tracking-tighter">
-              Creating <br /><em className="gold-text italic font-normal">Real Impact.</em>
+          <Eyebrow icon={Sparkles}>Our Programs</Eyebrow>
+
+          <div
+            className="prog-header-grid"
+            style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "3rem" }}
+          >
+            <motion.h2
+              variants={fadeUp}
+              className="prog-headline"
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: "clamp(3rem, 6vw, 6rem)",
+                fontWeight: 700, lineHeight: 0.95,
+                letterSpacing: "-0.01em", color: C.text,
+                flex: "0 0 auto",
+              }}
+            >
+              Creating <br />
+              <em style={{
+                fontStyle: "italic", fontWeight: 400,
+                background: `linear-gradient(135deg, ${C.gold}, ${C.orange})`,
+                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+              }}>Real Impact.</em>
             </motion.h2>
-            <motion.p variants={revealVariants} className="text-stone-500 text-lg md:text-xl font-light leading-relaxed border-l-2 border-amber-500/20 pl-8">
+
+            <motion.p
+              variants={fadeUp}
+              style={{
+                color: C.textMuted, fontFamily: "'DM Sans', sans-serif",
+                fontSize: "1rem", lineHeight: 1.8, fontWeight: 300,
+                maxWidth: 420,
+                borderLeft: `2px solid rgba(245,158,11,0.2)`,
+                paddingLeft: "1.5rem",
+              }}
+            >
               We empower women, girls, and youth to thrive through programs that create real, lasting change — from financial independence and education to health and leadership.
             </motion.p>
           </div>
         </motion.div>
 
-        {/* Programs Grid */}
-        <motion.div 
-          initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}
-          className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-40 md:mb-64"
+        {/* ── PROGRAM CARDS ── */}
+        <motion.div
+          initial="hidden" whileInView="visible"
+          viewport={{ once: true, margin: "-60px" }}
+          variants={stagger}
+          className="prog-cards-grid"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(4, 1fr)",
+            gap: "1rem",
+            marginBottom: "7rem",
+          }}
         >
           {PROGRAMS.map((p, i) => (
             <ProgramCard key={i} program={p} isMobile={isMobile} />
           ))}
         </motion.div>
 
-        {/* Gallery */}
-        <div id="events" className="relative">
-          <motion.div 
-            initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}
-            className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8 border-b border-stone-200 pb-12"
+        <Divider />
+
+        {/* ── GALLERY ── */}
+        <div id="events" style={{ marginTop: "5rem" }}>
+          <motion.div
+            initial="hidden" whileInView="visible"
+            viewport={{ once: true, margin: "-60px" }}
+            variants={stagger}
+            className="gallery-header"
+            style={{
+              display: "flex", alignItems: "flex-end",
+              justifyContent: "space-between",
+              marginBottom: "3rem",
+              paddingBottom: "2rem",
+              borderBottom: `1px solid ${C.border}`,
+              gap: "2rem",
+            }}
           >
             <div>
-              <PremiumEyebrow icon={ImageIcon}>Field Operations</PremiumEyebrow>
-              <h3 className="font-['Playfair_Display'] text-3xl md:text-5xl font-bold">In the Field</h3>
+              <Eyebrow icon={ImageIcon}>Field Operations</Eyebrow>
+              <motion.h3
+                variants={fadeUp}
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "clamp(2rem, 4vw, 3.5rem)",
+                  fontWeight: 700, color: C.text, lineHeight: 1.05,
+                }}
+              >
+                In the Field
+              </motion.h3>
             </div>
-            <div className="text-right">
-               <p className="text-stone-400 text-[0.65rem] font-black tracking-[0.4em] uppercase">Real Moments, Real Change</p>
-            </div>
+            <motion.p
+              variants={fadeUp}
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: "0.6rem", fontWeight: 700,
+                letterSpacing: "0.35em", textTransform: "uppercase",
+                color: C.textFaint,
+              }}
+            >
+              Real Moments, Real Change
+            </motion.p>
           </motion.div>
 
-          <div className="event-grid-premium">
+          {/* Photo grid */}
+          <div className="event-grid">
             {EVENT_PHOTOS.map((photo, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.96 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="relative group overflow-hidden rounded-[2.5rem] bg-stone-100 shadow-xl shadow-stone-900/5"
-                style={{ gridArea: isMobile ? "auto" : photo.gridArea }}
+                transition={{ delay: i * 0.09, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                style={{
+                  position: "relative", overflow: "hidden",
+                  borderRadius: 20,
+                  background: C.bgCard,
+                  border: `1px solid ${C.border}`,
+                  boxShadow: "0 12px 40px rgba(0,0,0,0.4)",
+                  gridArea: isMobile ? "auto" : photo.gridArea,
+                  cursor: "pointer",
+                }}
               >
-                <img 
-                  src={photo.src} 
-                  alt={photo.alt} 
-                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
+                <img
+                  src={photo.src}
+                  alt={photo.alt}
+                  style={{
+                    width: "100%", height: "100%",
+                    objectFit: "cover", display: "block",
+                    transition: "transform 1s ease",
+                    filter: "saturate(0.85) contrast(1.05)",
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.08)")}
+                  onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-stone-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 p-8 flex flex-col justify-end">
-                   <div className="flex items-center gap-3 text-white">
-                      <ImageIcon size={14} className="text-amber-500" />
-                      <span className="text-[0.6rem] font-black uppercase tracking-widest">{photo.alt}</span>
-                   </div>
+
+                {/* Overlay on hover */}
+                <div style={{
+                  position: "absolute", inset: 0,
+                  background: "linear-gradient(to top, rgba(10,8,6,0.85) 0%, rgba(10,8,6,0.2) 50%, transparent 100%)",
+                  opacity: 0, transition: "opacity 0.4s ease",
+                  display: "flex", flexDirection: "column", justifyContent: "flex-end",
+                  padding: "1.5rem",
+                }}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = "1")}
+                  onMouseLeave={e => (e.currentTarget.style.opacity = "0")}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                    <ImageIcon size={13} color={C.gold} />
+                    <span style={{
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: "0.58rem", fontWeight: 800,
+                      letterSpacing: "0.2em", textTransform: "uppercase",
+                      color: "#fff",
+                    }}>{photo.alt}</span>
+                  </div>
                 </div>
+
+                {/* Always-visible gold corner dot */}
+                <div style={{
+                  position: "absolute", top: "0.75rem", right: "0.75rem",
+                  width: 8, height: 8, borderRadius: "50%",
+                  background: C.gold, opacity: 0.6,
+                  boxShadow: `0 0 10px ${C.gold}`,
+                }} />
               </motion.div>
             ))}
           </div>
 
-          <motion.div 
-            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
-            className="mt-20 flex justify-center"
+          {/* Gallery CTA */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            style={{ marginTop: "3rem", display: "flex", justifyContent: "center" }}
           >
-            <button className="flex items-center gap-6 text-stone-900 font-black text-[0.6rem] tracking-[0.5em] uppercase px-12 py-6 rounded-full border border-stone-200 hover:border-amber-500/50 hover:bg-white transition-all shadow-lg shadow-amber-900/5">
-              View Full Gallery <ArrowRight size={16} className="text-amber-500" />
-            </button>
+            <motion.button
+              whileHover={{ borderColor: C.borderHov, y: -3 }}
+              whileTap={{ scale: 0.97 }}
+              style={{
+                display: "flex", alignItems: "center", gap: "1rem",
+                padding: "1rem 2.5rem", borderRadius: 100,
+                background: "rgba(255,255,255,0.03)",
+                border: `1px solid ${C.border}`,
+                color: "rgba(255,255,255,0.6)",
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: "0.62rem", fontWeight: 800,
+                letterSpacing: "0.35em", textTransform: "uppercase",
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+                backdropFilter: "blur(10px)",
+              }}
+              onMouseEnter={e => { e.currentTarget.style.color = "#fff"; }}
+              onMouseLeave={e => { e.currentTarget.style.color = "rgba(255,255,255,0.6)"; }}
+            >
+              View Full Gallery <ArrowRight size={14} color={C.gold} />
+            </motion.button>
           </motion.div>
         </div>
       </section>
-
-      {/* Background Accents */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-amber-200/10 blur-[150px] -z-10 rounded-full" />
-      <div className="absolute bottom-[20%] left-[-10%] w-[500px] h-[500px] bg-orange-200/10 blur-[150px] -z-10 rounded-full" />
     </div>
   );
 };
