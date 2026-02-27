@@ -380,59 +380,26 @@ const Card3D = ({ isMobile }: Card3DProps) => {
         </motion.div>
       )}
 
-      {/* Second floating accent */}
-      <motion.div
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 1.3, duration: 0.8 }}
-        style={{
-          position: "absolute",
-          top: isMobile ? "auto" : "30%",
-          bottom: isMobile ? "1rem" : "auto",
-          right: isMobile ? "1rem" : "-2rem",
-          background: "rgba(26,23,20,0.85)", backdropFilter: "blur(20px)",
-          border: "1px solid rgba(245,158,11,0.2)",
-          borderRadius: 16, padding: "0.8rem 1rem",
-          display: "flex", flexDirection: "column", alignItems: "center", gap: "0.3rem",
-          zIndex: 20,
-        }}
-      >
-        <Sparkles size={14} color="#F59E0B" />
-        <div style={{ fontSize: "0.7rem", fontWeight: 700, color: "#fff", fontFamily: "'Cormorant Garamond', serif" }}>Est.</div>
-        <div style={{ fontSize: "0.6rem", color: "#F59E0B", fontFamily: "'DM Sans', sans-serif" }}>2014</div>
-      </motion.div>
-
-      {/* Mobile-only floating pill — inline below card */}
-      {isMobile && (
+      {/* Est. 2014 accent — desktop only */}
+      {!isMobile && (
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.1, duration: 0.8 }}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 1.3, duration: 0.8 }}
           style={{
-            background: "rgba(26,23,20,0.92)", backdropFilter: "blur(30px)",
-            border: "1px solid rgba(245,158,11,0.25)",
-            borderRadius: 100, padding: "0.65rem 1.2rem",
-            display: "flex", alignItems: "center", gap: "0.9rem",
-            boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
-            zIndex: 20, whiteSpace: "nowrap",
-            width: "fit-content",
-            margin: "1rem auto 0",
+            position: "absolute",
+            top: "30%",
+            right: "-2rem",
+            background: "rgba(26,23,20,0.85)", backdropFilter: "blur(20px)",
+            border: "1px solid rgba(245,158,11,0.2)",
+            borderRadius: 16, padding: "0.8rem 1rem",
+            display: "flex", flexDirection: "column", alignItems: "center", gap: "0.3rem",
+            zIndex: 20,
           }}
         >
-          <div style={{
-            width: 34, height: 34, borderRadius: "50%",
-            background: "linear-gradient(135deg, #F59E0B, #EA580C)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            flexShrink: 0, boxShadow: "0 4px 15px rgba(245,158,11,0.4)",
-          }}>
-            <Users size={14} color="#fff" />
-          </div>
-          <div>
-            <div style={{ fontSize: "1rem", fontWeight: 700, color: "#fff", lineHeight: 1, fontFamily: "'Cormorant Garamond', serif" }}>500+</div>
-            <div style={{ fontSize: "0.5rem", color: "rgba(245,158,11,0.7)", letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 2, fontFamily: "'DM Sans', sans-serif" }}>
-              Lives Changed
-            </div>
-          </div>
+          <Sparkles size={14} color="#F59E0B" />
+          <div style={{ fontSize: "0.7rem", fontWeight: 700, color: "#fff", fontFamily: "'Cormorant Garamond', serif" }}>Est.</div>
+          <div style={{ fontSize: "0.6rem", color: "#F59E0B", fontFamily: "'DM Sans', sans-serif" }}>2014</div>
         </motion.div>
       )}
     </div>
