@@ -1,16 +1,24 @@
-import React, { useEffect, useState, useMemo, useRef } from "react";
-import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from "framer-motion";
+import { useEffect, useState, useMemo } from "react";
+import { motion, useMotionValue, useSpring, useTransform, MotionValue } from "framer-motion";
 import { Heart, Users, Award, ArrowRight, Sparkles, Globe, ChevronDown } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 // ─── DATA ─────────────────────────────────────────────────────────────────────
-const STATS = [
+interface StatItem {
+  icon: LucideIcon;
+  value: string;
+  label: string;
+  sub: string;
+}
+
+const STATS: StatItem[] = [
   { icon: Users,  value: "500+", label: "Lives Impacted",  sub: "and growing" },
   { icon: Heart,  value: "50+",  label: "Volunteers",      sub: "worldwide"   },
   { icon: Award,  value: "10+",  label: "Programs",        sub: "active now"  },
   { icon: Globe,  value: "8+",   label: "Communities",     sub: "served"      },
 ];
 
-const MARQUEE_WORDS = ["Empower", "Transform", "Uplift", "Mentor", "Support", "Inspire", "Elevate", "Unite"];
+const MARQUEE_WORDS: string[] = ["Empower", "Transform", "Uplift", "Mentor", "Support", "Inspire", "Elevate", "Unite"];
 
 // ─── PARTICLE FIELD ───────────────────────────────────────────────────────────
 const ParticleField = () => {
@@ -65,7 +73,12 @@ const ParticleField = () => {
 };
 
 // ─── GLOW ORBS ────────────────────────────────────────────────────────────────
-const GlowOrbs = ({ mouseX, mouseY }) => {
+interface GlowOrbsProps {
+  mouseX: MotionValue<number>;
+  mouseY: MotionValue<number>;
+}
+
+const GlowOrbs = ({ mouseX, mouseY }: GlowOrbsProps) => {
   const orb1X = useTransform(mouseX, [0, 1], [-20, 20]);
   const orb1Y = useTransform(mouseY, [0, 1], [-20, 20]);
   const orb2X = useTransform(mouseX, [0, 1], [20, -20]);
@@ -132,7 +145,15 @@ const MarqueeStrip = () => {
 };
 
 // ─── STAT CARD ────────────────────────────────────────────────────────────────
-const StatCard = ({ icon: Icon, value, label, sub, index }) => (
+interface StatCardProps {
+  icon: LucideIcon;
+  value: string;
+  label: string;
+  sub: string;
+  index: number;
+}
+
+const StatCard = ({ icon: Icon, value, label, sub, index }: StatCardProps) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
@@ -150,8 +171,12 @@ const StatCard = ({ icon: Icon, value, label, sub, index }) => (
       backdropFilter: "blur(10px)",
       cursor: "default",
     }}
-    onHoverStart={e => e.currentTarget && (e.currentTarget.style.borderColor = "rgba(245,158,11,0.3)")}
-    onHoverEnd={e => e.currentTarget && (e.currentTarget.style.borderColor = "rgba(245,158,11,0.1)")}
+    onHoverStart={(_e, _info) => {
+      /* border color is handled via whileHover / CSS — avoid direct DOM mutation here */
+    }}
+    onHoverEnd={(_e, _info) => {
+      /* intentionally empty */
+    }}
   >
     <div style={{
       width: 32, height: 32, borderRadius: 10,
@@ -176,7 +201,11 @@ const StatCard = ({ icon: Icon, value, label, sub, index }) => (
 );
 
 // ─── 3D IMAGE CARD ────────────────────────────────────────────────────────────
-const Card3D = ({ isMobile }) => {
+interface Card3DProps {
+  isMobile: boolean;
+}
+
+const Card3D = ({ isMobile }: Card3DProps) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const xs = useSpring(x, { stiffness: 80, damping: 20 });
@@ -187,11 +216,11 @@ const Card3D = ({ isMobile }) => {
   const glareY = useTransform(ys, [-0.5, 0.5], ["0%", "100%"]);
 
   const glareBackground = useTransform(
-    [glareX, glareY],
-    ([gx, gy]) => `radial-gradient(circle at ${gx} ${gy}, rgba(255,255,255,0.06) 0%, transparent 60%)`
+    [glareX, glareY] as MotionValue[],
+    ([gx, gy]: string[]) => `radial-gradient(circle at ${gx} ${gy}, rgba(255,255,255,0.06) 0%, transparent 60%)`
   );
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (isMobile) return;
     const rect = e.currentTarget.getBoundingClientRect();
     x.set((e.clientX - rect.left) / rect.width - 0.5);
@@ -316,7 +345,7 @@ const Card3D = ({ isMobile }) => {
         </motion.div>
       </motion.div>
 
-      {/* Floating pill — hidden on mobile to avoid overflow issues */}
+      {/* Floating pill — desktop only */}
       {!isMobile && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -351,7 +380,7 @@ const Card3D = ({ isMobile }) => {
         </motion.div>
       )}
 
-      {/* Second floating accent — repositioned for mobile */}
+      {/* Second floating accent */}
       <motion.div
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -380,14 +409,12 @@ const Card3D = ({ isMobile }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.1, duration: 0.8 }}
           style={{
-            marginTop: "1rem",
             background: "rgba(26,23,20,0.92)", backdropFilter: "blur(30px)",
             border: "1px solid rgba(245,158,11,0.25)",
             borderRadius: 100, padding: "0.65rem 1.2rem",
             display: "flex", alignItems: "center", gap: "0.9rem",
             boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
             zIndex: 20, whiteSpace: "nowrap",
-            alignSelf: "center",
             width: "fit-content",
             margin: "1rem auto 0",
           }}
@@ -414,13 +441,13 @@ const Card3D = ({ isMobile }) => {
 
 // ─── HERO ─────────────────────────────────────────────────────────────────────
 const Hero = () => {
-  const [isMobile, setIsMobile] = useState(false);
-  const mouseX = useMotionValue(0.5);
-  const mouseY = useMotionValue(0.5);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const mouseX = useMotionValue<number>(0.5);
+  const mouseY = useMotionValue<number>(0.5);
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < 1024);
-    const onMove = (e) => {
+    const onMove = (e: MouseEvent) => {
       if (window.innerWidth >= 1024) {
         mouseX.set(e.clientX / window.innerWidth);
         mouseY.set(e.clientY / window.innerHeight);
@@ -429,8 +456,11 @@ const Hero = () => {
     onResize();
     window.addEventListener("resize", onResize);
     window.addEventListener("mousemove", onMove);
-    return () => { window.removeEventListener("resize", onResize); window.removeEventListener("mousemove", onMove); };
-  }, []);
+    return () => {
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("mousemove", onMove);
+    };
+  }, [mouseX, mouseY]);
 
   const scrollDown = () => {
     const id = ["missionstatement", "about", "ourprograms"].find(i => document.getElementById(i));
@@ -488,6 +518,10 @@ const Hero = () => {
         }
         .h-cta-secondary:hover { border-color: var(--gold); color: var(--gold); background: rgba(245,158,11,0.06); }
 
+        /* Stat card hover border via CSS to avoid DOM mutation in TS */
+        .stat-card { transition: border-color 0.3s ease; }
+        .stat-card:hover { border-color: rgba(245,158,11,0.3) !important; }
+
         /* ── MOBILE LAYOUT ── */
         @media (max-width: 1023px) {
           .h-grid {
@@ -496,11 +530,8 @@ const Hero = () => {
             gap: 2.5rem !important;
             align-items: stretch !important;
           }
-
-          /* IMAGE FIRST on mobile — swap visual order */
           .h-img-col  { order: -1 !important; flex: none !important; width: 100% !important; }
           .h-text-col { order:  0 !important; align-items: center !important; text-align: center !important; }
-
           .h-eyebrow, .h-ctas { justify-content: center !important; }
           .h-divider { display: none !important; }
           .h-body { text-align: center !important; max-width: 520px !important; margin: 0 auto !important; }
@@ -530,7 +561,6 @@ const Hero = () => {
           flexDirection: "column",
         }}
       >
-        {/* Background layers */}
         <ParticleField />
         <GlowOrbs mouseX={mouseX} mouseY={mouseY} />
 
@@ -560,7 +590,7 @@ const Hero = () => {
             flex: 1, width: "100%",
           }}
         >
-          {/* Left text col — on desktop this is first, on mobile it comes second (image is first via order: -1) */}
+          {/* Text col */}
           <motion.div
             className="h-text-col"
             style={{ flex: 1.15, display: "flex", flexDirection: "column", alignItems: "flex-start" }}
@@ -686,7 +716,7 @@ const Hero = () => {
                 {[...Array(5)].map((_, i) => (
                   <div key={i} style={{
                     width: 22, height: 22, borderRadius: "50%",
-                    background: `linear-gradient(135deg, #F59E0B, #EA580C)`,
+                    background: "linear-gradient(135deg, #F59E0B, #EA580C)",
                     border: "2px solid var(--bg)", marginLeft: i > 0 ? -6 : 0,
                     display: "flex", alignItems: "center", justifyContent: "center",
                     fontSize: "0.55rem", color: "#fff", fontWeight: 700,
@@ -701,7 +731,7 @@ const Hero = () => {
             </motion.div>
           </motion.div>
 
-          {/* Right image col */}
+          {/* Image col */}
           <motion.div
             className="h-img-col"
             style={{ flex: 1, position: "relative", width: "100%" }}
@@ -727,13 +757,16 @@ const Hero = () => {
           </span>
           <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", flexWrap: "wrap" }}>
             {["Privacy", "Terms", "Contact"].map(item => (
-              <a key={item} href="#" style={{
-                fontSize: "0.55rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.1em",
-                textTransform: "uppercase", textDecoration: "none", transition: "color 0.2s",
-                fontFamily: "'DM Sans', sans-serif",
-              }}
-                onMouseEnter={e => e.currentTarget.style.color = "#F59E0B"}
-                onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.25)"}
+              <a
+                key={item}
+                href="#"
+                style={{
+                  fontSize: "0.55rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.1em",
+                  textTransform: "uppercase", textDecoration: "none", transition: "color 0.2s",
+                  fontFamily: "'DM Sans', sans-serif",
+                }}
+                onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => (e.currentTarget.style.color = "#F59E0B")}
+                onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => (e.currentTarget.style.color = "rgba(255,255,255,0.25)")}
               >{item}</a>
             ))}
             <button
@@ -746,8 +779,14 @@ const Hero = () => {
                 cursor: "pointer", display: "flex", alignItems: "center", gap: "0.5rem",
                 transition: "all 0.3s ease", fontFamily: "'DM Sans', sans-serif",
               }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(245,158,11,0.4)"; e.currentTarget.style.color = "#F59E0B"; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "rgba(255,255,255,0.5)"; }}
+              onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+                e.currentTarget.style.borderColor = "rgba(245,158,11,0.4)";
+                e.currentTarget.style.color = "#F59E0B";
+              }}
+              onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+                e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+                e.currentTarget.style.color = "rgba(255,255,255,0.5)";
+              }}
             >
               Explore <ChevronDown size={12} />
             </button>

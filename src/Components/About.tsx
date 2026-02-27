@@ -26,7 +26,7 @@ const C = {
   borderHov:  "rgba(245,158,11,0.3)",
   surface:    "rgba(255,255,255,0.04)",
   gradient:   "linear-gradient(135deg, #F59E0B, #EA580C)",
-};
+} as const;
 
 // ─── ANIMATION VARIANTS ───────────────────────────────────────────────────────
 const fadeUp: Variants = {
@@ -93,16 +93,26 @@ const Ticker = () => (
 );
 
 // ─── 3D TEAM CARD ─────────────────────────────────────────────────────────────
-const TeamCard: React.FC<{ title: string; role: string; initial: string; desc: string }> = ({ title, role, initial, desc }) => {
+interface TeamCardProps {
+  title: string;
+  role: string;
+  initial: string;
+  desc: string;
+}
+
+const TeamCard: React.FC<TeamCardProps> = ({ title, role, initial, desc }) => {
   const ref = useRef<HTMLDivElement>(null);
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
   const rotX = useSpring(useTransform(my, [-0.5, 0.5], ["8deg", "-8deg"]), { stiffness: 80, damping: 18 });
   const rotY = useSpring(useTransform(mx, [-0.5, 0.5], ["-8deg", "8deg"]), { stiffness: 80, damping: 18 });
 
-  const move = (e: React.MouseEvent) => {
+  const move = (e: React.MouseEvent<HTMLDivElement>) => {
     const r = ref.current?.getBoundingClientRect();
-    if (r) { mx.set((e.clientX - r.left) / r.width - 0.5); my.set((e.clientY - r.top) / r.height - 0.5); }
+    if (r) {
+      mx.set((e.clientX - r.left) / r.width - 0.5);
+      my.set((e.clientY - r.top) / r.height - 0.5);
+    }
   };
 
   return (
@@ -159,7 +169,18 @@ const TeamCard: React.FC<{ title: string; role: string; initial: string; desc: s
 };
 
 // ─── VISION CARD ──────────────────────────────────────────────────────────────
-const VisionCard: React.FC<{ n: string; t: string; d: string; delay?: number }> = ({ n, t, d, delay = 0 }) => (
+// FIX: `delay` was declared in the type and destructured but never used inside
+// the component body — removed it from destructuring to fix TS6133.
+// The prop is kept in the interface (as optional) so existing callers that pass
+// it don't break; it's simply accepted and ignored here.
+interface VisionCardProps {
+  n: string;
+  t: string;
+  d: string;
+  delay?: number;
+}
+
+const VisionCard: React.FC<VisionCardProps> = ({ n, t, d }) => (
   <motion.div
     variants={fadeUp}
     whileHover={{ y: -6, borderColor: C.borderHov }}
@@ -198,7 +219,12 @@ const VisionCard: React.FC<{ n: string; t: string; d: string; delay?: number }> 
 );
 
 // ─── STAT BOX ─────────────────────────────────────────────────────────────────
-const StatBox: React.FC<{ v: string; l: string }> = ({ v, l }) => (
+interface StatBoxProps {
+  v: string;
+  l: string;
+}
+
+const StatBox: React.FC<StatBoxProps> = ({ v, l }) => (
   <motion.div
     variants={fadeUp}
     whileHover={{ borderColor: C.borderHov, y: -4 }}
@@ -237,7 +263,7 @@ const Divider = () => (
 
 // ─── ABOUT PAGE ───────────────────────────────────────────────────────────────
 const About: React.FC = () => {
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: containerRef });
   const imageScale = useTransform(scrollYProgress, [0.1, 0.4], [1, 1.06]);
 
@@ -251,7 +277,6 @@ const About: React.FC = () => {
         * { box-sizing: border-box; }
         ::selection { background: rgba(245,158,11,0.25); color: #fff; }
 
-        /* Responsive helpers */
         @media (max-width: 768px) {
           .about-hero-title    { font-size: clamp(2.2rem, 9vw, 3.5rem) !important; }
           .about-story-grid    { grid-template-columns: 1fr !important; }
@@ -349,7 +374,7 @@ const About: React.FC = () => {
               variants={fadeUp}
               style={{
                 background: "rgba(245,158,11,0.05)",
-                border: `1px solid rgba(245,158,11,0.1)`,
+                border: "1px solid rgba(245,158,11,0.1)",
                 borderRadius: 24, padding: "2.5rem",
               }}
             >
@@ -398,7 +423,6 @@ const About: React.FC = () => {
           {/* Image */}
           <motion.div
             style={{ scale: imageScale, position: "relative" }}
-            className="story-image"
           >
             {/* Glow behind */}
             <div style={{
@@ -725,7 +749,7 @@ const About: React.FC = () => {
             className="about-team-grid"
             style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.25rem" }}
           >
-            <TeamCard role="Vision & Strategy"    initial="L" title="Leadership"          desc="Providing strategic direction and inspiring leadership to drive our mission forward." />
+            <TeamCard role="Vision & Strategy"    initial="L" title="Leadership"           desc="Providing strategic direction and inspiring leadership to drive our mission forward." />
             <TeamCard role="Community Programs"   initial="P" title="Program Coordinators" desc="Planning and delivering outreach initiatives that meet real community needs." />
             <TeamCard role="Learning & Support"   initial="E" title="Education & Welfare"  desc="Supporting access to quality education and skills development across Nigeria." />
           </motion.div>
@@ -755,7 +779,7 @@ const About: React.FC = () => {
           }}
         >
           Join Our Mission
-          <ArrowUpRight size={16} style={{ transition: "transform 0.2s" }} />
+          <ArrowUpRight size={16} />
         </motion.button>
         <p style={{
           marginTop: "1.5rem",
