@@ -1,129 +1,145 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Phone, MapPin, Instagram, Heart, ArrowUpRight, Sparkles } from "lucide-react";
+import {
+  Mail, Phone, MapPin, Instagram, Facebook, Twitter,
+  Heart, ArrowUpRight, Sparkles, ArrowRight, Globe
+} from "lucide-react";
 
-// ─── THEME CONFIGURATION ──────────────────────────────────────────────────────
-const THEME = {
-  // Matching the Hero's dark background
-  bgDark: "#0f0e0c", 
-  // Premium Gold Accents
-  goldGradient: "linear-gradient(135deg, #D4AF37 0%, #F59E0B 50%, #B8860B 100%)",
-  goldSolid: "#F59E0B",
-  // Text Colors
-  textMain: "#FFFFFF",
-  textMuted: "rgba(255, 255, 255, 0.5)",
-  glassBorder: "rgba(245, 158, 11, 0.15)",
-  cardDark: "rgba(255, 255, 255, 0.03)",
-} as const;
-
-// ─── TYPES ────────────────────────────────────────────────────────────────────
-interface QuickLink {
-  id: string;
-  label: string;
-}
+// ─── THEME ────────────────────────────────────────────────────────────────────
+const C = {
+  bg:        "#1a1714",
+  bgDeep:    "#131110",
+  bgCard:    "#211e1a",
+  gold:      "#F59E0B",
+  goldDeep:  "#D97706",
+  orange:    "#EA580C",
+  text:      "#ffffff",
+  textMuted: "rgba(255,255,255,0.5)",
+  textFaint: "rgba(255,255,255,0.22)",
+  border:    "rgba(245,158,11,0.12)",
+  borderHov: "rgba(245,158,11,0.32)",
+  gradient:  "linear-gradient(135deg, #F59E0B, #EA580C)",
+};
 
 // ─── DATA ─────────────────────────────────────────────────────────────────────
-const QUICK_LINKS: QuickLink[] = [
+const NAV_LINKS = [
   { id: "hero",         label: "Home"         },
-  { id: "about",        label: "Our Story"    },
-  { id: "programs",     label: "Programs"     },
+  { id: "whyitmatters", label: "Why We Exist" },
+  { id: "ourstory",     label: "Our Story"    },
+  { id: "ourprograms",  label: "Programs"     },
+  { id: "events",       label: "Events"       },
   { id: "testimonials", label: "Impact"       },
   { id: "contact",      label: "Contact"      },
 ];
 
-// ─── NAV LINK ─────────────────────────────────────────────────────────────────
-const NavLink: React.FC<{ link: QuickLink; onScroll: (id: string) => void }> = ({ link, onScroll }) => {
-  const [hovered, setHovered] = useState(false);
+const GET_INVOLVED = [
+  { id: "volunteer", label: "Volunteer"     },
+  { id: "donation",  label: "Donate"        },
+  { id: "events",    label: "Attend Events" },
+  { id: "contact",   label: "Partner With Us" },
+];
 
+const SOCIALS = [
+  { href: "https://instagram.com/generoushelpinghands", icon: Instagram, label: "Instagram" },
+  { href: "#", icon: Facebook,  label: "Facebook"  },
+  { href: "#", icon: Twitter,   label: "Twitter"   },
+  { href: "mailto:Giversgenerous@gmail.com", icon: Mail, label: "Email" },
+];
+
+// ─── NAV LINK ─────────────────────────────────────────────────────────────────
+const NavLink: React.FC<{ id: string; label: string; onScroll: (id: string) => void }> = ({ id, label, onScroll }) => {
+  const [hov, setHov] = useState(false);
   return (
     <li>
       <button
-        onClick={() => onScroll(link.id)}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
+        onClick={() => onScroll(id)}
+        onMouseEnter={() => setHov(true)}
+        onMouseLeave={() => setHov(false)}
         style={{
-          background: "transparent",
-          border: "none",
-          padding: 0,
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          gap: "0.75rem",
-          color: hovered ? THEME.goldSolid : THEME.textMuted,
-          fontSize: "0.85rem",
-          fontWeight: 500,
+          background: "transparent", border: "none", padding: 0,
+          cursor: "pointer", display: "flex", alignItems: "center", gap: "0.6rem",
+          color: hov ? C.gold : C.textMuted,
+          fontSize: "0.85rem", fontWeight: 500,
           fontFamily: "'DM Sans', sans-serif",
-          transition: "all 0.3s ease",
+          transition: "color 0.25s ease",
         }}
       >
-        <span style={{
-          display: "inline-block",
-          width: hovered ? "20px" : "0px",
-          height: "1px",
-          background: THEME.goldSolid,
-          transition: "width 0.3s ease",
-          flexShrink: 0,
-        }} />
-        {link.label}
+        <motion.span
+          animate={{ width: hov ? 18 : 0, opacity: hov ? 1 : 0 }}
+          transition={{ duration: 0.25 }}
+          style={{
+            display: "inline-block", height: 1,
+            background: C.gradient, borderRadius: 1, flexShrink: 0,
+            overflow: "hidden",
+          }}
+        />
+        {label}
       </button>
     </li>
   );
 };
 
-// ─── SOCIAL ICON ──────────────────────────────────────────────────────────────
-const SocialIcon: React.FC<{ href: string; icon: React.ElementType }> = ({ href, icon: Icon }) => {
-  const [hovered, setHovered] = useState(false);
-
+// ─── SOCIAL ICON ─────────────────────────────────────────────────────────────
+const SocialBtn: React.FC<{ href: string; icon: React.ElementType; label: string }> = ({ href, icon: Icon, label }) => {
+  const [hov, setHov] = useState(false);
   return (
     <motion.a
-      href={href}
-      target="_blank"
-      rel="noreferrer"
-      whileHover={{ y: -3 }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      href={href} target="_blank" rel="noreferrer"
+      whileHover={{ y: -4 }}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
       style={{
-        width: "42px", height: "42px",
-        borderRadius: "12px",
-        border: `1px solid ${THEME.glassBorder}`,
+        width: 42, height: 42, borderRadius: 13,
+        border: `1px solid ${hov ? C.borderHov : C.border}`,
         display: "flex", alignItems: "center", justifyContent: "center",
-        background: hovered ? "transparent" : "rgba(255,255,255,0.03)",
-        backgroundImage: hovered ? THEME.goldGradient : "none",
-        color: hovered ? "#000" : THEME.goldSolid,
-        transition: "all 0.4s cubic-bezier(0.23, 1, 0.32, 1)",
-        boxShadow: hovered ? "0 10px 20px rgba(245, 158, 11, 0.2)" : "none",
-        flexShrink: 0,
-        textDecoration: "none",
-      }}
+        background: hov ? C.gradient : "rgba(255,255,255,0.03)",
+        color: hov ? "#fff" : C.gold,
+        transition: "all 0.3s ease",
+        boxShadow: hov ? "0 8px 24px rgba(245,158,11,0.3)" : "none",
+        textDecoration: "none", flexShrink: 0,
+        title: label,
+      } as React.CSSProperties}
     >
-      <Icon size={18} />
+      <Icon size={17} />
     </motion.a>
   );
 };
 
+// ─── SECTION HEADING ─────────────────────────────────────────────────────────
+const ColHead: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "2rem" }}>
+    <div style={{ width: 16, height: 1.5, background: C.gradient, borderRadius: 1 }} />
+    <h3 style={{
+      fontFamily: "'DM Sans', sans-serif",
+      fontSize: "0.58rem", fontWeight: 800,
+      textTransform: "uppercase", letterSpacing: "0.35em",
+      color: C.gold, margin: 0,
+    }}>{children}</h3>
+  </div>
+);
+
 // ─── FOOTER ───────────────────────────────────────────────────────────────────
 const Footer: React.FC = () => {
-  const [ctaHovered, setCtaHovered] = useState(false);
+  const [ctaHov, setCtaHov] = useState(false);
 
-  const scrollToSection = (id: string) => {
-    const section = document.getElementById(id);
-    if (!section) return;
-    const top = section.getBoundingClientRect().top + window.pageYOffset - 80;
+  const scrollTo = (id: string) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const top = el.getBoundingClientRect().top + window.pageYOffset - 80;
     window.scrollTo({ top, behavior: "smooth" });
   };
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,700;1,600&family=DM+Sans:wght@400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap');
 
         .ft-grid {
           display: grid;
-          grid-template-columns: 1.4fr 0.8fr 0.8fr 1.2fr;
-          gap: 4rem;
+          grid-template-columns: 1.6fr 0.7fr 0.7fr 1.3fr;
+          gap: 3.5rem;
           margin-bottom: 5rem;
         }
-
         .ft-bottom {
           display: flex;
           justify-content: space-between;
@@ -131,256 +147,345 @@ const Footer: React.FC = () => {
           gap: 1.5rem;
           flex-wrap: wrap;
         }
-
-        @media (max-width: 1024px) {
+        @media (max-width: 1200px) {
           .ft-grid { grid-template-columns: 1fr 1fr !important; gap: 3rem !important; }
         }
-
-        @media (max-width: 600px) {
+        @media (max-width: 640px) {
           .ft-grid { grid-template-columns: 1fr !important; gap: 2.5rem !important; }
-          .ft-bottom { flex-direction: column; text-align: center; }
+          .ft-bottom { flex-direction: column !important; text-align: center !important; }
         }
       `}</style>
 
       <footer style={{
         position: "relative",
-        background: THEME.bgDark,
-        color: THEME.textMain,
-        paddingTop: "8rem",
+        background: C.bgDeep,
+        color: C.text,
+        paddingTop: "7rem",
         paddingBottom: "3rem",
         overflow: "hidden",
-        borderTop: `1px solid ${THEME.glassBorder}`,
+        borderTop: `1px solid ${C.border}`,
         fontFamily: "'DM Sans', sans-serif",
       }}>
-        {/* Ambient Top Glow to match Hero orbs */}
+
+        {/* ── AMBIENT GLOWS ── */}
         <div style={{
-          position: "absolute",
-          top: 0, left: "50%",
+          position: "absolute", top: 0, left: "50%",
           transform: "translateX(-50%)",
-          width: "100%", height: "400px",
-          background: "radial-gradient(circle, rgba(245, 158, 11, 0.07) 0%, transparent 70%)",
-          filter: "blur(100px)",
-          pointerEvents: "none",
+          width: "80%", height: 500,
+          background: "radial-gradient(ellipse, rgba(245,158,11,0.07) 0%, transparent 70%)",
+          filter: "blur(80px)", pointerEvents: "none",
+        }} />
+        <div style={{
+          position: "absolute", bottom: 0, right: "-10%",
+          width: 400, height: 400,
+          background: "radial-gradient(circle, rgba(234,88,12,0.05) 0%, transparent 65%)",
+          filter: "blur(80px)", pointerEvents: "none",
         }} />
 
-        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 2rem", position: "relative", zIndex: 2 }}>
+        {/* ── MARQUEE STRIP ── */}
+        <div style={{
+          overflow: "hidden",
+          borderTop: `1px solid ${C.border}`,
+          borderBottom: `1px solid ${C.border}`,
+          padding: "12px 0", marginBottom: "6rem",
+          background: "rgba(245,158,11,0.03)",
+          position: "relative", zIndex: 2,
+        }}>
+          <motion.div
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{ ease: "linear", duration: 28, repeat: Infinity }}
+            style={{ display: "flex", gap: "3rem", whiteSpace: "nowrap" }}
+          >
+            {[...Array(16)].map((_, i) => (
+              <span key={i} style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: "0.65rem", letterSpacing: "0.4em",
+                textTransform: "uppercase",
+                color: i % 2 === 0 ? C.gold : C.textFaint,
+                fontStyle: i % 2 === 0 ? "italic" : "normal",
+              }}>
+                {["Empower", "Transform", "Uplift", "Inspire", "Unite", "Rise"][i % 6]}&nbsp;{i % 2 === 0 ? "✦" : "◦"}
+              </span>
+            ))}
+          </motion.div>
+        </div>
+
+        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 6%", position: "relative", zIndex: 2 }}>
 
           <div className="ft-grid">
-            {/* 01. Brand */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
-              <div style={{ display: "flex", flexDirection: "column" }}>
+
+            {/* ── COL 1: BRAND ── */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
+              <div>
                 <span style={{
                   fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: "2.2rem",
-                  fontWeight: 700,
-                  lineHeight: 1,
-                  color: "#fff",
+                  fontSize: "2rem", fontWeight: 700, lineHeight: 1, color: C.text,
+                  display: "block",
                 }}>
                   Generous{" "}
-                  <span style={{
+                  <em style={{
                     fontStyle: "italic",
-                    backgroundImage: THEME.goldGradient,
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    backgroundClip: "text",
-                    color: "transparent",
-                  }}>Hands</span>
+                    background: C.gradient,
+                    WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+                  }}>Hands</em>
                 </span>
                 <span style={{
-                  fontSize: "0.6rem",
-                  fontWeight: 900,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.45em",
-                  color: THEME.goldSolid,
-                  marginTop: "0.5rem",
-                }}>
-                  Foundation
-                </span>
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.55rem", fontWeight: 800,
+                  textTransform: "uppercase", letterSpacing: "0.45em",
+                  color: C.gold, marginTop: "0.4rem", display: "block",
+                }}>Foundation</span>
               </div>
 
               <p style={{
-                color: THEME.textMuted,
-                fontSize: "0.95rem",
-                lineHeight: 1.8,
-                maxWidth: "300px",
+                color: C.textMuted, fontSize: "0.9rem", lineHeight: 1.8,
+                maxWidth: 280, fontWeight: 300,
               }}>
                 Empowering the next generation of women in Nigeria through education, resources, and community-led support.
               </p>
 
-              <div style={{ display: "flex", gap: "0.85rem" }}>
-                <SocialIcon href="https://instagram.com/generoushelpinghands" icon={Instagram} />
-                <SocialIcon href="mailto:Giversgenerous@gmail.com" icon={Mail} />
+              {/* Social row */}
+              <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap" }}>
+                {SOCIALS.map(s => <SocialBtn key={s.label} {...s} />)}
               </div>
-            </div>
 
-            {/* 02. Navigation */}
-            <div>
-              <h3 style={{
-                fontSize: "0.7rem",
-                fontWeight: 900,
-                textTransform: "uppercase",
-                letterSpacing: "0.25em",
-                color: THEME.goldSolid,
-                marginBottom: "2.5rem",
-              }}>
-                Navigation
-              </h3>
-              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-                {QUICK_LINKS.map((link) => (
-                  <NavLink key={link.id} link={link} onScroll={scrollToSection} />
-                ))}
-              </ul>
-            </div>
-
-            {/* 03. Headquarters */}
-            <div>
-              <h3 style={{
-                fontSize: "0.7rem",
-                fontWeight: 900,
-                textTransform: "uppercase",
-                letterSpacing: "0.25em",
-                color: THEME.goldSolid,
-                marginBottom: "2.5rem",
-              }}>
-                Headquarters
-              </h3>
-              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "2rem" }}>
-                <li style={{ display: "flex", gap: "1.25rem" }}>
-                  <MapPin size={20} color={THEME.goldSolid} style={{ flexShrink: 0 }} />
-                  <span style={{ color: "#fff", fontSize: "0.9rem", lineHeight: 1.6 }}>
-                    Lagos, Nigeria
-                    <span style={{
-                      display: "block",
-                      fontSize: "0.6rem",
-                      fontWeight: 700,
-                      color: THEME.textMuted,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.15em",
-                      marginTop: "0.4rem",
-                    }}>
-                      West Africa Ops
-                    </span>
-                  </span>
-                </li>
-                <li style={{ display: "flex", gap: "1.25rem", alignItems: "center" }}>
-                  <Phone size={20} color={THEME.goldSolid} style={{ flexShrink: 0 }} />
-                  <a
-                    href="tel:+2349036854354"
-                    style={{
-                      color: "#fff",
-                      fontSize: "0.9rem",
-                      fontWeight: 500,
-                      textDecoration: "none",
-                      transition: "color 0.3s ease",
-                    }}
-                    onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => (e.currentTarget.style.color = THEME.goldSolid)}
-                    onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => (e.currentTarget.style.color = "#fff")}
-                  >
-                    +234 903 685 4354
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* 04. Support CTA card */}
-            <div
-              onMouseEnter={() => setCtaHovered(true)}
-              onMouseLeave={() => setCtaHovered(false)}
-              style={{
-                position: "relative",
-                padding: "2.5rem",
-                borderRadius: "2.5rem",
-                background: "rgba(255,255,255,0.02)",
-                border: `1px solid ${THEME.glassBorder}`,
-                overflow: "hidden",
-                backdropFilter: "blur(10px)",
-              }}
-            >
+              {/* Newsletter mini-widget */}
               <div style={{
-                position: "absolute", top: "-10px", right: "-10px",
-                opacity: 0.15,
-                transform: ctaHovered ? "rotate(15deg) scale(1.1)" : "rotate(0deg)",
-                transition: "transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                pointerEvents: "none",
+                background: C.bgCard, border: `1px solid ${C.border}`,
+                borderRadius: 16, padding: "1.25rem",
+                position: "relative", overflow: "hidden",
               }}>
-                <Sparkles size={80} color={THEME.goldSolid} />
+                <div style={{
+                  position: "absolute", top: 0, left: 0, right: 0, height: 2,
+                  background: `linear-gradient(90deg, ${C.gold}, transparent)`,
+                }} />
+                <p style={{
+                  fontFamily: "'DM Sans', sans-serif", fontSize: "0.65rem",
+                  fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase",
+                  color: C.gold, marginBottom: "0.75rem",
+                }}>Stay Updated</p>
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <input
+                    type="email" placeholder="Your email"
+                    style={{
+                      flex: 1, background: "rgba(255,255,255,0.04)",
+                      border: `1px solid ${C.border}`, borderRadius: 10,
+                      padding: "0.6rem 0.75rem",
+                      color: C.text, fontSize: "0.8rem",
+                      fontFamily: "'DM Sans', sans-serif", outline: "none",
+                    }}
+                    onFocus={e => e.currentTarget.style.borderColor = C.borderHov}
+                    onBlur={e => e.currentTarget.style.borderColor = C.border}
+                  />
+                  <motion.button
+                    whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.96 }}
+                    style={{
+                      background: C.gradient, border: "none",
+                      borderRadius: 10, padding: "0.6rem 0.9rem",
+                      cursor: "pointer", flexShrink: 0,
+                      display: "flex", alignItems: "center",
+                      boxShadow: "0 4px 14px rgba(245,158,11,0.3)",
+                    }}
+                  >
+                    <ArrowRight size={14} color="#fff" />
+                  </motion.button>
+                </div>
               </div>
+            </div>
 
-              <h3 style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "1.4rem",
-                fontWeight: 700,
-                fontStyle: "italic",
-                color: "#fff",
-                marginBottom: "1rem",
-              }}>
-                Fuel the Change
-              </h3>
-              <p style={{
-                color: THEME.textMuted,
-                fontSize: "0.85rem",
-                lineHeight: 1.7,
-                marginBottom: "2rem",
-              }}>
-                Your contributions directly fund our grassroots empowerment initiatives.
-              </p>
+            {/* ── COL 2: NAVIGATION ── */}
+            <div>
+              <ColHead>Navigation</ColHead>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "1.1rem" }}>
+                {NAV_LINKS.map(l => <NavLink key={l.id} {...l} onScroll={scrollTo} />)}
+              </ul>
+            </div>
 
-              <motion.button
-                whileHover={{ y: -4, boxShadow: "0 12px 24px rgba(245, 158, 11, 0.3)" }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => scrollToSection("donation")}
+            {/* ── COL 3: GET INVOLVED ── */}
+            <div>
+              <ColHead>Get Involved</ColHead>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "1.1rem" }}>
+                {GET_INVOLVED.map(l => <NavLink key={l.id} {...l} onScroll={scrollTo} />)}
+              </ul>
+
+              {/* Contact details */}
+              <div style={{ marginTop: "2.5rem", display: "flex", flexDirection: "column", gap: "1.1rem" }}>
+                {[
+                  { icon: MapPin, text: "Lagos, Nigeria",               sub: "West Africa Ops"         },
+                  { icon: Phone,  text: "+234 903 685 4354",             sub: "Mon–Fri, 9am–5pm WAT",   href: "tel:+2349036854354" },
+                  { icon: Globe,  text: "Giversgenerous@gmail.com",      sub: "We reply within 24hrs",  href: "mailto:Giversgenerous@gmail.com" },
+                ].map(({ icon: Icon, text, sub, href }, i) => (
+                  <div key={i} style={{ display: "flex", gap: "0.85rem", alignItems: "flex-start" }}>
+                    <div style={{
+                      width: 32, height: 32, borderRadius: 9,
+                      background: "rgba(245,158,11,0.08)",
+                      border: `1px solid ${C.border}`,
+                      display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                    }}>
+                      <Icon size={13} color={C.gold} />
+                    </div>
+                    <div>
+                      {href ? (
+                        <a href={href} style={{
+                          color: C.text, fontSize: "0.82rem", fontWeight: 500,
+                          textDecoration: "none", display: "block",
+                          transition: "color 0.2s",
+                          wordBreak: "break-all",
+                        }}
+                          onMouseEnter={e => e.currentTarget.style.color = C.gold}
+                          onMouseLeave={e => e.currentTarget.style.color = C.text}
+                        >{text}</a>
+                      ) : (
+                        <span style={{ color: C.text, fontSize: "0.82rem", fontWeight: 500 }}>{text}</span>
+                      )}
+                      <span style={{
+                        display: "block", fontSize: "0.6rem",
+                        color: C.textFaint, marginTop: 2, letterSpacing: "0.05em",
+                      }}>{sub}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ── COL 4: CTA CARD ── */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              {/* Donate card */}
+              <motion.div
+                onMouseEnter={() => setCtaHov(true)}
+                onMouseLeave={() => setCtaHov(false)}
                 style={{
-                  width: "100%",
-                  padding: "1.1rem",
-                  backgroundImage: THEME.goldGradient,
-                  color: "#000",
-                  border: "none",
-                  borderRadius: "1rem",
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: "0.7rem",
-                  fontWeight: 800,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.2em",
-                  cursor: "pointer",
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: "0.6rem",
+                  position: "relative", overflow: "hidden",
+                  padding: "2.25rem", borderRadius: 24,
+                  background: C.gradient,
+                  boxShadow: ctaHov
+                    ? "0 24px 60px rgba(245,158,11,0.4)"
+                    : "0 12px 40px rgba(245,158,11,0.2)",
+                  transition: "box-shadow 0.4s ease",
+                  flex: 1,
                 }}
               >
-                Donate Now <ArrowUpRight size={16} />
-              </motion.button>
+                <div style={{
+                  position: "absolute", top: -16, right: -16, opacity: 0.1,
+                  transform: ctaHov ? "rotate(20deg) scale(1.15)" : "rotate(0deg) scale(1)",
+                  transition: "transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                  pointerEvents: "none",
+                }}>
+                  <Sparkles size={140} />
+                </div>
+                <div style={{ position: "relative", zIndex: 1 }}>
+                  <p style={{
+                    fontSize: "0.55rem", fontWeight: 700,
+                    letterSpacing: "0.3em", textTransform: "uppercase",
+                    color: "rgba(255,255,255,0.65)", marginBottom: "0.6rem",
+                    fontFamily: "'DM Sans', sans-serif",
+                  }}>Support the Mission</p>
+                  <h3 style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: "1.5rem", fontWeight: 700, fontStyle: "italic",
+                    color: "#fff", lineHeight: 1.2, marginBottom: "0.75rem",
+                  }}>Fuel the Change</h3>
+                  <p style={{
+                    color: "rgba(255,255,255,0.75)", fontSize: "0.82rem",
+                    lineHeight: 1.65, marginBottom: "1.5rem", fontWeight: 300,
+                    fontFamily: "'DM Sans', sans-serif",
+                  }}>
+                    Your contributions directly fund grassroots empowerment initiatives across Nigeria.
+                  </p>
+                  <motion.button
+                    whileHover={{ y: -3 }} whileTap={{ scale: 0.97 }}
+                    onClick={() => scrollTo("donation")}
+                    style={{
+                      width: "100%", padding: "0.9rem",
+                      background: "#131110", color: "#fff",
+                      border: "none", borderRadius: 12,
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: "0.68rem", fontWeight: 800,
+                      textTransform: "uppercase", letterSpacing: "0.15em",
+                      cursor: "pointer",
+                      display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem",
+                      boxShadow: "0 8px 20px rgba(0,0,0,0.35)",
+                    }}
+                  >
+                    Donate Now <ArrowUpRight size={14} />
+                  </motion.button>
+                </div>
+              </motion.div>
+
+              {/* Stats mini-card */}
+              <div style={{
+                background: C.bgCard, border: `1px solid ${C.border}`,
+                borderRadius: 20, padding: "1.5rem",
+                display: "grid", gridTemplateColumns: "1fr 1fr",
+                gap: "0.1rem",
+              }}>
+                {[
+                  { v: "500+", l: "Lives" },
+                  { v: "10+",  l: "Programs" },
+                  { v: "8+",   l: "Communities" },
+                  { v: "2014", l: "Founded" },
+                ].map(({ v, l }, i) => (
+                  <div key={i} style={{
+                    textAlign: "center", padding: "0.75rem 0.5rem",
+                    borderRight: i % 2 === 0 ? `1px solid ${C.border}` : "none",
+                    borderBottom: i < 2 ? `1px solid ${C.border}` : "none",
+                  }}>
+                    <div style={{
+                      fontFamily: "'Cormorant Garamond', serif",
+                      fontSize: "1.4rem", fontWeight: 700, lineHeight: 1,
+                      background: `linear-gradient(135deg, ${C.gold}, #fff 70%)`,
+                      WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+                    }}>{v}</div>
+                    <div style={{
+                      fontFamily: "'DM Sans', sans-serif", fontSize: "0.52rem",
+                      fontWeight: 700, textTransform: "uppercase",
+                      letterSpacing: "0.15em", color: C.textFaint, marginTop: 3,
+                    }}>{l}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* ── BOTTOM BAR ── */}
-          <div style={{ paddingTop: "3rem", borderTop: `1px solid ${THEME.glassBorder}` }}>
+          <div style={{ paddingTop: "2.5rem", borderTop: `1px solid ${C.border}` }}>
             <div className="ft-bottom">
               <p style={{
-                fontSize: "0.65rem",
-                fontWeight: 600,
-                textTransform: "uppercase",
-                letterSpacing: "0.15em",
-                color: THEME.textMuted,
+                fontSize: "0.58rem", fontWeight: 600,
+                textTransform: "uppercase", letterSpacing: "0.15em",
+                color: C.textFaint,
               }}>
-                © {new Date().getFullYear()} Generous Helping Hands Foundation.
+                © {new Date().getFullYear()} Generous Helping Hands Foundation · All Rights Reserved
               </p>
 
-              <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "1.25rem", flexWrap: "wrap", justifyContent: "center" }}>
+                {["Privacy Policy", "Terms of Use", "RC: 123456789"].map((item, i) => (
+                  <React.Fragment key={item}>
+                    <span style={{
+                      fontSize: "0.58rem", fontWeight: 600,
+                      textTransform: "uppercase", letterSpacing: "0.1em",
+                      color: i < 2 ? C.textMuted : C.textFaint,
+                      cursor: i < 2 ? "pointer" : "default",
+                      transition: "color 0.2s",
+                    }}
+                      onMouseEnter={e => i < 2 && (e.currentTarget.style.color = C.gold)}
+                      onMouseLeave={e => i < 2 && (e.currentTarget.style.color = C.textMuted)}
+                    >{item}</span>
+                    {i < 2 && <div style={{ width: 1, height: 12, background: C.border }} />}
+                  </React.Fragment>
+                ))}
+                <div style={{ width: 1, height: 12, background: C.border }} />
                 <div style={{
-                  display: "flex", alignItems: "center", gap: "0.6rem",
-                  fontSize: "0.65rem", fontWeight: 700,
-                  textTransform: "uppercase", letterSpacing: "0.2em",
-                  color: "#fff",
+                  display: "flex", alignItems: "center", gap: "0.5rem",
+                  fontSize: "0.58rem", fontWeight: 700,
+                  textTransform: "uppercase", letterSpacing: "0.15em", color: C.text,
                 }}>
-                  <span>Legacy of</span>
-                  <Heart size={14} fill={THEME.goldSolid} color={THEME.goldSolid} />
-                  <span>Compassion</span>
+                  Legacy of <Heart size={12} fill={C.gold} color={C.gold} /> Compassion
                 </div>
-                <div style={{ height: "16px", width: "1px", background: THEME.glassBorder }} />
-                <span style={{ fontSize: "0.65rem", fontWeight: 700, color: THEME.textMuted }}>
-                  RC: 123456789
-                </span>
               </div>
             </div>
           </div>
+
         </div>
       </footer>
     </>

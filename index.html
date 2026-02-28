@@ -3,81 +3,104 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- SEO -->
     <title>Generous Helping Hands Foundation</title>
+    <meta name="description" content="Empowering women and girls across Nigeria through education, economic opportunity, and community advocacy." />
+    <meta name="theme-color" content="#1a1714" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <!-- Open Graph -->
+    <meta property="og:title"       content="Generous Helping Hands Foundation" />
+    <meta property="og:description" content="Empowering women and girls across Nigeria." />
+    <meta property="og:type"        content="website" />
+    <meta property="og:image"       content="/Hero.png" />
 
+    <!-- Fonts: Cormorant Garamond + DM Sans (matches all components) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind (kept for utility classes used across components) -->
     <script src="https://cdn.tailwindcss.com"></script>
-
     <script>
       tailwind.config = {
-        darkMode: 'class',
         theme: {
           extend: {
             colors: {
-              // Custom palette for the foundation
-              gold: {
-                DEFAULT: '#C9A96E',
-                dark: '#A68A56',
-              },
-              matte: '#0A0908',
-              surface: '#141412',
+              gold:   { DEFAULT: "#F59E0B", deep: "#D97706" },
+              orange: "#EA580C",
+              site:   "#1a1714",
+              card:   "#211e1a",
+              deep:   "#131110",
             },
             fontFamily: {
-              // Directing Tailwind to use our loaded Google Fonts
-              serif: ['Playfair Display', 'serif'],
-              sans: ['DM Sans', 'sans-serif'],
+              serif: ["Cormorant Garamond", "serif"],
+              sans:  ["DM Sans", "sans-serif"],
             },
-          }
-        }
-      }
-    </script>
-
-    <script>
-      // Theme preservation logic
-      (function() {
-        try {
-          const savedTheme = localStorage.getItem('theme');
-          // For the Heritage theme, we usually default to dark for that premium feel
-          if (savedTheme === 'dark' || !savedTheme) {
-            document.documentElement.classList.add('dark');
-          } else {
-            document.documentElement.classList.remove('dark');
-          }
-        } catch (e) {}
-      })();
+          },
+        },
+      };
     </script>
 
     <style>
-      /* Smooth transitions for a luxury feel */
-      html, body {
-        transition: background-color 0.5s ease, color 0.5s ease;
-        scroll-behavior: smooth;
+      /* ── INSTANT DARK PAINT — prevents any white flash ── */
+      html {
+        background-color: #1a1714;
+        color-scheme: dark;
       }
-      
-      /* Base styles to prevent white flash on load */
-      .dark body {
-        background-color: #0A0908;
+
+      body {
+        background-color: #1a1714;
+        color: #ffffff;
+        margin: 0;
+        /* Warm radial tint fixed behind all content */
+        background-image: radial-gradient(
+          ellipse at 50% 0%,
+          rgba(245, 158, 11, 0.04) 0%,
+          transparent 60%
+        );
+        background-attachment: fixed;
+      }
+
+      /* ── TRANSITIONS ── */
+      *, *::before, *::after {
+        box-sizing: border-box;
+      }
+
+      /* ── SCROLLBAR ── */
+      ::-webkit-scrollbar       { width: 5px; }
+      ::-webkit-scrollbar-track { background: #131110; }
+      ::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, #F59E0B, #EA580C);
+        border-radius: 100px;
+      }
+      ::-webkit-scrollbar-thumb:hover { background: #F59E0B; }
+      * { scrollbar-width: thin; scrollbar-color: #F59E0B #131110; }
+
+      /* ── SELECTION ── */
+      ::selection {
+        background-color: rgba(245, 158, 11, 0.3);
         color: #ffffff;
       }
 
-      /* Custom scrollbar for premium look */
-      ::-webkit-scrollbar {
-        width: 8px;
+      /* ── FONT SMOOTHING ── */
+      body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
-      ::-webkit-scrollbar-track {
-        background: #0A0908;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #C9A96E;
-        border-radius: 10px;
+
+      /* ── PREVENT FOUC ON #root ── */
+      #root {
+        background-color: #1a1714;
+        min-height: 100vh;
       }
     </style>
   </head>
-  
-  <body class="bg-white dark:bg-matte selection:bg-gold selection:text-black">
+
+  <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
