@@ -96,7 +96,7 @@ const Logo: React.FC<{ onClick: () => void; compact: boolean }> = ({ onClick, co
       transition:"all 0.4s cubic-bezier(0.16,1,0.3,1)",
       boxShadow:"0 0 0 1px rgba(245,158,11,0.25), 0 4px 18px rgba(245,158,11,0.22)",
     }}>
-      <img src="/logo_light.jpg" alt="GHHF" style={{ width:"100%", height:"100%", objectFit:"cover", display:"block" }} />
+      <img src="/new_logo.jpeg" alt="GHHF" style={{ width:"100%", height:"100%", objectFit:"cover", display:"block" }} />
       <div style={{
         position:"absolute", inset:0,
         background:"linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 60%)",
