@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Mail, Phone, MapPin, Instagram, Facebook, Twitter,
-  Heart, ArrowUpRight, Sparkles, ArrowRight, Globe
+  Heart, ArrowUpRight, Sparkles, Globe
 } from "lucide-react";
 
 // ─── THEME ────────────────────────────────────────────────────────────────────
@@ -117,123 +117,6 @@ const ColHead: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     }}>{children}</h3>
   </div>
 );
-
-// ─── NEWSLETTER WIDGET ────────────────────────────────────────────────────────
-const NewsletterWidget = () => {
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
-
-  const handleSubscribe = async () => {
-    const trimmed = email.trim();
-    if (!trimmed || status === "sending") return;
-
-    setStatus("sending");
-
-    try {
-      const res = await fetch("https://formspree.io/f/xeerqlbk", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: trimmed }),
-      });
-
-      if (res.ok) {
-        setStatus("success");
-        setEmail("");
-        setTimeout(() => setStatus("idle"), 5000);
-      } else {
-        setStatus("error");
-        setTimeout(() => setStatus("idle"), 4000);
-      }
-    } catch {
-      setStatus("error");
-      setTimeout(() => setStatus("idle"), 4000);
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") handleSubscribe();
-  };
-
-  return (
-    <div style={{
-      background: C.bgCard, border: `1px solid ${C.border}`,
-      borderRadius: 16, padding: "1.25rem",
-      position: "relative", overflow: "hidden",
-    }}>
-      <div style={{
-        position: "absolute", top: 0, left: 0, right: 0, height: 2,
-        background: `linear-gradient(90deg, ${C.gold}, transparent)`,
-      }} />
-      <p style={{
-        fontFamily: "'DM Sans', sans-serif", fontSize: "0.65rem",
-        fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase",
-        color: C.gold, marginBottom: "0.75rem",
-      }}>Stay Updated</p>
-
-      {status === "success" ? (
-        <motion.p
-          initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-          style={{ color: C.gold, fontSize: "0.78rem", fontWeight: 600, fontFamily: "'DM Sans', sans-serif", padding: "0.6rem 0" }}
-        >
-          ✦ You're subscribed! Check your inbox.
-        </motion.p>
-      ) : status === "error" ? (
-        <motion.p
-          initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-          style={{ color: "#f87171", fontSize: "0.78rem", fontWeight: 600, fontFamily: "'DM Sans', sans-serif", padding: "0.6rem 0" }}
-        >
-          ✕ Something went wrong. Please try again.
-        </motion.p>
-      ) : (
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-          <input
-            type="email"
-            placeholder="Your email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            onKeyDown={handleKeyDown}
-            disabled={status === "sending"}
-            style={{
-              flex: 1, background: "rgba(255,255,255,0.04)",
-              border: `1px solid ${C.border}`, borderRadius: 10,
-              padding: "0.6rem 0.75rem",
-              color: C.text, fontSize: "0.8rem",
-              fontFamily: "'DM Sans', sans-serif", outline: "none",
-              transition: "border-color 0.2s",
-              opacity: status === "sending" ? 0.6 : 1,
-            }}
-            onFocus={e => e.currentTarget.style.borderColor = C.borderHov}
-            onBlur={e => e.currentTarget.style.borderColor = C.border}
-          />
-          <motion.button
-            whileHover={{ scale: status === "sending" ? 1 : 1.06 }}
-            whileTap={{ scale: status === "sending" ? 1 : 0.96 }}
-            onClick={handleSubscribe}
-            disabled={status === "sending"}
-            style={{
-              background: C.gradient, border: "none",
-              borderRadius: 10, padding: "0.6rem 0.9rem",
-              cursor: status === "sending" ? "not-allowed" : "pointer",
-              flexShrink: 0, display: "flex", alignItems: "center",
-              boxShadow: "0 4px 14px rgba(245,158,11,0.3)",
-              opacity: status === "sending" ? 0.7 : 1,
-            }}
-          >
-            {status === "sending" ? (
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
-                style={{ width: 14, height: 14, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%" }}
-              />
-            ) : (
-              <ArrowRight size={14} color="#fff" />
-            )}
-          </motion.button>
-        </div>
-      )}
-    </div>
-  );
-};
 
 // ─── FOOTER ───────────────────────────────────────────────────────────────────
 const Footer = () => {
@@ -365,9 +248,6 @@ const Footer = () => {
               <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap" }}>
                 {SOCIALS.map(s => <SocialBtn key={s.label} {...s} />)}
               </div>
-
-              {/* Newsletter widget */}
-              <NewsletterWidget />
 
             </div>
 
