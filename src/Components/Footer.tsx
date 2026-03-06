@@ -47,7 +47,7 @@ const SOCIALS = [
 ];
 
 // ─── NAV LINK ─────────────────────────────────────────────────────────────────
-const NavLink = ({ id, label, onScroll }) => {
+const NavLink: React.FC<{ id: string; label: string; onScroll: (id: string) => void }> = ({ id, label, onScroll }) => {
   const [hov, setHov] = useState(false);
   return (
     <li>
@@ -80,7 +80,7 @@ const NavLink = ({ id, label, onScroll }) => {
 };
 
 // ─── SOCIAL ICON ─────────────────────────────────────────────────────────────
-const SocialBtn = ({ href, icon: Icon, label }) => {
+const SocialBtn: React.FC<{ href: string; icon: React.ElementType; label: string }> = ({ href, icon: Icon, label }) => {
   const [hov, setHov] = useState(false);
   return (
     <motion.a
@@ -106,7 +106,7 @@ const SocialBtn = ({ href, icon: Icon, label }) => {
 };
 
 // ─── SECTION HEADING ─────────────────────────────────────────────────────────
-const ColHead = ({ children }) => (
+const ColHead: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "2rem" }}>
     <div style={{ width: 16, height: 1.5, background: C.gradient, borderRadius: 1 }} />
     <h3 style={{
@@ -140,7 +140,7 @@ const NewsletterWidget = () => {
     setTimeout(() => setSent(false), 4000);
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") handleSubscribe();
   };
 
@@ -215,7 +215,7 @@ const NewsletterWidget = () => {
 const Footer = () => {
   const [ctaHov, setCtaHov] = useState(false);
 
-  const scrollTo = (id) => {
+  const scrollTo = (id: string) => {
     const el = document.getElementById(id);
     if (!el) return;
     const top = el.getBoundingClientRect().top + window.pageYOffset - 80;
