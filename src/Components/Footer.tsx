@@ -121,22 +121,33 @@ const ColHead: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 // ─── NEWSLETTER WIDGET ────────────────────────────────────────────────────────
 const NewsletterWidget = () => {
   const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
 
-  const handleSubscribe = () => {
+  const handleSubscribe = async () => {
     const trimmed = email.trim();
-    if (!trimmed) return;
+    if (!trimmed || status === "sending") return;
 
-    const subject = encodeURIComponent("Welcome to Generous Helping Hands Updates!");
-    const body = encodeURIComponent(
-      `Hi there,\n\nThank you for subscribing to updates from Generous Helping Hands Foundation!\n\nWe'll keep you informed about our latest programs, events, and impact stories.\n\nWith gratitude,\nThe Generous Helping Hands Team\ninfo@generoushelpinghands.org`
-    );
-    // Opens mail client with FROM as info@generoushelpinghands.org, TO as the typed email
-    window.location.href = `mailto:${trimmed}?from=info@generoushelpinghands.org&subject=${subject}&body=${body}`;
+    setStatus("sending");
 
-    setSent(true);
-    setEmail("");
-    setTimeout(() => setSent(false), 4000);
+    try {
+      const res = await fetch("https://formspree.io/f/xeerqlbk", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: trimmed }),
+      });
+
+      if (res.ok) {
+        setStatus("success");
+        setEmail("");
+        setTimeout(() => setStatus("idle"), 5000);
+      } else {
+        setStatus("error");
+        setTimeout(() => setStatus("idle"), 4000);
+      }
+    } catch {
+      setStatus("error");
+      setTimeout(() => setStatus("idle"), 4000);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -159,17 +170,19 @@ const NewsletterWidget = () => {
         color: C.gold, marginBottom: "0.75rem",
       }}>Stay Updated</p>
 
-      {sent ? (
+      {status === "success" ? (
         <motion.p
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          style={{
-            color: C.gold, fontSize: "0.78rem", fontWeight: 600,
-            fontFamily: "'DM Sans', sans-serif",
-            padding: "0.6rem 0",
-          }}
+          initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+          style={{ color: C.gold, fontSize: "0.78rem", fontWeight: 600, fontFamily: "'DM Sans', sans-serif", padding: "0.6rem 0" }}
         >
-          ✦ Check your email to confirm!
+          ✦ You're subscribed! Check your inbox.
+        </motion.p>
+      ) : status === "error" ? (
+        <motion.p
+          initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+          style={{ color: "#f87171", fontSize: "0.78rem", fontWeight: 600, fontFamily: "'DM Sans', sans-serif", padding: "0.6rem 0" }}
+        >
+          ✕ Something went wrong. Please try again.
         </motion.p>
       ) : (
         <div style={{ display: "flex", gap: "0.5rem" }}>
@@ -177,8 +190,9 @@ const NewsletterWidget = () => {
             type="email"
             placeholder="Your email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={e => setEmail(e.target.value)}
             onKeyDown={handleKeyDown}
+            disabled={status === "sending"}
             style={{
               flex: 1, background: "rgba(255,255,255,0.04)",
               border: `1px solid ${C.border}`, borderRadius: 10,
@@ -186,23 +200,34 @@ const NewsletterWidget = () => {
               color: C.text, fontSize: "0.8rem",
               fontFamily: "'DM Sans', sans-serif", outline: "none",
               transition: "border-color 0.2s",
+              opacity: status === "sending" ? 0.6 : 1,
             }}
             onFocus={e => e.currentTarget.style.borderColor = C.borderHov}
             onBlur={e => e.currentTarget.style.borderColor = C.border}
           />
           <motion.button
-            whileHover={{ scale: 1.06 }}
-            whileTap={{ scale: 0.96 }}
+            whileHover={{ scale: status === "sending" ? 1 : 1.06 }}
+            whileTap={{ scale: status === "sending" ? 1 : 0.96 }}
             onClick={handleSubscribe}
+            disabled={status === "sending"}
             style={{
               background: C.gradient, border: "none",
               borderRadius: 10, padding: "0.6rem 0.9rem",
-              cursor: "pointer", flexShrink: 0,
-              display: "flex", alignItems: "center",
+              cursor: status === "sending" ? "not-allowed" : "pointer",
+              flexShrink: 0, display: "flex", alignItems: "center",
               boxShadow: "0 4px 14px rgba(245,158,11,0.3)",
+              opacity: status === "sending" ? 0.7 : 1,
             }}
           >
-            <ArrowRight size={14} color="#fff" />
+            {status === "sending" ? (
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+                style={{ width: 14, height: 14, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%" }}
+              />
+            ) : (
+              <ArrowRight size={14} color="#fff" />
+            )}
           </motion.button>
         </div>
       )}
