@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Mail, Phone, MapPin, Instagram, Facebook, Twitter,
-  Heart, ArrowUpRight, Sparkles, Globe
+  Heart, ArrowUpRight, Sparkles, ArrowRight, Globe
 } from "lucide-react";
 
 // ─── THEME ────────────────────────────────────────────────────────────────────
@@ -117,6 +117,98 @@ const ColHead: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     }}>{children}</h3>
   </div>
 );
+
+// ─── NEWSLETTER WIDGET ────────────────────────────────────────────────────────
+const NewsletterWidget = () => {
+  const [email, setEmail] = useState("");
+  const [sent, setSent] = useState(false);
+
+  const handleSubscribe = () => {
+    const trimmed = email.trim();
+    if (!trimmed) return;
+
+    const subject = encodeURIComponent("Welcome to Generous Helping Hands Updates!");
+    const body = encodeURIComponent(
+      `Hi there,\n\nThank you for subscribing to updates from Generous Helping Hands Foundation!\n\nWe'll keep you informed about our latest programs, events, and impact stories.\n\nWith gratitude,\nThe Generous Helping Hands Team\ninfo@generoushelpinghands.org`
+    );
+    // Opens mail client with FROM as info@generoushelpinghands.org, TO as the typed email
+    window.location.href = `mailto:${trimmed}?from=info@generoushelpinghands.org&subject=${subject}&body=${body}`;
+
+    setSent(true);
+    setEmail("");
+    setTimeout(() => setSent(false), 4000);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") handleSubscribe();
+  };
+
+  return (
+    <div style={{
+      background: C.bgCard, border: `1px solid ${C.border}`,
+      borderRadius: 16, padding: "1.25rem",
+      position: "relative", overflow: "hidden",
+    }}>
+      <div style={{
+        position: "absolute", top: 0, left: 0, right: 0, height: 2,
+        background: `linear-gradient(90deg, ${C.gold}, transparent)`,
+      }} />
+      <p style={{
+        fontFamily: "'DM Sans', sans-serif", fontSize: "0.65rem",
+        fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase",
+        color: C.gold, marginBottom: "0.75rem",
+      }}>Stay Updated</p>
+
+      {sent ? (
+        <motion.p
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          style={{
+            color: C.gold, fontSize: "0.78rem", fontWeight: 600,
+            fontFamily: "'DM Sans', sans-serif",
+            padding: "0.6rem 0",
+          }}
+        >
+          ✦ Check your email to confirm!
+        </motion.p>
+      ) : (
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          <input
+            type="email"
+            placeholder="Your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={handleKeyDown}
+            style={{
+              flex: 1, background: "rgba(255,255,255,0.04)",
+              border: `1px solid ${C.border}`, borderRadius: 10,
+              padding: "0.6rem 0.75rem",
+              color: C.text, fontSize: "0.8rem",
+              fontFamily: "'DM Sans', sans-serif", outline: "none",
+              transition: "border-color 0.2s",
+            }}
+            onFocus={e => e.currentTarget.style.borderColor = C.borderHov}
+            onBlur={e => e.currentTarget.style.borderColor = C.border}
+          />
+          <motion.button
+            whileHover={{ scale: 1.06 }}
+            whileTap={{ scale: 0.96 }}
+            onClick={handleSubscribe}
+            style={{
+              background: C.gradient, border: "none",
+              borderRadius: 10, padding: "0.6rem 0.9rem",
+              cursor: "pointer", flexShrink: 0,
+              display: "flex", alignItems: "center",
+              boxShadow: "0 4px 14px rgba(245,158,11,0.3)",
+            }}
+          >
+            <ArrowRight size={14} color="#fff" />
+          </motion.button>
+        </div>
+      )}
+    </div>
+  );
+};
 
 // ─── FOOTER ───────────────────────────────────────────────────────────────────
 const Footer = () => {
@@ -248,6 +340,9 @@ const Footer = () => {
               <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap" }}>
                 {SOCIALS.map(s => <SocialBtn key={s.label} {...s} />)}
               </div>
+
+              {/* Newsletter widget */}
+              <NewsletterWidget />
 
             </div>
 
