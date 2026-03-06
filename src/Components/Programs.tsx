@@ -7,8 +7,8 @@ import {
   Briefcase, BookOpen, HeartPulse, Star,
   Image as ImageIcon, Sparkles, ArrowUpRight, ArrowRight,
   X, ChevronLeft, ChevronRight, ZoomIn, Grid3x3,
-  LayoutGrid, ArrowLeft, Home, Share2, Download,
-  Maximize2, Filter, Search, SlidersHorizontal
+  LayoutGrid, ArrowLeft, Home, Share2,
+  Maximize2, Search
 } from "lucide-react";
 
 // ─── THEME ────────────────────────────────────────────────────────────────────
@@ -216,7 +216,6 @@ const Lightbox: React.FC<{
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
   const [zoomed, setZoomed] = useState(false);
-  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -254,12 +253,6 @@ const Lightbox: React.FC<{
     }
     touchStartX.current = null;
     touchStartY.current = null;
-  };
-
-  const handleCopyLink = async () => {
-    await navigator.clipboard.writeText(window.location.href);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
