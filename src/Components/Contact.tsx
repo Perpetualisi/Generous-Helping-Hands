@@ -21,27 +21,35 @@ const C = {
   gradient:  "linear-gradient(135deg, #F59E0B, #EA580C)",
 };
 
+// ─── CONSTANTS ────────────────────────────────────────────────────────────────
+const EMAIL      = "info@generoushelpinghands.org";
+const PHONE      = "+234 903 685 4354";
+const IG_URL     = "https://instagram.com/generoushelpinghands";
+const FB_URL     = "https://facebook.com/generoushelpinghands";
+const TWITTER_URL= "https://twitter.com/ghhfoundation";
+
 // ─── DATA ─────────────────────────────────────────────────────────────────────
 interface ContactInfo { icon: React.ElementType; title: string; content: string; link?: string; sub?: string; }
 
 const CONTACT_INFO: ContactInfo[] = [
-  { icon: Phone,  title: "Phone",        content: "+234 903 685 4354",       link: "tel:+2349036854354",                          sub: "Mon–Fri, 9am–5pm WAT" },
-  { icon: Mail,   title: "Email",        content: "Giversgenerous@gmail.com", link: "mailto:Giversgenerous@gmail.com",              sub: "We reply within 24hrs" },
-  { icon: Share2, title: "Social Media", content: "@GenerousHelpingHands",    link: "https://instagram.com/generoushelpinghands",   sub: "Follow our journey" },
-  { icon: MapPin, title: "Location",     content: "Lagos, Nigeria",           sub: "Serving communities nationwide" },
+  { icon: Phone,  title: "Phone",        content: PHONE,    link: "tel:+2349036854354",   sub: "Mon–Fri, 9am–5pm WAT" },
+  { icon: Mail,   title: "Email",        content: EMAIL,    link: `mailto:${EMAIL}`,       sub: "We reply within 24hrs" },
+  { icon: Share2, title: "Social Media", content: "@GenerousHelpingHands", link: IG_URL,  sub: "Follow our journey" },
+  { icon: MapPin, title: "Location",     content: "Lagos, Nigeria",         sub: "Serving communities nationwide" },
 ];
 
-const SOCIALS = [
-  { icon: Mail,   label: "Instagram", href: "https://instagram.com/generoushelpinghands" },
-  { icon: Share2, label: "Facebook",  href: "#" },
-  { icon: Globe,  label: "Twitter",   href: "#" },
-];
-
+// ─── FIX: removed "Impact Report" — it leads nowhere ─────────────────────────
 const QUICK_LINKS = [
-  { label: "Our Programs",  href: "#ourprograms" },
-  { label: "Volunteer",     href: "#volunteer"   },
-  { label: "Donate",        href: "#donation"    },
-  { label: "Impact Report", href: "#"            },
+  { label: "Our Programs", href: "#ourprograms" },
+  { label: "Volunteer",    href: "#volunteer"   },
+  { label: "Donate",       href: "#donation"    },
+];
+
+// ─── FIX: real social URLs ────────────────────────────────────────────────────
+const SOCIALS = [
+  { icon: Share2, label: "Instagram", href: IG_URL      },
+  { icon: Globe,  label: "Facebook",  href: FB_URL      },
+  { icon: Mail,   label: "Twitter",   href: TWITTER_URL },
 ];
 
 const STATS = [
@@ -99,7 +107,8 @@ const ContactRow: React.FC<{ info: ContactInfo }> = ({ info }) => {
         {info.sub && (
           <p style={{
             fontFamily: "'DM Sans', sans-serif", fontSize: "0.6rem",
-            color: C.textFaint, marginTop: "0.15rem", display: "flex", alignItems: "center", gap: "0.3rem",
+            color: C.textFaint, marginTop: "0.15rem",
+            display: "flex", alignItems: "center", gap: "0.3rem",
           }}>
             <Clock size={9} color={C.textFaint} />{info.sub}
           </p>
@@ -123,12 +132,10 @@ const Contact: React.FC = () => {
         * { box-sizing: border-box; }
         ::selection { background: rgba(245,158,11,0.25); color: #fff; }
 
-        .ct-main-grid   { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
         .ct-bottom-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem; }
         .ct-cta-btns    { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
 
         @media (max-width: 1024px) {
-          .ct-main-grid   { grid-template-columns: 1fr; }
           .ct-bottom-grid { grid-template-columns: 1fr 1fr; }
         }
         @media (max-width: 640px) {
@@ -234,7 +241,7 @@ const Contact: React.FC = () => {
           ))}
         </motion.div>
 
-        {/* ── CONTACT INFO CARD (full width now) ── */}
+        {/* ── CONTACT INFO CARD ── */}
         <motion.div
           initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -246,7 +253,6 @@ const Contact: React.FC = () => {
             marginBottom: "1.5rem",
           }}
         >
-          {/* Top gold line */}
           <div style={{
             position: "absolute", top: 0, left: 0, right: 0, height: 2,
             background: `linear-gradient(90deg, ${C.gold}, transparent)`,
@@ -265,7 +271,6 @@ const Contact: React.FC = () => {
             </h3>
           </div>
 
-          {/* Contact rows in a 2-col grid on wider screens */}
           <div style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
@@ -374,7 +379,7 @@ const Contact: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Quick Links card */}
+          {/* Quick Links card — Impact Report removed */}
           <motion.div
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.2 }}

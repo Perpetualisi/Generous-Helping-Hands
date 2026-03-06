@@ -47,7 +47,7 @@ const SOCIALS = [
 ];
 
 // ─── NAV LINK ─────────────────────────────────────────────────────────────────
-const NavLink: React.FC<{ id: string; label: string; onScroll: (id: string) => void }> = ({ id, label, onScroll }) => {
+const NavLink = ({ id, label, onScroll }) => {
   const [hov, setHov] = useState(false);
   return (
     <li>
@@ -80,7 +80,7 @@ const NavLink: React.FC<{ id: string; label: string; onScroll: (id: string) => v
 };
 
 // ─── SOCIAL ICON ─────────────────────────────────────────────────────────────
-const SocialBtn: React.FC<{ href: string; icon: React.ElementType; label: string }> = ({ href, icon: Icon, label }) => {
+const SocialBtn = ({ href, icon: Icon, label }) => {
   const [hov, setHov] = useState(false);
   return (
     <motion.a
@@ -97,8 +97,8 @@ const SocialBtn: React.FC<{ href: string; icon: React.ElementType; label: string
         transition: "all 0.3s ease",
         boxShadow: hov ? "0 8px 24px rgba(245,158,11,0.3)" : "none",
         textDecoration: "none", flexShrink: 0,
-        title: label,
-      } as React.CSSProperties}
+      }}
+      aria-label={label}
     >
       <Icon size={17} />
     </motion.a>
@@ -106,7 +106,7 @@ const SocialBtn: React.FC<{ href: string; icon: React.ElementType; label: string
 };
 
 // ─── SECTION HEADING ─────────────────────────────────────────────────────────
-const ColHead: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+const ColHead = ({ children }) => (
   <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "2rem" }}>
     <div style={{ width: 16, height: 1.5, background: C.gradient, borderRadius: 1 }} />
     <h3 style={{
@@ -118,11 +118,104 @@ const ColHead: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   </div>
 );
 
+// ─── NEWSLETTER WIDGET ────────────────────────────────────────────────────────
+const NewsletterWidget = () => {
+  const [email, setEmail] = useState("");
+  const [sent, setSent] = useState(false);
+
+  const handleSubscribe = () => {
+    const trimmed = email.trim();
+    if (!trimmed) return;
+
+    // Open the user's mail client addressed TO the typed email,
+    // pre-filled with a welcome subject & body from the foundation.
+    const subject = encodeURIComponent("Welcome to Generous Helping Hands Updates!");
+    const body = encodeURIComponent(
+      `Hi there,\n\nThank you for subscribing to updates from Generous Helping Hands Foundation!\n\nWe'll keep you informed about our latest programs, events, and impact stories.\n\nWith gratitude,\nThe Generous Helping Hands Team\nGiversgenerous@gmail.com`
+    );
+    window.location.href = `mailto:${trimmed}?subject=${subject}&body=${body}`;
+
+    setSent(true);
+    setEmail("");
+    setTimeout(() => setSent(false), 4000);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") handleSubscribe();
+  };
+
+  return (
+    <div style={{
+      background: C.bgCard, border: `1px solid ${C.border}`,
+      borderRadius: 16, padding: "1.25rem",
+      position: "relative", overflow: "hidden",
+    }}>
+      <div style={{
+        position: "absolute", top: 0, left: 0, right: 0, height: 2,
+        background: `linear-gradient(90deg, ${C.gold}, transparent)`,
+      }} />
+      <p style={{
+        fontFamily: "'DM Sans', sans-serif", fontSize: "0.65rem",
+        fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase",
+        color: C.gold, marginBottom: "0.75rem",
+      }}>Stay Updated</p>
+
+      {sent ? (
+        <motion.p
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          style={{
+            color: C.gold, fontSize: "0.78rem", fontWeight: 600,
+            fontFamily: "'DM Sans', sans-serif",
+            padding: "0.6rem 0",
+          }}
+        >
+          ✦ Check your email to confirm!
+        </motion.p>
+      ) : (
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          <input
+            type="email"
+            placeholder="Your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={handleKeyDown}
+            style={{
+              flex: 1, background: "rgba(255,255,255,0.04)",
+              border: `1px solid ${C.border}`, borderRadius: 10,
+              padding: "0.6rem 0.75rem",
+              color: C.text, fontSize: "0.8rem",
+              fontFamily: "'DM Sans', sans-serif", outline: "none",
+              transition: "border-color 0.2s",
+            }}
+            onFocus={e => e.currentTarget.style.borderColor = C.borderHov}
+            onBlur={e => e.currentTarget.style.borderColor = C.border}
+          />
+          <motion.button
+            whileHover={{ scale: 1.06 }}
+            whileTap={{ scale: 0.96 }}
+            onClick={handleSubscribe}
+            style={{
+              background: C.gradient, border: "none",
+              borderRadius: 10, padding: "0.6rem 0.9rem",
+              cursor: "pointer", flexShrink: 0,
+              display: "flex", alignItems: "center",
+              boxShadow: "0 4px 14px rgba(245,158,11,0.3)",
+            }}
+          >
+            <ArrowRight size={14} color="#fff" />
+          </motion.button>
+        </div>
+      )}
+    </div>
+  );
+};
+
 // ─── FOOTER ───────────────────────────────────────────────────────────────────
-const Footer: React.FC = () => {
+const Footer = () => {
   const [ctaHov, setCtaHov] = useState(false);
 
-  const scrollTo = (id: string) => {
+  const scrollTo = (id) => {
     const el = document.getElementById(id);
     if (!el) return;
     const top = el.getBoundingClientRect().top + window.pageYOffset - 80;
@@ -249,48 +342,8 @@ const Footer: React.FC = () => {
                 {SOCIALS.map(s => <SocialBtn key={s.label} {...s} />)}
               </div>
 
-              {/* Newsletter mini-widget */}
-              <div style={{
-                background: C.bgCard, border: `1px solid ${C.border}`,
-                borderRadius: 16, padding: "1.25rem",
-                position: "relative", overflow: "hidden",
-              }}>
-                <div style={{
-                  position: "absolute", top: 0, left: 0, right: 0, height: 2,
-                  background: `linear-gradient(90deg, ${C.gold}, transparent)`,
-                }} />
-                <p style={{
-                  fontFamily: "'DM Sans', sans-serif", fontSize: "0.65rem",
-                  fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase",
-                  color: C.gold, marginBottom: "0.75rem",
-                }}>Stay Updated</p>
-                <div style={{ display: "flex", gap: "0.5rem" }}>
-                  <input
-                    type="email" placeholder="Your email"
-                    style={{
-                      flex: 1, background: "rgba(255,255,255,0.04)",
-                      border: `1px solid ${C.border}`, borderRadius: 10,
-                      padding: "0.6rem 0.75rem",
-                      color: C.text, fontSize: "0.8rem",
-                      fontFamily: "'DM Sans', sans-serif", outline: "none",
-                    }}
-                    onFocus={e => e.currentTarget.style.borderColor = C.borderHov}
-                    onBlur={e => e.currentTarget.style.borderColor = C.border}
-                  />
-                  <motion.button
-                    whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.96 }}
-                    style={{
-                      background: C.gradient, border: "none",
-                      borderRadius: 10, padding: "0.6rem 0.9rem",
-                      cursor: "pointer", flexShrink: 0,
-                      display: "flex", alignItems: "center",
-                      boxShadow: "0 4px 14px rgba(245,158,11,0.3)",
-                    }}
-                  >
-                    <ArrowRight size={14} color="#fff" />
-                  </motion.button>
-                </div>
-              </div>
+              {/* Newsletter widget — now functional */}
+              <NewsletterWidget />
             </div>
 
             {/* ── COL 2: NAVIGATION ── */}

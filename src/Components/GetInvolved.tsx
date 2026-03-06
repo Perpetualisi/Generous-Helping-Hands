@@ -4,7 +4,7 @@ import {
   Mail, Heart, Gift, Instagram,
   Users, ChevronDown, Sparkles,
   ExternalLink, ArrowRight, ShieldCheck,
-  Copy, Check, Building2, CreditCard,
+  Copy, Check, Building2, CreditCard, Flower2,
 } from "lucide-react";
 
 // ─── THEME ────────────────────────────────────────────────────────────────────
@@ -28,6 +28,8 @@ interface ContactMethod  { icon: React.ElementType; label: string; href: string;
 interface DonationMethod { icon: React.ElementType; title: string; description: string; }
 interface FAQItem        { question: string; answer: string; }
 
+const EMAIL = "info@generoushelpinghands.org";
+
 const BANK = {
   bank:    "First Bank",
   account: "2045352809",
@@ -35,8 +37,8 @@ const BANK = {
 };
 
 const CONTACT_METHODS: ContactMethod[] = [
-  { icon: Mail,      label: "Email",     href: "mailto:info@generoushelpinghands.org",     display: "info@generoushelpinghands.org" },
-  { icon: Instagram, label: "Instagram", href: "https://instagram.com/GenerousHands", display: "@GenerousHands"           },
+  { icon: Mail,      label: "Email",     href: `mailto:${EMAIL}`,                             display: EMAIL                  },
+  { icon: Instagram, label: "Instagram", href: "https://instagram.com/GenerousHands",         display: "@GenerousHands"       },
 ];
 
 const DONATION_METHODS: DonationMethod[] = [
@@ -45,7 +47,7 @@ const DONATION_METHODS: DonationMethod[] = [
 ];
 
 const FAQS: FAQItem[] = [
-  { question: "How are donations used?",           answer: "100% of public donations go directly toward our core programs — school fees for girls, start-up support for women-led businesses, and community health outreach." },
+  { question: "How are donations used?",            answer: "100% of public donations go directly toward our core programs — school fees for girls, start-up support for women-led businesses, and community health outreach." },
   { question: "Can I donate from outside Nigeria?", answer: "Yes. We accept international transfers via SWIFT/IBAN. Contact us for specific routing details."                                                              },
 ];
 
@@ -53,12 +55,7 @@ const FAQS: FAQItem[] = [
 const Eyebrow: React.FC<{ icon: React.ElementType; children: React.ReactNode }> = ({ icon: Icon, children }) => (
   <motion.div
     initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-    style={{
-      display: "inline-flex", alignItems: "center", gap: "0.5rem",
-      padding: "0.4rem 1rem", borderRadius: 100,
-      border: `1px solid ${C.border}`, background: "rgba(245,158,11,0.06)",
-      marginBottom: "1.5rem",
-    }}
+    style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.4rem 1rem", borderRadius: 100, border: `1px solid ${C.border}`, background: "rgba(245,158,11,0.06)", marginBottom: "1.5rem" }}
   >
     <Icon size={11} color={C.gold} />
     <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.58rem", fontWeight: 700, letterSpacing: "0.35em", textTransform: "uppercase", color: C.gold, whiteSpace: "nowrap" }}>{children}</span>
@@ -68,26 +65,10 @@ const Eyebrow: React.FC<{ icon: React.ElementType; children: React.ReactNode }> 
 // ─── COPY BUTTON ──────────────────────────────────────────────────────────────
 const CopyBtn: React.FC<{ value: string }> = ({ value }) => {
   const [copied, setCopied] = useState(false);
-  const copy = () => {
-    navigator.clipboard.writeText(value).catch(() => {});
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  const copy = () => { navigator.clipboard.writeText(value).catch(() => {}); setCopied(true); setTimeout(() => setCopied(false), 2000); };
   return (
-    <motion.button
-      onClick={copy}
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.9 }}
-      title="Copy"
-      style={{
-        width: 30, height: 30, borderRadius: 8, flexShrink: 0,
-        background: copied ? "rgba(34,197,94,0.15)" : "rgba(245,158,11,0.1)",
-        border: `1px solid ${copied ? "rgba(34,197,94,0.4)" : C.border}`,
-        color: copied ? "#22c55e" : C.gold,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        cursor: "pointer", transition: "all 0.2s ease",
-      }}
-    >
+    <motion.button onClick={copy} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} title="Copy"
+      style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0, background: copied ? "rgba(34,197,94,0.15)" : "rgba(245,158,11,0.1)", border: `1px solid ${copied ? "rgba(34,197,94,0.4)" : C.border}`, color: copied ? "#22c55e" : C.gold, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "all 0.2s ease" }}>
       {copied ? <Check size={13} /> : <Copy size={13} />}
     </motion.button>
   );
@@ -102,28 +83,11 @@ const BankPanel: React.FC<{ show: boolean }> = ({ show }) => (
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -8, scale: 0.97 }}
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        style={{
-          position: "relative", overflow: "hidden",
-          borderRadius: 20,
-          background: C.bgCard,
-          border: `1px solid ${C.borderHov}`,
-          boxShadow: "0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(245,158,11,0.06), 0 0 40px rgba(245,158,11,0.07)",
-          padding: "1.75rem",
-        }}
+        style={{ position: "relative", overflow: "hidden", borderRadius: 20, background: C.bgCard, border: `1px solid ${C.borderHov}`, boxShadow: "0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(245,158,11,0.07)", padding: "1.75rem" }}
       >
-        {/* Top gold bar */}
-        <div style={{
-          position: "absolute", top: 0, left: 0, right: 0, height: 2,
-          background: C.gradient, borderRadius: "20px 20px 0 0",
-        }} />
-
-        {/* Header */}
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: C.gradient, borderRadius: "20px 20px 0 0" }} />
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.5rem" }}>
-          <div style={{
-            width: 36, height: 36, borderRadius: 10,
-            background: "rgba(245,158,11,0.1)", border: `1px solid ${C.border}`,
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(245,158,11,0.1)", border: `1px solid ${C.border}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
             <Building2 size={16} color={C.gold} />
           </div>
           <div>
@@ -131,42 +95,23 @@ const BankPanel: React.FC<{ show: boolean }> = ({ show }) => (
             <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1rem", fontWeight: 700, color: C.text, marginTop: 3, lineHeight: 1 }}>Donation Account</p>
           </div>
         </div>
-
-        {/* Detail rows */}
         {[
           { label: "Bank",           icon: Building2,   value: BANK.bank    },
           { label: "Account Number", icon: CreditCard,  value: BANK.account },
           { label: "Account Name",   icon: ShieldCheck, value: BANK.name    },
         ].map(({ label, icon: Icon, value }) => (
-          <div key={label} style={{
-            display: "flex", alignItems: "center", justifyContent: "space-between",
-            padding: "0.85rem 1rem", borderRadius: 12, marginBottom: "0.5rem",
-            background: "rgba(245,158,11,0.04)", border: `1px solid ${C.border}`,
-          }}>
+          <div key={label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.85rem 1rem", borderRadius: 12, marginBottom: "0.5rem", background: "rgba(245,158,11,0.04)", border: `1px solid ${C.border}` }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
               <Icon size={14} color={C.gold} style={{ flexShrink: 0 }} />
               <div>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.48rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.18em", color: C.textFaint, marginBottom: 2 }}>{label}</p>
-                <p style={{
-                  fontFamily: label === "Account Number" ? "'Courier New', monospace" : "'DM Sans', sans-serif",
-                  fontSize: label === "Account Number" ? "1.05rem" : "0.85rem",
-                  fontWeight: label === "Account Number" ? 700 : 500,
-                  color: label === "Account Number" ? C.gold : "rgba(255,255,255,0.85)",
-                  letterSpacing: label === "Account Number" ? "0.12em" : "normal",
-                }}>{value}</p>
+                <p style={{ fontFamily: label === "Account Number" ? "'Courier New', monospace" : "'DM Sans', sans-serif", fontSize: label === "Account Number" ? "1.05rem" : "0.85rem", fontWeight: label === "Account Number" ? 700 : 500, color: label === "Account Number" ? C.gold : "rgba(255,255,255,0.85)", letterSpacing: label === "Account Number" ? "0.12em" : "normal" }}>{value}</p>
               </div>
             </div>
             <CopyBtn value={value} />
           </div>
         ))}
-
-        {/* Trust note */}
-        <div style={{
-          display: "flex", alignItems: "center", gap: "0.6rem",
-          marginTop: "1rem", padding: "0.75rem 1rem",
-          borderRadius: 10, background: "rgba(34,197,94,0.05)",
-          border: "1px solid rgba(34,197,94,0.15)",
-        }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginTop: "1rem", padding: "0.75rem 1rem", borderRadius: 10, background: "rgba(34,197,94,0.05)", border: "1px solid rgba(34,197,94,0.15)" }}>
           <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e", boxShadow: "0 0 8px rgba(34,197,94,0.8)", flexShrink: 0 }} />
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.6rem", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(34,197,94,0.8)", lineHeight: 1.5 }}>
             Verified foundation account · 100% goes to programs
@@ -177,17 +122,91 @@ const BankPanel: React.FC<{ show: boolean }> = ({ show }) => (
   </AnimatePresence>
 );
 
+// ─── DONATE IN MEMORY CARD ────────────────────────────────────────────────────
+const DonateInMemory: React.FC = () => {
+  const [hov, setHov] = useState(false);
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      style={{
+        position: "relative", overflow: "hidden",
+        borderRadius: 24,
+        background: hov
+          ? "linear-gradient(135deg, rgba(245,158,11,0.09) 0%, rgba(234,88,12,0.07) 100%)"
+          : C.bgCard,
+        border: `1px solid ${hov ? C.borderHov : C.border}`,
+        padding: "2rem 2rem 1.75rem",
+        transition: "background 0.4s ease, border-color 0.3s ease",
+        boxShadow: hov ? "0 24px 60px rgba(0,0,0,0.45)" : "0 12px 40px rgba(0,0,0,0.3)",
+      }}
+    >
+      {/* Subtle top gradient bar */}
+      <div style={{
+        position: "absolute", top: 0, left: 0, right: 0, height: 2,
+        background: hov ? C.gradient : "transparent",
+        transition: "background 0.4s ease",
+        borderRadius: "24px 24px 0 0",
+      }} />
+
+      {/* Faint decorative bloom */}
+      <div style={{
+        position: "absolute", top: -30, right: -30, width: 160, height: 160,
+        borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(245,158,11,0.07) 0%, transparent 70%)",
+        filter: "blur(24px)",
+        opacity: hov ? 1 : 0.4,
+        transition: "opacity 0.5s ease",
+        pointerEvents: "none",
+      }} />
+
+      {/* Header row */}
+      <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem", marginBottom: "1.25rem", position: "relative", zIndex: 1 }}>
+        <motion.div
+          animate={{ background: hov ? C.gradient : "rgba(245,158,11,0.1)" }}
+          transition={{ duration: 0.3 }}
+          style={{ width: 46, height: 46, borderRadius: 13, flexShrink: 0, border: `1px solid ${hov ? "transparent" : C.border}`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: hov ? "0 6px 20px rgba(245,158,11,0.3)" : "none", transition: "box-shadow 0.3s ease, border-color 0.3s ease" }}
+        >
+          <Flower2 size={19} color={hov ? "#fff" : C.gold} />
+        </motion.div>
+        <div>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.52rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.22em", color: C.textFaint, marginBottom: "0.3rem" }}>
+            Legacy Gift
+          </p>
+          <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.4rem", fontWeight: 700, color: C.text, lineHeight: 1.15 }}>
+            Donate in Memory
+          </h3>
+        </div>
+      </div>
+
+      {/* Body */}
+      <div style={{ position: "relative", zIndex: 1 }}>
+        <div style={{ width: 28, height: 2, background: C.gradient, borderRadius: 2, marginBottom: "1rem" }} />
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.9rem", color: C.textMuted, lineHeight: 1.8, fontWeight: 300, marginBottom: "1.5rem" }}>
+          Honor the memory of a loved one by helping those in need. A donation made in their name keeps their compassion and kindness alive, creating a{" "}
+          <span style={{ color: "rgba(255,255,255,0.75)", fontWeight: 400 }}>meaningful legacy</span>{" "}
+          that continues to make a difference.
+        </p>
+
+
+      </div>
+    </motion.div>
+  );
+};
+
 // ─── 3D PHOTO ─────────────────────────────────────────────────────────────────
 const PremiumPhoto: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState(false);
-  const mx = useMotionValue(0);
-  const my = useMotionValue(0);
+  const mx = useMotionValue(0); const my = useMotionValue(0);
   const xs = useSpring(mx, { stiffness: 120, damping: 20 });
   const ys = useSpring(my, { stiffness: 120, damping: 20 });
   const rotX = useTransform(ys, [-0.5, 0.5], ["5deg", "-5deg"]);
   const rotY = useTransform(xs, [-0.5, 0.5], ["-5deg", "5deg"]);
-
   return (
     <motion.div ref={ref}
       onMouseMove={e => { const r = ref.current?.getBoundingClientRect(); if (r) { mx.set((e.clientX - r.left) / r.width - 0.5); my.set((e.clientY - r.top) / r.height - 0.5); } }}
@@ -211,14 +230,7 @@ const ContactCard: React.FC<{ method: ContactMethod }> = ({ method: m }) => {
   return (
     <a href={m.href} target={m.href.startsWith("http") ? "_blank" : undefined} rel="noreferrer"
       onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
-      style={{
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "1.1rem 1.25rem", borderRadius: 16,
-        background: hov ? "rgba(245,158,11,0.05)" : C.bgCard,
-        border: `1px solid ${hov ? C.borderHov : C.border}`,
-        transition: "border-color 0.25s ease, background 0.25s ease",
-        textDecoration: "none",
-      }}
+      style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "1.1rem 1.25rem", borderRadius: 16, background: hov ? "rgba(245,158,11,0.05)" : C.bgCard, border: `1px solid ${hov ? C.borderHov : C.border}`, transition: "border-color 0.25s ease, background 0.25s ease", textDecoration: "none" }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
         <div style={{ width: 42, height: 42, borderRadius: 12, flexShrink: 0, background: "rgba(245,158,11,0.08)", border: `1px solid ${C.border}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -368,7 +380,7 @@ const GetInvolved: React.FC = () => {
                 {DONATION_METHODS.map(m => <DonationRow key={m.title} m={m} />)}
               </div>
 
-              {/* CTA row */}
+              {/* Bank details CTA */}
               <div className="gi-cta-row" style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap", marginTop: "0.5rem" }}>
                 <motion.button
                   onClick={() => setShowBankPanel(v => !v)}
@@ -385,15 +397,20 @@ const GetInvolved: React.FC = () => {
                     cursor: "pointer", transition: "all 0.3s ease",
                   }}
                 >
-                  {showBankPanel ? "Hide Details" : "View Bank Details"} <ArrowRight size={14} style={{ transform: showBankPanel ? "rotate(90deg)" : "rotate(0)", transition: "transform 0.3s ease" }} />
+                  {showBankPanel ? "Hide Details" : "View Bank Details"}
+                  <ArrowRight size={14} style={{ transform: showBankPanel ? "rotate(90deg)" : "rotate(0)", transition: "transform 0.3s ease" }} />
                 </motion.button>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontFamily: "'DM Sans', sans-serif", fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: C.textFaint }}>
                   <ShieldCheck size={15} color={C.gold} /> Guaranteed Secure
                 </div>
               </div>
 
-              {/* Bank panel — slides in below CTA */}
+              {/* Bank panel */}
               <BankPanel show={showBankPanel} />
+
+              {/* ── DONATE IN MEMORY ── */}
+              <DonateInMemory />
+
             </motion.div>
 
             <motion.div className="gi-img"
@@ -430,7 +447,7 @@ const GetInvolved: React.FC = () => {
             <div style={{ width: 300, height: 80, borderRadius: "50%", background: "radial-gradient(ellipse, rgba(245,158,11,0.1) 0%, transparent 70%)", filter: "blur(20px)", margin: "0 auto 1.5rem" }} />
             <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.1rem", fontStyle: "italic", color: C.textMuted, lineHeight: 1.6 }}>
               Still have questions?{" "}
-              <a href="mailto:info@generoushelpinghands.org" style={{ color: C.gold, textDecoration: "none" }}>Reach out directly.</a>
+              <a href={`mailto:${EMAIL}`} style={{ color: C.gold, textDecoration: "none" }}>Reach out directly.</a>
             </p>
           </motion.div>
         </section>
